@@ -1,0 +1,195 @@
+{
+  "version": "2.0.0",
+  "project": {
+    "name": "Example Project",
+    "description": "Sample task manager project to demonstrate VTM CLI"
+  },
+  "stats": {
+    "total_tasks": 5,
+    "completed": 2,
+    "in_progress": 0,
+    "pending": 3,
+    "blocked": 0
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "adr_source": "adr-001-task-manager.md",
+      "spec_source": "spec-task-manager-cli.md",
+      "title": "Set up project structure and TypeScript configuration",
+      "description": "Create the foundational project structure for the CLI tool. Set up TypeScript, tsconfig.json, package.json with required dependencies.",
+      "acceptance_criteria": [
+        "Project structure created with src/, lib/, tests/ directories",
+        "TypeScript configuration with strict mode enabled",
+        "Package.json with required dependencies installed",
+        "Build command successfully compiles TypeScript"
+      ],
+      "dependencies": [],
+      "blocks": ["TASK-002", "TASK-003"],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Setup work - verify with successful build",
+      "estimated_hours": 2,
+      "risk": "low",
+      "files": {
+        "create": [
+          "package.json",
+          "tsconfig.json",
+          "src/index.ts",
+          "src/lib/types.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "completed",
+      "started_at": "2025-10-28T10:00:00Z",
+      "completed_at": "2025-10-28T11:30:00Z",
+      "commits": ["a1b2c3d"],
+      "validation": {
+        "tests_pass": true,
+        "ac_verified": ["AC1", "AC2", "AC3", "AC4"]
+      }
+    },
+    {
+      "id": "TASK-002",
+      "adr_source": "adr-001-task-manager.md",
+      "spec_source": "spec-task-manager-cli.md",
+      "title": "Implement VTMReader with caching",
+      "description": "Create VTMReader class that efficiently reads and caches vtm.json. Implement file modification tracking to avoid unnecessary reloads.",
+      "acceptance_criteria": [
+        "VTMReader can load and parse vtm.json",
+        "Caching prevents redundant file reads",
+        "getTask() returns single task by ID",
+        "getReadyTasks() returns tasks with met dependencies"
+      ],
+      "dependencies": ["TASK-001"],
+      "blocks": ["TASK-004", "TASK-005"],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Core logic - requires comprehensive unit tests",
+      "estimated_hours": 3,
+      "risk": "medium",
+      "files": {
+        "create": [
+          "src/lib/vtm-reader.ts",
+          "src/lib/vtm-reader.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "completed",
+      "started_at": "2025-10-28T12:00:00Z",
+      "completed_at": "2025-10-28T14:45:00Z",
+      "commits": ["e4f5g6h", "i7j8k9l"],
+      "validation": {
+        "tests_pass": true,
+        "ac_verified": ["AC1", "AC2", "AC3", "AC4"]
+      }
+    },
+    {
+      "id": "TASK-003",
+      "adr_source": "adr-001-task-manager.md",
+      "spec_source": "spec-task-manager-cli.md",
+      "title": "Implement VTMWriter with atomic writes",
+      "description": "Create VTMWriter class that safely updates vtm.json using atomic write operations (write to temp, then rename).",
+      "acceptance_criteria": [
+        "updateTask() modifies single task without corruption",
+        "Atomic write prevents partial writes on crash",
+        "Stats automatically recalculated on update",
+        "Invalid updates rejected with clear errors"
+      ],
+      "dependencies": ["TASK-001"],
+      "blocks": ["TASK-004"],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Critical data integrity - requires thorough testing",
+      "estimated_hours": 3,
+      "risk": "high",
+      "files": {
+        "create": [
+          "src/lib/vtm-writer.ts",
+          "src/lib/vtm-writer.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-004",
+      "adr_source": "adr-001-task-manager.md",
+      "spec_source": "spec-task-manager-cli.md",
+      "title": "Implement ContextBuilder for minimal context generation",
+      "description": "Create ContextBuilder that generates token-efficient context packages for Claude Code. Include task details, dependencies, and file information.",
+      "acceptance_criteria": [
+        "buildMinimalContext() generates markdown context",
+        "Context includes all acceptance criteria",
+        "Completed dependencies listed with files",
+        "Context estimated at <3000 tokens"
+      ],
+      "dependencies": ["TASK-002"],
+      "blocks": ["TASK-005"],
+      "test_strategy": "Unit",
+      "test_strategy_rationale": "String formatting logic - unit tests sufficient",
+      "estimated_hours": 2,
+      "risk": "low",
+      "files": {
+        "create": [
+          "src/lib/context-builder.ts",
+          "src/lib/context-builder.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-005",
+      "adr_source": "adr-001-task-manager.md",
+      "spec_source": "spec-task-manager-cli.md",
+      "title": "Implement CLI commands (next, context, start, complete, stats)",
+      "description": "Create CLI using Commander.js with all core commands. Wire up VTMReader, VTMWriter, and ContextBuilder.",
+      "acceptance_criteria": [
+        "vtm next shows ready tasks",
+        "vtm context <id> generates context",
+        "vtm start <id> marks task in-progress",
+        "vtm complete <id> marks task done",
+        "vtm stats shows project statistics",
+        "All commands have --help text"
+      ],
+      "dependencies": ["TASK-002", "TASK-003", "TASK-004"],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "End-to-end command testing with real file operations",
+      "estimated_hours": 4,
+      "risk": "medium",
+      "files": {
+        "create": [
+          "src/index.ts",
+          "src/commands.test.ts"
+        ],
+        "modify": ["package.json"],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    }
+  ]
+}

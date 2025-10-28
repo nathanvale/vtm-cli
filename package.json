@@ -1,0 +1,78 @@
+{
+  "name": "vtm-cli",
+  "version": "2.0.0",
+  "description": "Virtual Task Manager CLI - Token-efficient task management for Claude Code",
+  "type": "commonjs",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "vtm": "./dist/index.js"
+  },
+  "files": [
+    "dist/**",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "clean": "rm -rf dist .tsbuildinfo 2>/dev/null || true",
+    "dev": "npm run build && node ./dist/index.js",
+    "cli": "node ./dist/index.js",
+    "start": "node ./dist/index.js",
+    "watch": "tsc -p tsconfig.json --watch",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier -w .",
+    "prepare": "husky",
+    "version:gen": "changeset",
+    "release": "changeset publish",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:ui": "vitest --ui",
+    "test:ci": "TF_BUILD=true vitest run",
+    "coverage": "vitest run --coverage",
+    "test:coverage": "vitest run --coverage",
+    "commitlint": "commitlint --edit $GIT_PARAMS || true",
+    "quality-check": "quality-check",
+    "quality-check:ci": "quality-check --since origin/main --safe --fix"
+  },
+  "engines": {
+    "node": ">=18.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "keywords": [
+    "task-manager",
+    "claude-code",
+    "vtm",
+    "tdd",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "clipboardy": "^2.3.0",
+    "commander": "^11.1.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^20.1.0",
+    "@commitlint/config-conventional": "^20.0.0",
+    "@eslint/js": "^9.38.0",
+    "@orchestr8/quality-check": "^1.2.0",
+    "@types/node": "^24.8.1",
+    "@vitest/coverage-v8": "^3.2.4",
+    "changesets": "^1.0.2",
+    "eslint": "^9.38.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.6.2",
+    "prettier-plugin-sort-json": "^4.1.1",
+    "rimraf": "^6.0.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.46.1",
+    "vitest": "^3.2.4"
+  }
+}
