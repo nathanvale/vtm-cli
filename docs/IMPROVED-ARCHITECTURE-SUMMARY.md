@@ -28,6 +28,14 @@ Commands were linear (forced order), outputs weren't reusable, thinking was hidd
 
 ## New Architecture: Four Thinking Partners
 
+**The Four Stages of Guided Planning:**
+1. **PRD Ideation** - Research problem space, guide PRD creation
+2. **ADR Decomposition** - Break PRD into distinct decisions, plan ADRs
+3. **Spec Implementation** - Research HOW to implement decisions
+4. **Each outputs structured JSON feeding into next stage**
+
+### Complete Planning Pipeline:
+
 ### 1. PRD Ideation Thinking Partner
 **Command:** `/helpers:thinking-partner:prd-ideation "your feature idea"`
 
