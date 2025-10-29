@@ -4,15 +4,20 @@ Virtual Task Manager for AI-assisted development with Claude Code.
 
 ## Overview
 
-VTM CLI is a token-efficient task management tool that solves token bloat by providing surgical access to task manifests instead of loading everything into context, achieving **99% token reduction**.
+VTM CLI is a token-efficient task management tool that solves token bloat by
+providing surgical access to task manifests instead of loading everything into
+context, achieving **99% token reduction**.
 
 ### Key Features
 
 - **Token Efficient**: Minimal context generation for AI workflows
 - **Dependency Management**: Automatic dependency resolution and blocking
-- **Plan-to-VTM Bridge**: Transform ADR+Spec documents into executable tasks using AI
-- **TDD Support**: Built-in test strategy tracking (TDD, Unit, Integration, Direct)
-- **Atomic Operations**: Crash-safe file operations with automatic stats recalculation
+- **Plan-to-VTM Bridge**: Transform ADR+Spec documents into executable tasks
+  using AI
+- **TDD Support**: Built-in test strategy tracking (TDD, Unit, Integration,
+  Direct)
+- **Atomic Operations**: Crash-safe file operations with automatic stats
+  recalculation
 - **Rich Context**: Optional traceability to source ADRs and specifications
 
 ## Installation
@@ -79,27 +84,28 @@ vtm complete TASK-004       # Mark done
 
 ### Core Commands
 
-| Command | Description |
-|---------|-------------|
-| `vtm next [-n <count>]` | Show next available tasks |
-| `vtm context <task-id>` | Generate minimal context for Claude |
-| `vtm task <task-id>` | Show detailed task information |
-| `vtm start <task-id>` | Mark task as in-progress |
-| `vtm complete <task-id>` | Mark task as completed |
-| `vtm stats` | Show project statistics |
+| Command                        | Description                            |
+| ------------------------------ | -------------------------------------- |
+| `vtm next [-n <count>]`        | Show next available tasks              |
+| `vtm context <task-id>`        | Generate minimal context for Claude    |
+| `vtm task <task-id>`           | Show detailed task information         |
+| `vtm start <task-id>`          | Mark task as in-progress               |
+| `vtm complete <task-id>`       | Mark task as completed                 |
+| `vtm stats`                    | Show project statistics                |
 | `vtm list [--status <status>]` | List all tasks with optional filtering |
 
 ### Plan-to-VTM Bridge Commands
 
-| Command | Description |
-|---------|-------------|
-| `vtm summary [--incomplete] [--json]` | Generate VTM summary for AI agents |
-| `vtm ingest <file> [--preview] [--commit]` | Validate and ingest tasks into VTM |
-| `/plan:to-vtm <adr> <spec>` | Transform ADR+Spec into VTM tasks (Claude Code) |
+| Command                                    | Description                                     |
+| ------------------------------------------ | ----------------------------------------------- |
+| `vtm summary [--incomplete] [--json]`      | Generate VTM summary for AI agents              |
+| `vtm ingest <file> [--preview] [--commit]` | Validate and ingest tasks into VTM              |
+| `/plan:to-vtm <adr> <spec>`                | Transform ADR+Spec into VTM tasks (Claude Code) |
 
 ## Plan-to-VTM Bridge
 
-The Plan-to-VTM bridge uses AI to transform planning documents into executable tasks with automatic dependency resolution.
+The Plan-to-VTM bridge uses AI to transform planning documents into executable
+tasks with automatic dependency resolution.
 
 ### Architecture
 
@@ -119,7 +125,8 @@ Tasks added to vtm.json
 
 ### Features
 
-- **Automatic ID Assignment**: Sequential TASK-XXX IDs starting after highest existing ID
+- **Automatic ID Assignment**: Sequential TASK-XXX IDs starting after highest
+  existing ID
 - **Dependency Resolution**: Converts index-based dependencies to task IDs
 - **Token Efficiency**: 80% reduction using incomplete tasks filter
 - **Rich Context**: Links tasks to source documents with line numbers
@@ -135,6 +142,7 @@ Tasks added to vtm.json
 ```
 
 The command will:
+
 1. Read your ADR and Spec documents
 2. Generate VTM summary for agent context
 3. Launch AI agent to extract tasks
@@ -164,6 +172,7 @@ vtm ingest tasks.json --commit
 Tasks support two dependency formats:
 
 **Index-based** (for batch ingestion):
+
 ```json
 {
   "title": "Implement Profile Storage",
@@ -175,6 +184,7 @@ Tasks support two dependency formats:
 ```
 
 **ID-based** (for existing tasks):
+
 ```json
 {
   "title": "Add CLI Commands",
@@ -186,6 +196,7 @@ Tasks support two dependency formats:
 ```
 
 **Mixed dependencies** are supported:
+
 ```json
 "dependencies": [0, "TASK-002"]
 ```
@@ -194,12 +205,12 @@ Tasks support two dependency formats:
 
 VTM supports four test strategies:
 
-| Strategy | When to Use | Example |
-|----------|-------------|---------|
-| `TDD` | High-risk core logic, security features | Authentication, data validation |
-| `Unit` | Medium-risk pure functions | Utilities, helpers, calculations |
-| `Integration` | Cross-component behavior | API endpoints, database operations |
-| `Direct` | Setup, configuration, docs | tsconfig.json, README updates |
+| Strategy      | When to Use                             | Example                            |
+| ------------- | --------------------------------------- | ---------------------------------- |
+| `TDD`         | High-risk core logic, security features | Authentication, data validation    |
+| `Unit`        | Medium-risk pure functions              | Utilities, helpers, calculations   |
+| `Integration` | Cross-component behavior                | API endpoints, database operations |
+| `Direct`      | Setup, configuration, docs              | tsconfig.json, README updates      |
 
 ## Project Structure
 
@@ -231,50 +242,47 @@ vtm-cli/
 
 ```json
 {
-  "version": "2.0.0",
   "project": {
-    "name": "My Project",
-    "description": "Project description"
+    "description": "Project description",
+    "name": "My Project"
   },
   "stats": {
-    "total_tasks": 10,
+    "blocked": 0,
     "completed": 3,
     "in_progress": 1,
     "pending": 6,
-    "blocked": 0
+    "total_tasks": 10
   },
   "tasks": [
     {
-      "id": "TASK-001",
+      "acceptance_criteria": ["Criterion 1", "Criterion 2"],
       "adr_source": "adr/ADR-001-architecture.md",
-      "spec_source": "specs/spec-core.md",
-      "title": "Task title",
-      "description": "Detailed description",
-      "acceptance_criteria": [
-        "Criterion 1",
-        "Criterion 2"
-      ],
-      "dependencies": [],
       "blocks": [],
-      "test_strategy": "TDD",
-      "test_strategy_rationale": "High-risk feature requiring comprehensive testing",
+      "commits": [],
+      "completed_at": null,
+      "dependencies": [],
+      "description": "Detailed description",
       "estimated_hours": 8,
-      "risk": "high",
       "files": {
         "create": ["src/new-file.ts"],
-        "modify": ["src/existing.ts"],
-        "delete": []
+        "delete": [],
+        "modify": ["src/existing.ts"]
       },
-      "status": "pending",
+      "id": "TASK-001",
+      "risk": "high",
+      "spec_source": "specs/spec-core.md",
       "started_at": null,
-      "completed_at": null,
-      "commits": [],
+      "status": "pending",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "High-risk feature requiring comprehensive testing",
+      "title": "Task title",
       "validation": {
-        "tests_pass": false,
-        "ac_verified": []
+        "ac_verified": [],
+        "tests_pass": false
       }
     }
-  ]
+  ],
+  "version": "2.0.0"
 }
 ```
 
@@ -333,6 +341,7 @@ VTM CLI is designed to work seamlessly with Claude Code:
 ### Traditional Prompts
 
 Located in `/prompts/`:
+
 1. **Generate VTM**: Convert ADRs/specs → vtm.json
 2. **Execute Task**: TDD implementation of single task
 3. **Add Feature**: Append new tasks to existing VTM
@@ -378,6 +387,7 @@ VTM CLI achieves 99% token reduction through:
 ## Examples
 
 See `examples/` directory for:
+
 - `vtm-example.json`: Sample VTM file
 - `adr/`: Example ADR documents
 - `specs/`: Example specification documents
@@ -435,6 +445,7 @@ MIT
 ## Acknowledgments
 
 Built with:
+
 - [TypeScript](https://www.typescriptlang.org/)
 - [Commander.js](https://github.com/tj/commander.js/)
 - [Vitest](https://vitest.dev/)

@@ -8,6 +8,7 @@
 ## Overview
 
 Composability requires **standard interfaces** - contracts that all components must follow. This ensures:
+
 - Any tool can manage any component
 - Components from different authors interoperate
 - Testing and validation work uniformly
@@ -26,60 +27,60 @@ Every component must expose metadata describing what it is.
 ```json
 {
   "component": {
-    "id": "string (unique identifier)",
-    "type": "command|skill|mcp|hook|agent|plugin",
-    "version": "semver",
-    "name": "string (human readable)",
-    "description": "string (what it does)",
-
-    "created_at": "ISO8601",
-    "updated_at": "ISO8601",
-    "creator": "string (username)",
     "authors": ["string"],
 
-    "location": "string (path to component)",
-    "repository": "string (git repo)",
-
-    "tags": ["string"],
     "category": "string",
 
-    "inputs": {
-      "parameters": {
-        "{param_name}": {
-          "type": "string|number|boolean|array|object",
-          "description": "string",
-          "required": "boolean",
-          "default": "value"
-        }
-      },
-      "dependencies": ["component_id"]
-    },
-
-    "outputs": {
-      "return_type": "object|string|boolean|void",
-      "description": "string",
-      "schema": {}
-    },
-
+    "created_at": "ISO8601",
+    "creator": "string (username)",
     "dependencies": ["component_id"],
     "dependents": ["component_id"],
 
-    "status": "active|deprecated|experimental|archived",
+    "description": "string (what it does)",
 
-    "quality": {
-      "test_coverage": "number (0-100)",
-      "documented": "boolean",
-      "security_reviewed": "boolean",
-      "performance_benchmarked": "boolean",
-      "quality_score": "number (0-100)"
+    "id": "string (unique identifier)",
+    "inputs": {
+      "dependencies": ["component_id"],
+      "parameters": {
+        "{param_name}": {
+          "default": "value",
+          "description": "string",
+          "required": "boolean",
+          "type": "string|number|boolean|array|object"
+        }
+      }
     },
 
+    "location": "string (path to component)",
+    "name": "string (human readable)",
+    "outputs": {
+      "description": "string",
+      "return_type": "object|string|boolean|void",
+      "schema": {}
+    },
+
+    "quality": {
+      "documented": "boolean",
+      "performance_benchmarked": "boolean",
+      "quality_score": "number (0-100)",
+      "security_reviewed": "boolean",
+      "test_coverage": "number (0-100)"
+    },
+
+    "repository": "string (git repo)",
+
     "sharing": {
-      "scope": "personal|team|community",
       "published": "boolean",
       "registry": "internal|public",
+      "scope": "personal|team|community",
       "teams": ["string"]
-    }
+    },
+    "status": "active|deprecated|experimental|archived",
+
+    "tags": ["string"],
+    "type": "command|skill|mcp|hook|agent|plugin",
+    "updated_at": "ISO8601",
+    "version": "semver"
   }
 }
 ```
@@ -89,6 +90,7 @@ Every component must expose metadata describing what it is.
 For slash commands and skills, expose metadata via frontmatter:
 
 **Command Example: `.claude/commands/pm/next.md`**
+
 ```markdown
 ---
 type: command
@@ -129,6 +131,7 @@ quality:
 ```
 
 **Skill Example: `.claude/skills/pm-expert/SKILL.md`**
+
 ```markdown
 ---
 type: skill
@@ -155,34 +158,35 @@ quality:
 ```
 
 **MCP Example: `.claude/mcp-servers/pm-notion/mcp.json`**
+
 ```json
 {
   "component": {
-    "id": "pm-notion",
-    "type": "mcp",
-    "name": "PM Notion Integration",
-    "version": "1.0.0",
     "description": "Notion database integration for PM tasks",
 
+    "id": "pm-notion",
     "inputs": {
       "parameters": {
         "api_key": {
-          "type": "string",
           "description": "Notion API key",
-          "required": true
+          "required": true,
+          "type": "string"
         },
         "database_id": {
-          "type": "string",
           "description": "Notion database ID",
-          "required": true
+          "required": true,
+          "type": "string"
         }
       }
     },
 
+    "name": "PM Notion Integration",
     "outputs": {
-      "return_type": "object",
-      "description": "Task data from Notion"
-    }
+      "description": "Task data from Notion",
+      "return_type": "object"
+    },
+    "type": "mcp",
+    "version": "1.0.0"
   }
 }
 ```
@@ -195,16 +199,16 @@ Every component must support standard lifecycle operations for discoverability a
 
 ### Required Operations
 
-| Operation | Input | Output | Purpose |
-|-----------|-------|--------|---------|
-| **create** | Config | Component ID | Initialize new component |
-| **read** | Component ID | Metadata + Status | Retrieve component definition |
-| **update** | Component ID + Changes | Updated Metadata | Modify component |
-| **delete** | Component ID | Success/Failure | Remove component |
-| **test** | Component ID + Inputs | Test Results | Validate component works |
-| **deploy** | Component ID | Deployment Status | Make active/available |
-| **version** | Component ID | Version History | Track changes |
-| **help** | Component ID | Documentation | Get usage help |
+| Operation   | Input                  | Output            | Purpose                       |
+| ----------- | ---------------------- | ----------------- | ----------------------------- |
+| **create**  | Config                 | Component ID      | Initialize new component      |
+| **read**    | Component ID           | Metadata + Status | Retrieve component definition |
+| **update**  | Component ID + Changes | Updated Metadata  | Modify component              |
+| **delete**  | Component ID           | Success/Failure   | Remove component              |
+| **test**    | Component ID + Inputs  | Test Results      | Validate component works      |
+| **deploy**  | Component ID           | Deployment Status | Make active/available         |
+| **version** | Component ID           | Version History   | Track changes                 |
+| **help**    | Component ID           | Documentation     | Get usage help                |
 
 ### Command Interface Example
 
@@ -364,20 +368,20 @@ All components accept configuration in standard format.
 
 ```yaml
 components:
-  {domain}:
-    {component}:
-      enabled: boolean                    # Is component active?
-      timeout: number (seconds)          # Execution timeout
-      retry_policy: exponential|linear   # Retry strategy
-      max_retries: number                # How many retries
-      cache: boolean                     # Cache results?
-      cache_ttl: number (seconds)        # Cache duration
-      cost_limit: number (tokens)        # Max tokens allowed
-      owners: [string]                   # Who can modify
-      teams: [string]                    # Which teams can use
-      env_vars: {key: value}             # Environment config
-      tags: [string]                     # Runtime tags
-      metadata: {key: value}             # Custom metadata
+  { domain }:
+    { component }:
+      enabled: boolean # Is component active?
+      timeout: number (seconds) # Execution timeout
+      retry_policy: exponential|linear # Retry strategy
+      max_retries: number # How many retries
+      cache: boolean # Cache results?
+      cache_ttl: number (seconds) # Cache duration
+      cost_limit: number (tokens) # Max tokens allowed
+      owners: [string] # Who can modify
+      teams: [string] # Which teams can use
+      env_vars: { key: value } # Environment config
+      tags: [string] # Runtime tags
+      metadata: { key: value } # Custom metadata
 ```
 
 ### Config File Example
@@ -393,8 +397,8 @@ components:
       retry_policy: exponential
       max_retries: 2
       cache: true
-      cache_ttl: 300  # 5 minutes
-      cost_limit: 500  # tokens
+      cache_ttl: 300 # 5 minutes
+      cost_limit: 500 # tokens
       owners: [alice, bob]
       teams: [engineering]
       env_vars:
@@ -441,15 +445,15 @@ Components declare what context they need.
 ---
 context:
   required:
-    - project_structure    # Need project layout
-    - task_definitions     # Need PM task schema
-    - recent_changes       # Need git history
+    - project_structure # Need project layout
+    - task_definitions # Need PM task schema
+    - recent_changes # Need git history
 
   optional:
-    - team_members        # Nice to have
+    - team_members # Nice to have
     - performance_metrics # Nice to have
 
-  token_budget: 2000      # Max tokens for context
+  token_budget: 2000 # Max tokens for context
   context_mode: "minimal" # minimal|balanced|comprehensive
 ---
 ```
@@ -484,15 +488,15 @@ Components expose resource usage for optimization.
 {
   "component": "pm:next",
   "execution": {
-    "timestamp": "2025-10-29T15:30:00Z",
+    "api_calls": 1,
+    "cost_usd": 0.0024,
     "duration_ms": 234,
+    "timestamp": "2025-10-29T15:30:00Z",
     "tokens": {
       "input": 150,
       "output": 42,
       "total": 192
-    },
-    "cost_usd": 0.0024,
-    "api_calls": 1
+    }
   }
 }
 ```
@@ -527,33 +531,33 @@ Components expose quality metrics.
 
 ```yaml
 quality:
-  functionality:          # Does it work?
+  functionality: # Does it work?
     tests_passing: true
     coverage: 85
     score: 0.95
 
-  performance:            # Is it fast enough?
+  performance: # Is it fast enough?
     p95_latency_ms: 250
     throughput: 1000
     target_latency_ms: 100
     score: 0.75
 
-  security:              # Is it safe?
+  security: # Is it safe?
     scan_status: passed
     vulnerabilities: 0
     score: 1.0
 
-  documentation:         # Is it clear?
+  documentation: # Is it clear?
     completeness: 0.8
     examples: true
     score: 0.8
 
-  maintainability:       # Is it maintainable?
+  maintainability: # Is it maintainable?
     cyclomatic_complexity: 3
     code_duplication: 0.02
     score: 0.9
 
-  overall: 0.88         # Weighted average
+  overall: 0.88 # Weighted average
 ```
 
 ### Quality Gates
@@ -584,12 +588,12 @@ Components declare dependencies clearly.
 ---
 dependencies:
   required:
-    - pm-notion-mcp    # Must have
+    - pm-notion-mcp # Must have
 
   optional:
-    - cache-layer      # Nice to have
+    - cache-layer # Nice to have
 
-  conflicts_with:      # Cannot coexist with
+  conflicts_with: # Cannot coexist with
     - pm-jira-mcp
 ---
 ```
@@ -677,33 +681,39 @@ Components can be composed together.
 When building a component, ensure:
 
 ✅ **Metadata**
+
 - [ ] Has frontmatter/metadata block
 - [ ] Includes name, version, description
 - [ ] Lists dependencies
 - [ ] Includes tags
 
 ✅ **Operations**
+
 - [ ] Can be queried: `/registry:scan {component}`
 - [ ] Can be tested: `/test:command {component}`
 - [ ] Can be versioned: `/version:list {component}`
 - [ ] Can be discovered: `/registry:search {keyword}`
 
 ✅ **Events**
+
 - [ ] Emits lifecycle events (created, deleted, deployed)
 - [ ] Emits execution events (started, completed, failed)
 - [ ] Subscribes to relevant events
 
 ✅ **Configuration**
+
 - [ ] Accepts standard config format
 - [ ] Honors timeout, retry policy, cost limits
 - [ ] Respects ownership/team rules
 
 ✅ **Quality**
+
 - [ ] Has tests (or test_coverage: 0 documented)
 - [ ] Is documented
 - [ ] Has quality score calculated
 
 ✅ **Dependencies**
+
 - [ ] Declares what it needs
 - [ ] Fails gracefully if deps missing
 - [ ] Can be updated without breaking dependents
@@ -766,6 +776,7 @@ When interface needs evolution:
 ## This Specification
 
 This interface contract ensures:
+
 - ✅ All components speak same language
 - ✅ Tools can manage anything
 - ✅ Composition works reliably

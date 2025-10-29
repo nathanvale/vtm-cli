@@ -1,350 +1,130 @@
 {
-  "version": "1.0",
   "description": "Pre-built test cases for common Claude Code components",
-  "last_updated": "2025-10-29",
-  "test_templates": {
-    "pm:next": {
-      "component_id": "pm:next",
-      "component_type": "command",
-      "category": "project-management",
-      "description": "Test PM domain next command",
-      "test_cases": [
-        {
-          "id": "pm-next-smoke",
-          "name": "Smoke Test - PM Next",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify pm:next command exists and can be invoked",
-          "command": "pm:next",
-          "expected": null,
-          "timeout": 5,
-          "should_pass": true
-        },
-        {
-          "id": "pm-next-basic",
-          "name": "Basic Execution",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test pm:next returns task list",
-          "command": "pm:next",
-          "args": [],
-          "expected": "Ready Tasks",
-          "timeout": 10,
-          "should_pass": true,
-          "notes": "Requires vtm.json in working directory"
-        },
-        {
-          "id": "pm-next-with-count",
-          "name": "With Count Argument",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test pm:next with --number argument",
-          "command": "pm:next",
-          "args": ["--number", "10"],
-          "expected": "Tasks",
-          "timeout": 10,
-          "should_pass": true,
-          "notes": "Test pagination with custom count"
-        },
-        {
-          "id": "pm-next-integration",
-          "name": "Integration Test",
-          "mode": "comprehensive",
-          "type": "integration",
-          "description": "Test pm:next works with VTM reader",
-          "command": "pm:next",
-          "dependencies": ["vtm-reader", "vtm-data"],
-          "should_pass": true,
-          "notes": "Validates dependency resolution"
-        }
+  "error_scenarios": {
+    "invalid_input": {
+      "description": "Component receives malformed or unexpected input",
+      "expected_error": "invalid",
+      "name": "Invalid Input Arguments",
+      "recovery_steps": [
+        "Check argument format",
+        "Review help documentation",
+        "Verify data types"
       ]
     },
-    "pm:context": {
-      "component_id": "pm:context",
-      "component_type": "command",
-      "category": "project-management",
-      "description": "Test PM context generation command",
-      "test_cases": [
-        {
-          "id": "pm-context-smoke",
-          "name": "Smoke Test - PM Context",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify pm:context command exists",
-          "command": "pm:context",
-          "expected": null,
-          "timeout": 5,
-          "should_pass": true
-        },
-        {
-          "id": "pm-context-task",
-          "name": "With Task ID",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test context generation for specific task",
-          "command": "pm:context",
-          "args": ["TASK-001"],
-          "expected": "dependencies",
-          "timeout": 15,
-          "should_pass": true,
-          "notes": "Requires TASK-001 to exist in vtm.json"
-        },
-        {
-          "id": "pm-context-compact",
-          "name": "Compact Mode",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test compact context format",
-          "command": "pm:context",
-          "args": ["TASK-001", "--compact"],
-          "expected": "Task",
-          "timeout": 15,
-          "should_pass": true,
-          "notes": "Compact mode should reduce output size by 70%"
-        },
-        {
-          "id": "pm-context-invalid-task",
-          "name": "Error Handling - Invalid Task",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test error message for non-existent task",
-          "command": "pm:context",
-          "args": ["INVALID-999"],
-          "expected": null,
-          "should_fail": true,
-          "should_contain_error": true,
-          "timeout": 10,
-          "notes": "Should gracefully handle missing task"
-        },
-        {
-          "id": "pm-context-performance",
-          "name": "Performance Benchmark",
-          "mode": "comprehensive",
-          "type": "performance",
-          "description": "Verify context generation is fast",
-          "command": "pm:context",
-          "args": ["TASK-001"],
-          "max_execution_time_ms": 5000,
-          "expected_token_usage": {
-            "minimal": 1500,
-            "compact": 500
-          },
-          "timeout": 30,
-          "should_pass": true
-        }
+    "missing_dependency": {
+      "description": "Component depends on unavailable resource",
+      "expected_error": "not found",
+      "name": "Missing Required Dependency",
+      "recovery_steps": [
+        "Verify dependency is installed",
+        "Check file paths",
+        "Reinstall if needed"
       ]
     },
-    "pm:start": {
-      "component_id": "pm:start",
-      "component_type": "command",
-      "category": "project-management",
-      "description": "Test PM task start command",
-      "test_cases": [
-        {
-          "id": "pm-start-smoke",
-          "name": "Smoke Test - PM Start",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify pm:start command exists",
-          "command": "pm:start",
-          "expected": null,
-          "timeout": 5,
-          "should_pass": true
-        },
-        {
-          "id": "pm-start-mark-task",
-          "name": "Mark Task In Progress",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test marking task as in-progress",
-          "command": "pm:start",
-          "args": ["TASK-001"],
-          "expected": "in-progress",
-          "timeout": 10,
-          "should_pass": true,
-          "side_effects": {
-            "modifies_vtm": true,
-            "updates_stats": true
-          },
-          "notes": "Test should verify vtm.json is updated"
-        },
-        {
-          "id": "pm-start-invalid-task",
-          "name": "Error Handling",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test error for non-existent task",
-          "command": "pm:start",
-          "args": ["INVALID-999"],
-          "should_fail": true,
-          "timeout": 10
-        }
-      ]
-    },
-    "pm:complete": {
-      "component_id": "pm:complete",
-      "component_type": "command",
-      "category": "project-management",
-      "description": "Test PM task completion command",
-      "test_cases": [
-        {
-          "id": "pm-complete-basic",
-          "name": "Mark Task Complete",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test marking task as completed",
-          "command": "pm:complete",
-          "args": ["TASK-001"],
-          "expected": "completed",
-          "timeout": 10,
-          "should_pass": true,
-          "side_effects": {
-            "modifies_vtm": true,
-            "updates_stats": true,
-            "may_unlock_dependencies": true
-          }
-        },
-        {
-          "id": "pm-complete-with-metadata",
-          "name": "Complete with Metadata",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test completion with commits and files",
-          "command": "pm:complete",
-          "args": [
-            "TASK-001",
-            "--commits",
-            "abc123,def456",
-            "--tests-pass"
-          ],
-          "expected": "completed",
-          "timeout": 10,
-          "should_pass": true,
-          "notes": "Verify metadata is properly recorded"
-        }
-      ]
-    },
-    "pm-expert": {
-      "component_id": "pm-expert",
-      "component_type": "skill",
-      "category": "project-management",
-      "description": "Test PM expert skill auto-discovery",
-      "test_cases": [
-        {
-          "id": "pm-expert-smoke",
-          "name": "Smoke Test - PM Expert",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify pm-expert skill exists",
-          "command": "pm-expert",
-          "trigger_phrases": [
-            "what should I work on",
-            "next task",
-            "current status"
-          ],
-          "expected": null,
-          "timeout": 5,
-          "should_pass": true
-        },
-        {
-          "id": "pm-expert-trigger",
-          "name": "Trigger Phrase Detection",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test skill activates on trigger phrases",
-          "trigger_input": "What should I work on next?",
-          "should_activate_skill": true,
-          "expected": "TASK",
-          "timeout": 15,
-          "should_pass": true
-        }
-      ]
-    },
-    "notion-mcp": {
-      "component_id": "notion-mcp",
-      "component_type": "mcp",
-      "category": "integration",
-      "description": "Test Notion MCP server",
-      "test_cases": [
-        {
-          "id": "notion-mcp-smoke",
-          "name": "Smoke Test - Notion MCP",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify Notion MCP server can be reached",
-          "endpoint": "http://localhost:3000/mcp/notion",
-          "expected": null,
-          "timeout": 10,
-          "should_pass": true,
-          "requires_auth": true,
-          "requires_running_server": true
-        },
-        {
-          "id": "notion-mcp-connection",
-          "name": "Connection Test",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test MCP connection and authentication",
-          "operation": "health_check",
-          "expected": "ok",
-          "timeout": 15,
-          "should_pass": true,
-          "requires_auth": true,
-          "env_vars": ["NOTION_API_KEY"]
-        },
-        {
-          "id": "notion-mcp-list-databases",
-          "name": "List Databases",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test listing available databases",
-          "operation": "list_databases",
-          "expected_type": "array",
-          "timeout": 20,
-          "should_pass": true,
-          "requires_auth": true
-        }
-      ]
-    },
-    "deploy-hook": {
-      "component_id": "deploy-hook",
-      "component_type": "hook",
-      "category": "automation",
-      "description": "Test deployment automation hook",
-      "test_cases": [
-        {
-          "id": "deploy-hook-smoke",
-          "name": "Smoke Test - Deploy Hook",
-          "mode": "quick",
-          "type": "smoke",
-          "description": "Verify deploy hook exists",
-          "command": "deploy-hook",
-          "expected": null,
-          "timeout": 5,
-          "should_pass": true
-        },
-        {
-          "id": "deploy-hook-trigger",
-          "name": "Hook Trigger",
-          "mode": "comprehensive",
-          "type": "functional",
-          "description": "Test hook executes on commit event",
-          "event": "on:git-push",
-          "expected": "deployment",
-          "timeout": 30,
-          "should_pass": true,
-          "side_effects": {
-            "may_run_remote_operations": true
-          },
-          "env_vars": ["DEPLOY_TOKEN", "ENVIRONMENT"]
-        }
+    "timeout": {
+      "description": "Component takes too long to execute",
+      "expected_behavior": "graceful timeout",
+      "name": "Execution Timeout",
+      "recovery_steps": [
+        "Increase timeout value",
+        "Check for performance bottlenecks",
+        "Review resource usage"
       ]
     }
   },
+  "expected_outputs": {
+    "pm-expert": ["TASK", "recommendation", "next"],
+    "pm:context": ["dependencies", "Task", "Context", "acceptance_criteria"],
+    "pm:next": ["Ready Tasks", "Task", "Status:", "Risk:", "Dependencies:"]
+  },
+  "last_updated": "2025-10-29",
+  "performance_thresholds": {
+    "pm:complete": {
+      "max_execution_time_ms": 5000,
+      "max_token_estimate": 500,
+      "target_execution_time_ms": 500
+    },
+    "pm:context": {
+      "compact_token_estimate": 1000,
+      "max_execution_time_ms": 10000,
+      "max_token_estimate": 5000,
+      "target_execution_time_ms": 2000
+    },
+    "pm:next": {
+      "max_execution_time_ms": 5000,
+      "max_token_estimate": 1000,
+      "target_execution_time_ms": 1000
+    },
+    "pm:start": {
+      "max_execution_time_ms": 5000,
+      "max_token_estimate": 500,
+      "target_execution_time_ms": 500
+    }
+  },
+  "quality_metrics": {
+    "minimum_documentation_level": "comprehensive",
+    "minimum_test_coverage": 80,
+    "required_error_handling": true,
+    "required_metadata_fields": [
+      "id",
+      "type",
+      "version",
+      "name",
+      "description",
+      "dependencies"
+    ]
+  },
+  "test_configurations": {
+    "ci_pipeline": {
+      "fail_on_warning": true,
+      "generate_report": true,
+      "mode": "comprehensive",
+      "timeout": 120,
+      "verbose": true
+    },
+    "default": {
+      "generate_report": false,
+      "mode": "quick",
+      "timeout": 30,
+      "verbose": false
+    },
+    "development": {
+      "generate_report": false,
+      "mode": "quick",
+      "timeout": 30,
+      "verbose": true,
+      "watch": true
+    },
+    "pre_release": {
+      "benchmark": true,
+      "fail_on_warning": true,
+      "generate_report": true,
+      "mode": "comprehensive",
+      "timeout": 180,
+      "verbose": true
+    }
+  },
   "test_suites": {
+    "integration-tests": {
+      "description": "Test interactions between different domains",
+      "name": "Cross-Component Integration",
+      "test_cases": [
+        "pm-next-integration",
+        "pm-context-task",
+        "pm-complete-basic"
+      ],
+      "timeout": 60
+    },
+    "performance-benchmarks": {
+      "description": "Measure and validate performance metrics",
+      "generate_report": true,
+      "name": "Performance Benchmarking",
+      "test_cases": ["pm-context-performance"],
+      "timeout": 120
+    },
     "pm-domain-basic": {
-      "name": "PM Domain - Basic Tests",
       "description": "Quick smoke tests for all PM domain commands",
+      "name": "PM Domain - Basic Tests",
       "test_cases": [
         "pm-next-smoke",
         "pm-context-smoke",
@@ -354,8 +134,9 @@
       "timeout": 30
     },
     "pm-domain-comprehensive": {
-      "name": "PM Domain - Full Test Suite",
       "description": "Comprehensive test coverage for PM domain",
+      "name": "PM Domain - Full Test Suite",
+      "requires": ["vtm.json"],
       "test_cases": [
         "pm-next-smoke",
         "pm-next-basic",
@@ -368,31 +149,11 @@
         "pm-complete-basic",
         "pm-complete-with-metadata"
       ],
-      "timeout": 120,
-      "requires": ["vtm.json"]
-    },
-    "integration-tests": {
-      "name": "Cross-Component Integration",
-      "description": "Test interactions between different domains",
-      "test_cases": [
-        "pm-next-integration",
-        "pm-context-task",
-        "pm-complete-basic"
-      ],
-      "timeout": 60
-    },
-    "performance-benchmarks": {
-      "name": "Performance Benchmarking",
-      "description": "Measure and validate performance metrics",
-      "test_cases": [
-        "pm-context-performance"
-      ],
-      "timeout": 120,
-      "generate_report": true
+      "timeout": 120
     },
     "smoke-tests-all": {
-      "name": "Smoke Tests - All Components",
       "description": "Quick verification that all components exist and load",
+      "name": "Smoke Tests - All Components",
       "test_cases": [
         "pm-next-smoke",
         "pm-context-smoke",
@@ -405,122 +166,339 @@
       "timeout": 60
     }
   },
-  "test_configurations": {
-    "default": {
-      "mode": "quick",
-      "timeout": 30,
-      "generate_report": false,
-      "verbose": false
+  "test_templates": {
+    "deploy-hook": {
+      "category": "automation",
+      "component_id": "deploy-hook",
+      "component_type": "hook",
+      "description": "Test deployment automation hook",
+      "test_cases": [
+        {
+          "command": "deploy-hook",
+          "description": "Verify deploy hook exists",
+          "expected": null,
+          "id": "deploy-hook-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - Deploy Hook",
+          "should_pass": true,
+          "timeout": 5,
+          "type": "smoke"
+        },
+        {
+          "description": "Test hook executes on commit event",
+          "env_vars": ["DEPLOY_TOKEN", "ENVIRONMENT"],
+          "event": "on:git-push",
+          "expected": "deployment",
+          "id": "deploy-hook-trigger",
+          "mode": "comprehensive",
+          "name": "Hook Trigger",
+          "should_pass": true,
+          "side_effects": {
+            "may_run_remote_operations": true
+          },
+          "timeout": 30,
+          "type": "functional"
+        }
+      ]
     },
-    "ci_pipeline": {
-      "mode": "comprehensive",
-      "timeout": 120,
-      "generate_report": true,
-      "verbose": true,
-      "fail_on_warning": true
+    "notion-mcp": {
+      "category": "integration",
+      "component_id": "notion-mcp",
+      "component_type": "mcp",
+      "description": "Test Notion MCP server",
+      "test_cases": [
+        {
+          "description": "Verify Notion MCP server can be reached",
+          "endpoint": "http://localhost:3000/mcp/notion",
+          "expected": null,
+          "id": "notion-mcp-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - Notion MCP",
+          "requires_auth": true,
+          "requires_running_server": true,
+          "should_pass": true,
+          "timeout": 10,
+          "type": "smoke"
+        },
+        {
+          "description": "Test MCP connection and authentication",
+          "env_vars": ["NOTION_API_KEY"],
+          "expected": "ok",
+          "id": "notion-mcp-connection",
+          "mode": "comprehensive",
+          "name": "Connection Test",
+          "operation": "health_check",
+          "requires_auth": true,
+          "should_pass": true,
+          "timeout": 15,
+          "type": "functional"
+        },
+        {
+          "description": "Test listing available databases",
+          "expected_type": "array",
+          "id": "notion-mcp-list-databases",
+          "mode": "comprehensive",
+          "name": "List Databases",
+          "operation": "list_databases",
+          "requires_auth": true,
+          "should_pass": true,
+          "timeout": 20,
+          "type": "functional"
+        }
+      ]
     },
-    "development": {
-      "mode": "quick",
-      "timeout": 30,
-      "generate_report": false,
-      "verbose": true,
-      "watch": true
-    },
-    "pre_release": {
-      "mode": "comprehensive",
-      "timeout": 180,
-      "generate_report": true,
-      "verbose": true,
-      "fail_on_warning": true,
-      "benchmark": true
-    }
-  },
-  "expected_outputs": {
-    "pm:next": [
-      "Ready Tasks",
-      "Task",
-      "Status:",
-      "Risk:",
-      "Dependencies:"
-    ],
-    "pm:context": [
-      "dependencies",
-      "Task",
-      "Context",
-      "acceptance_criteria"
-    ],
-    "pm-expert": [
-      "TASK",
-      "recommendation",
-      "next"
-    ]
-  },
-  "performance_thresholds": {
-    "pm:next": {
-      "max_execution_time_ms": 5000,
-      "max_token_estimate": 1000,
-      "target_execution_time_ms": 1000
-    },
-    "pm:context": {
-      "max_execution_time_ms": 10000,
-      "max_token_estimate": 5000,
-      "compact_token_estimate": 1000,
-      "target_execution_time_ms": 2000
-    },
-    "pm:start": {
-      "max_execution_time_ms": 5000,
-      "max_token_estimate": 500,
-      "target_execution_time_ms": 500
+    "pm-expert": {
+      "category": "project-management",
+      "component_id": "pm-expert",
+      "component_type": "skill",
+      "description": "Test PM expert skill auto-discovery",
+      "test_cases": [
+        {
+          "command": "pm-expert",
+          "description": "Verify pm-expert skill exists",
+          "expected": null,
+          "id": "pm-expert-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - PM Expert",
+          "should_pass": true,
+          "timeout": 5,
+          "trigger_phrases": [
+            "what should I work on",
+            "next task",
+            "current status"
+          ],
+          "type": "smoke"
+        },
+        {
+          "description": "Test skill activates on trigger phrases",
+          "expected": "TASK",
+          "id": "pm-expert-trigger",
+          "mode": "comprehensive",
+          "name": "Trigger Phrase Detection",
+          "should_activate_skill": true,
+          "should_pass": true,
+          "timeout": 15,
+          "trigger_input": "What should I work on next?",
+          "type": "functional"
+        }
+      ]
     },
     "pm:complete": {
-      "max_execution_time_ms": 5000,
-      "max_token_estimate": 500,
-      "target_execution_time_ms": 500
-    }
-  },
-  "error_scenarios": {
-    "missing_dependency": {
-      "name": "Missing Required Dependency",
-      "description": "Component depends on unavailable resource",
-      "expected_error": "not found",
-      "recovery_steps": [
-        "Verify dependency is installed",
-        "Check file paths",
-        "Reinstall if needed"
+      "category": "project-management",
+      "component_id": "pm:complete",
+      "component_type": "command",
+      "description": "Test PM task completion command",
+      "test_cases": [
+        {
+          "args": ["TASK-001"],
+          "command": "pm:complete",
+          "description": "Test marking task as completed",
+          "expected": "completed",
+          "id": "pm-complete-basic",
+          "mode": "comprehensive",
+          "name": "Mark Task Complete",
+          "should_pass": true,
+          "side_effects": {
+            "may_unlock_dependencies": true,
+            "modifies_vtm": true,
+            "updates_stats": true
+          },
+          "timeout": 10,
+          "type": "functional"
+        },
+        {
+          "args": ["TASK-001", "--commits", "abc123,def456", "--tests-pass"],
+          "command": "pm:complete",
+          "description": "Test completion with commits and files",
+          "expected": "completed",
+          "id": "pm-complete-with-metadata",
+          "mode": "comprehensive",
+          "name": "Complete with Metadata",
+          "notes": "Verify metadata is properly recorded",
+          "should_pass": true,
+          "timeout": 10,
+          "type": "functional"
+        }
       ]
     },
-    "invalid_input": {
-      "name": "Invalid Input Arguments",
-      "description": "Component receives malformed or unexpected input",
-      "expected_error": "invalid",
-      "recovery_steps": [
-        "Check argument format",
-        "Review help documentation",
-        "Verify data types"
+    "pm:context": {
+      "category": "project-management",
+      "component_id": "pm:context",
+      "component_type": "command",
+      "description": "Test PM context generation command",
+      "test_cases": [
+        {
+          "command": "pm:context",
+          "description": "Verify pm:context command exists",
+          "expected": null,
+          "id": "pm-context-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - PM Context",
+          "should_pass": true,
+          "timeout": 5,
+          "type": "smoke"
+        },
+        {
+          "args": ["TASK-001"],
+          "command": "pm:context",
+          "description": "Test context generation for specific task",
+          "expected": "dependencies",
+          "id": "pm-context-task",
+          "mode": "comprehensive",
+          "name": "With Task ID",
+          "notes": "Requires TASK-001 to exist in vtm.json",
+          "should_pass": true,
+          "timeout": 15,
+          "type": "functional"
+        },
+        {
+          "args": ["TASK-001", "--compact"],
+          "command": "pm:context",
+          "description": "Test compact context format",
+          "expected": "Task",
+          "id": "pm-context-compact",
+          "mode": "comprehensive",
+          "name": "Compact Mode",
+          "notes": "Compact mode should reduce output size by 70%",
+          "should_pass": true,
+          "timeout": 15,
+          "type": "functional"
+        },
+        {
+          "args": ["INVALID-999"],
+          "command": "pm:context",
+          "description": "Test error message for non-existent task",
+          "expected": null,
+          "id": "pm-context-invalid-task",
+          "mode": "comprehensive",
+          "name": "Error Handling - Invalid Task",
+          "notes": "Should gracefully handle missing task",
+          "should_contain_error": true,
+          "should_fail": true,
+          "timeout": 10,
+          "type": "functional"
+        },
+        {
+          "args": ["TASK-001"],
+          "command": "pm:context",
+          "description": "Verify context generation is fast",
+          "expected_token_usage": {
+            "compact": 500,
+            "minimal": 1500
+          },
+          "id": "pm-context-performance",
+          "max_execution_time_ms": 5000,
+          "mode": "comprehensive",
+          "name": "Performance Benchmark",
+          "should_pass": true,
+          "timeout": 30,
+          "type": "performance"
+        }
       ]
     },
-    "timeout": {
-      "name": "Execution Timeout",
-      "description": "Component takes too long to execute",
-      "expected_behavior": "graceful timeout",
-      "recovery_steps": [
-        "Increase timeout value",
-        "Check for performance bottlenecks",
-        "Review resource usage"
+    "pm:next": {
+      "category": "project-management",
+      "component_id": "pm:next",
+      "component_type": "command",
+      "description": "Test PM domain next command",
+      "test_cases": [
+        {
+          "command": "pm:next",
+          "description": "Verify pm:next command exists and can be invoked",
+          "expected": null,
+          "id": "pm-next-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - PM Next",
+          "should_pass": true,
+          "timeout": 5,
+          "type": "smoke"
+        },
+        {
+          "args": [],
+          "command": "pm:next",
+          "description": "Test pm:next returns task list",
+          "expected": "Ready Tasks",
+          "id": "pm-next-basic",
+          "mode": "comprehensive",
+          "name": "Basic Execution",
+          "notes": "Requires vtm.json in working directory",
+          "should_pass": true,
+          "timeout": 10,
+          "type": "functional"
+        },
+        {
+          "args": ["--number", "10"],
+          "command": "pm:next",
+          "description": "Test pm:next with --number argument",
+          "expected": "Tasks",
+          "id": "pm-next-with-count",
+          "mode": "comprehensive",
+          "name": "With Count Argument",
+          "notes": "Test pagination with custom count",
+          "should_pass": true,
+          "timeout": 10,
+          "type": "functional"
+        },
+        {
+          "command": "pm:next",
+          "dependencies": ["vtm-reader", "vtm-data"],
+          "description": "Test pm:next works with VTM reader",
+          "id": "pm-next-integration",
+          "mode": "comprehensive",
+          "name": "Integration Test",
+          "notes": "Validates dependency resolution",
+          "should_pass": true,
+          "type": "integration"
+        }
+      ]
+    },
+    "pm:start": {
+      "category": "project-management",
+      "component_id": "pm:start",
+      "component_type": "command",
+      "description": "Test PM task start command",
+      "test_cases": [
+        {
+          "command": "pm:start",
+          "description": "Verify pm:start command exists",
+          "expected": null,
+          "id": "pm-start-smoke",
+          "mode": "quick",
+          "name": "Smoke Test - PM Start",
+          "should_pass": true,
+          "timeout": 5,
+          "type": "smoke"
+        },
+        {
+          "args": ["TASK-001"],
+          "command": "pm:start",
+          "description": "Test marking task as in-progress",
+          "expected": "in-progress",
+          "id": "pm-start-mark-task",
+          "mode": "comprehensive",
+          "name": "Mark Task In Progress",
+          "notes": "Test should verify vtm.json is updated",
+          "should_pass": true,
+          "side_effects": {
+            "modifies_vtm": true,
+            "updates_stats": true
+          },
+          "timeout": 10,
+          "type": "functional"
+        },
+        {
+          "args": ["INVALID-999"],
+          "command": "pm:start",
+          "description": "Test error for non-existent task",
+          "id": "pm-start-invalid-task",
+          "mode": "comprehensive",
+          "name": "Error Handling",
+          "should_fail": true,
+          "timeout": 10,
+          "type": "functional"
+        }
       ]
     }
   },
-  "quality_metrics": {
-    "minimum_test_coverage": 80,
-    "minimum_documentation_level": "comprehensive",
-    "required_error_handling": true,
-    "required_metadata_fields": [
-      "id",
-      "type",
-      "version",
-      "name",
-      "description",
-      "dependencies"
-    ]
-  }
+  "version": "1.0"
 }

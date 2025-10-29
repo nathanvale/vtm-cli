@@ -1,6 +1,6 @@
 ---
 allowed-tools: Bash(cat:*, echo:*)
-description: {DESCRIPTION}
+description: { DESCRIPTION }
 argument-hint: [options]
 ---
 
@@ -67,6 +67,7 @@ echo "✅ {OPERATION} completed"
    - Format output for readability
 
 2. **Test locally**
+
    ```bash
    /{DOMAIN}:{OPERATION}
    ```

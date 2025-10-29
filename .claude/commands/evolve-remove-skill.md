@@ -27,8 +27,8 @@ Removes the skill file and skill metadata from a command, effectively disabling 
 ## Arguments
 
 ```javascript
-const command = ARGUMENTS[0]; // Format: namespace:operation
-const dryRun = ARGUMENTS.includes('--dry-run');
+const command = ARGUMENTS[0] // Format: namespace:operation
+const dryRun = ARGUMENTS.includes("--dry-run")
 ```
 
 ---
@@ -38,14 +38,14 @@ const dryRun = ARGUMENTS.includes('--dry-run');
 Execute the skill removal using the EvolveManager:
 
 ```javascript
-const { EvolveManager } = require('./.claude/lib/evolve');
-const evolve = new EvolveManager();
+const { EvolveManager } = require("./.claude/lib/evolve")
+const evolve = new EvolveManager()
 
 try {
-  evolve.removeSkill(command, { dryRun });
+  evolve.removeSkill(command, { dryRun })
 } catch (error) {
-  console.error('❌ Removal failed:', error.message);
-  process.exit(1);
+  console.error("❌ Removal failed:", error.message)
+  process.exit(1)
 }
 ```
 
@@ -78,14 +78,17 @@ Restore anytime:
 ## What Gets Changed
 
 ### 1. Skill Directory
+
 - Moved from `.claude/skills/{namespace}-{operation}-discovery/`
 - Archived to `.claude/.archive/{namespace}-{operation}-discovery-{timestamp}/`
 
 ### 2. Command Metadata
+
 - `skill_id` field removed from command frontmatter
 - Command file otherwise unchanged
 
 ### 3. Evolution Record
+
 - Removal recorded in `.claude/history/{command}.evolution.json`
 - Includes rollback instructions
 
@@ -94,6 +97,7 @@ Restore anytime:
 ## Why Remove a Skill?
 
 **Good reasons:**
+
 - ✅ Trigger phrases conflict with other skills
 - ✅ Command used rarely, clutters auto-suggest
 - ✅ Testing manual-only workflow
@@ -101,6 +105,7 @@ Restore anytime:
 - ✅ Command being deprecated
 
 **Not necessary if:**
+
 - ❌ Just want different trigger phrases → Update skill file instead
 - ❌ Command has bugs → Fix the command, not the skill
 - ❌ Skill works fine → No need to remove
@@ -110,6 +115,7 @@ Restore anytime:
 ## Validation
 
 The command will validate:
+
 - ✅ Command exists
 - ✅ Command has a skill attached
 - ✅ Skill directory can be archived
@@ -120,6 +126,7 @@ The command will validate:
 ## Error Handling
 
 **No skill attached:**
+
 ```
 ❌ No skill attached to /pm:next
 Command is already manual-only.
@@ -129,12 +136,14 @@ Add skill if needed:
 ```
 
 **Command not found:**
+
 ```
 ❌ Command not found: .claude/commands/pm/next.md
 Cannot remove skill from non-existent command.
 ```
 
 **Invalid format:**
+
 ```
 ❌ Invalid command format. Use: namespace:operation
 Example: /evolve:remove-skill pm:next
@@ -145,6 +154,7 @@ Example: /evolve:remove-skill pm:next
 ## Before & After
 
 **Before (Auto-Discovery Enabled):**
+
 ```
 User: "What should I work on?"
 Claude: "Let me check... [auto-runs /pm:next]"
@@ -153,6 +163,7 @@ Claude: [executes command]
 ```
 
 **After (Manual Only):**
+
 ```
 User: "What should I work on?"
 Claude: "I don't have access to your task list."
@@ -167,12 +178,14 @@ Claude: [executes command] ✅ Still works!
 Three ways to restore:
 
 ### 1. Re-add with same triggers
+
 ```bash
 /evolve:add-skill pm:next
 # Auto-generates triggers (might differ from original)
 ```
 
 ### 2. Re-add with original triggers
+
 ```bash
 # Check archived triggers
 cat .claude/.archive/pm-next-discovery-*/SKILL.md
@@ -182,6 +195,7 @@ cat .claude/.archive/pm-next-discovery-*/SKILL.md
 ```
 
 ### 3. Rollback the removal
+
 ```bash
 /evolve:rollback pm:next
 # Restores exact previous state
@@ -192,15 +206,18 @@ cat .claude/.archive/pm-next-discovery-*/SKILL.md
 ## Safety Features
 
 **Non-Destructive:**
+
 - Skill archived, not deleted
 - Command unchanged (except metadata)
 - Can restore anytime
 
 **Reversible:**
+
 - Use `/evolve:add-skill` to re-enable
 - Use `/evolve:rollback` to restore exact state
 
 **History Tracked:**
+
 - Evolution recorded
 - Rollback command provided
 - Archive timestamped

@@ -35,11 +35,13 @@ Five core commands enabling safe, reversible component evolution:
 ## Deliverables
 
 ### 1. Specification Document
+
 **File:** `.claude/SPEC-lifecycle-layer-evolve.md`
 **Lines:** 1,456
 **Status:** ✅ COMPLETE
 
 Comprehensive technical specification including:
+
 - Core design principles
 - Full documentation for all 5 commands
 - Process flows with step-by-step interactions
@@ -53,11 +55,13 @@ Comprehensive technical specification including:
 ---
 
 ### 2. User Guide
+
 **File:** `.claude/EVOLVE-GUIDE.md`
 **Lines:** 905
 **Status:** ✅ COMPLETE
 
 Practical user guide with:
+
 - Quick start section
 - Example 1: PM domain evolution (command → plugin)
 - Example 2: Splitting complex domain
@@ -72,6 +76,7 @@ Practical user guide with:
 ---
 
 ### 3. Implementation Code
+
 **File:** `.claude/lib/evolve.ts`
 **Lines:** 840
 **Status:** ✅ COMPLETE
@@ -79,6 +84,7 @@ Practical user guide with:
 Full TypeScript implementation of `EvolveManager` class:
 
 **Public API:**
+
 ```typescript
 class EvolveManager {
   addSkill(command, triggerPhrases?, options?)
@@ -90,6 +96,7 @@ class EvolveManager {
 ```
 
 **Features:**
+
 - Safe file operations with backups
 - Evolution history tracking
 - Component discovery and analysis
@@ -102,11 +109,13 @@ class EvolveManager {
 ---
 
 ### 4. Template Library
+
 **File:** `.claude/lib/evolve-templates.json`
 **Lines:** 465
 **Status:** ✅ COMPLETE
 
 Complete template library containing:
+
 - Generic skill template + domain variants (pm, deploy, test)
 - Plugin manifest template structure
 - Plugin README template
@@ -122,11 +131,13 @@ Complete template library containing:
 ---
 
 ### 5. Implementation Index
+
 **File:** `.claude/EVOLVE-IMPLEMENTATION-INDEX.md`
 **Lines:** 495
 **Status:** ✅ COMPLETE
 
 Complete integration overview with:
+
 - Architecture overview and data flow
 - File organization structure
 - Integration points with other systems
@@ -146,6 +157,7 @@ Complete integration overview with:
 **Purpose:** Transform command into auto-discoverable by adding skill with trigger phrases.
 
 **Flow:**
+
 ```
 User: /evolve:add-skill pm:next
 
@@ -172,6 +184,7 @@ Result: /pm:next now has auto-discovery
 **Purpose:** Package domain (commands + skills + MCPs + hooks) into complete, shareable plugin.
 
 **Flow:**
+
 ```
 User: /evolve:to-plugin pm --version 1.0.0
 
@@ -188,6 +201,7 @@ Result: Complete plugin at .claude/plugins/pm-automation/
 ```
 
 **Generated Files:**
+
 - `plugin.yaml` - Complete manifest
 - `README.md` - User guide
 - `TEAM-SETUP.md` - Installation instructions
@@ -204,6 +218,7 @@ Result: Complete plugin at .claude/plugins/pm-automation/
 **Purpose:** Analyze monolithic domain and suggest how to split into smaller, focused pieces.
 
 **Flow:**
+
 ```
 User: /evolve:split pm --depth 3
 
@@ -222,6 +237,7 @@ Result: Clear understanding of:
 ```
 
 **Output:**
+
 - Current complexity/cohesion metrics
 - 2-3 suggested split domains
 - Benefits (35% maintainability, 45% reusability improvement)
@@ -237,6 +253,7 @@ Result: Clear understanding of:
 **Purpose:** Remove auto-discovery skill from command, returning to manual-only invocation.
 
 **Flow:**
+
 ```
 User: /evolve:remove-skill pm:next
 
@@ -261,6 +278,7 @@ Result: /pm:next still works exactly the same
 **Purpose:** Revert any component to previous version, undoing one or more evolutions.
 
 **Flow:**
+
 ```
 User: /evolve:rollback pm:next
 
@@ -277,6 +295,7 @@ Result: Component back to target state
 ```
 
 **Safety:**
+
 - All evolutions backed up in `.archive/`
 - Evolution history in `.claude/history/`
 - Can restore from any historical state
@@ -320,6 +339,7 @@ Result: Component back to target state
 ## Integration Checklist
 
 ### Phase 1: Foundation
+
 - [ ] Review specification in `SPEC-lifecycle-layer-evolve.md`
 - [ ] Integrate `EvolveManager` class from `evolve.ts`
 - [ ] Load templates from `evolve-templates.json`
@@ -327,6 +347,7 @@ Result: Component back to target state
 - [ ] Connect to registry scanner
 
 ### Phase 2: Testing
+
 - [ ] Unit tests for each command
 - [ ] Integration tests for workflows
 - [ ] User acceptance tests
@@ -334,6 +355,7 @@ Result: Component back to target state
 - [ ] Error handling validation
 
 ### Phase 3: Deployment
+
 - [ ] Create command stubs in `.claude/commands/evolve/`
 - [ ] Add auto-discovery skill for evolve commands
 - [ ] Update registry
@@ -341,6 +363,7 @@ Result: Component back to target state
 - [ ] Create initial plugin for evolve commands
 
 ### Phase 4: Monitoring
+
 - [ ] Track usage patterns
 - [ ] Collect user feedback
 - [ ] Monitor quality impacts
@@ -352,12 +375,14 @@ Result: Component back to target state
 ## Quality Metrics
 
 ### Code Quality
+
 - ✅ TypeScript with strict types
 - ✅ Error handling throughout
 - ✅ File backups and recovery
 - ✅ User-friendly error messages
 
 ### Documentation Quality
+
 - ✅ Comprehensive specification (1,456 lines)
 - ✅ Practical user guide (905 lines)
 - ✅ Real-world examples
@@ -365,6 +390,7 @@ Result: Component back to target state
 - ✅ Integration index
 
 ### Feature Completeness
+
 - ✅ All 5 commands fully specified
 - ✅ All workflows documented
 - ✅ All error cases handled
@@ -456,6 +482,7 @@ Pick which to rollback to, restored from backup.
 ## Benefits
 
 ### For Developers
+
 - Safe way to evolve components
 - Clear, reversible progression
 - Quality gates enforced
@@ -463,6 +490,7 @@ Pick which to rollback to, restored from backup.
 - Undo anything
 
 ### For Teams
+
 - Easy to share components
 - Complete plugin packaging
 - Migration guides provided
@@ -470,6 +498,7 @@ Pick which to rollback to, restored from backup.
 - One-command team distribution
 
 ### For Organizations
+
 - Cleaner architecture through splits
 - Reduced maintenance burden
 - Faster innovation cycles
@@ -481,12 +510,14 @@ Pick which to rollback to, restored from backup.
 ## Limitations & Future Work
 
 ### Current Limitations
+
 - Commands must use namespace:operation format
 - Trigger phrases validated at runtime
 - Quality score is basic (will improve)
 - No automatic version bumping (manual)
 
 ### Future Enhancements
+
 - Semantic versioning automation
 - Change type suggestions (major/minor/patch)
 - Dependency graph visualization
@@ -516,21 +547,25 @@ Pick which to rollback to, restored from backup.
 ## Quick Start for Integration
 
 1. **Review the spec:**
+
    ```bash
    cat .claude/SPEC-lifecycle-layer-evolve.md
    ```
 
 2. **Read the user guide:**
+
    ```bash
    cat .claude/EVOLVE-GUIDE.md
    ```
 
 3. **Check implementation:**
+
    ```bash
    cat .claude/lib/evolve.ts
    ```
 
 4. **Use templates:**
+
    ```bash
    cat .claude/lib/evolve-templates.json
    ```
@@ -546,6 +581,7 @@ Pick which to rollback to, restored from backup.
 ## Support & Questions
 
 For questions about:
+
 - **What it does:** See EVOLVE-GUIDE.md
 - **How it works:** See SPEC-lifecycle-layer-evolve.md
 - **How to implement:** See EVOLVE-IMPLEMENTATION-INDEX.md
@@ -561,6 +597,7 @@ The Evolve Command Family provides a complete, production-ready system for manag
 **Status: ✅ READY FOR INTEGRATION**
 
 ### Deliverables Summary
+
 - 1,456 lines of specification
 - 905 lines of user guide
 - 840 lines of implementation

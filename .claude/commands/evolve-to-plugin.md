@@ -9,6 +9,7 @@
 ## What This Command Does
 
 Scans all components in a domain, assesses quality, and generates a complete plugin package with:
+
 - Plugin manifest (plugin.yaml)
 - README with setup instructions
 - Team configuration guide
@@ -37,13 +38,14 @@ Scans all components in a domain, assesses quality, and generates a complete plu
 ## Arguments
 
 ```javascript
-const domain = ARGUMENTS[0]; // Domain name (e.g., "pm")
-const version = ARGUMENTS[1] || '1.0.0'; // Version (semver)
-const descriptionArg = ARGUMENTS.slice(2).join(' ') || `${domain} automation plugin`;
-const dryRun = ARGUMENTS.includes('--dry-run');
+const domain = ARGUMENTS[0] // Domain name (e.g., "pm")
+const version = ARGUMENTS[1] || "1.0.0" // Version (semver)
+const descriptionArg =
+  ARGUMENTS.slice(2).join(" ") || `${domain} automation plugin`
+const dryRun = ARGUMENTS.includes("--dry-run")
 
 // Clean description if it contains --dry-run
-const description = descriptionArg.replace('--dry-run', '').trim();
+const description = descriptionArg.replace("--dry-run", "").trim()
 ```
 
 ---
@@ -53,14 +55,14 @@ const description = descriptionArg.replace('--dry-run', '').trim();
 Execute the packaging using the EvolveManager:
 
 ```javascript
-const { EvolveManager } = require('./.claude/lib/evolve');
-const evolve = new EvolveManager();
+const { EvolveManager } = require("./.claude/lib/evolve")
+const evolve = new EvolveManager()
 
 try {
-  evolve.toPlugin(domain, version, description, { dryRun });
+  evolve.toPlugin(domain, version, description, { dryRun })
 } catch (error) {
-  console.error('❌ Packaging failed:', error.message);
-  process.exit(1);
+  console.error("❌ Packaging failed:", error.message)
+  process.exit(1)
 }
 ```
 
@@ -109,25 +111,31 @@ Team installs with:
 ## What Gets Created
 
 ### 1. Plugin Directory
+
 `.claude/plugins/{domain}-automation/`
 
 ### 2. Plugin Manifest
+
 `plugin.yaml` with:
+
 - Component inventory
 - Dependencies
 - Configuration requirements
 - Version info
 
 ### 3. Documentation
+
 - `README.md` - Overview and features
 - `TEAM-SETUP.md` - Step-by-step installation
 - `CONFIGURATION.md` - Config options
 - `TROUBLESHOOTING.md` - Common issues
 
 ### 4. Component Copies
+
 All domain components symlinked or copied into plugin structure
 
 ### 5. Evolution Record
+
 `.claude/history/{domain}.evolution.json`
 
 ---
@@ -136,12 +144,12 @@ All domain components symlinked or copied into plugin structure
 
 The command checks quality before packaging:
 
-| Score | Status | Action |
-|-------|--------|--------|
-| 8-10 | Excellent | Package immediately |
-| 6-7 | Good | Package with warnings |
-| 4-5 | Fair | Suggest improvements |
-| 0-3 | Poor | Block packaging |
+| Score | Status    | Action                |
+| ----- | --------- | --------------------- |
+| 8-10  | Excellent | Package immediately   |
+| 6-7   | Good      | Package with warnings |
+| 4-5   | Fair      | Suggest improvements  |
+| 0-3   | Poor      | Block packaging       |
 
 **Minimum score to package: 5/10**
 
@@ -162,6 +170,7 @@ The command checks quality before packaging:
 ## Validation
 
 The command will validate:
+
 - ✅ Domain exists and has components
 - ✅ Quality score meets minimum (5/10)
 - ✅ No conflicting plugins exist
@@ -173,12 +182,14 @@ The command will validate:
 ## Error Handling
 
 **No components found:**
+
 ```
 ❌ No components found for domain: pm
 Create commands first: /scaffold:domain pm
 ```
 
 **Quality too low:**
+
 ```
 ❌ Quality score too low: 3/10 (minimum: 5/10)
 
@@ -192,6 +203,7 @@ Try again after improvements.
 ```
 
 **Plugin already exists:**
+
 ```
 ⚠️  Plugin pm-automation already exists
 
@@ -206,6 +218,7 @@ Options:
 ## Team Distribution Workflow
 
 ### 1. Package (Creator)
+
 ```bash
 /evolve:to-plugin pm 1.0.0
 cd .claude/plugins
@@ -213,11 +226,13 @@ zip -r pm-automation.zip pm-automation/
 ```
 
 ### 2. Share (Creator)
+
 - Email zip to team
 - Upload to shared drive
 - Commit to team repo
 
 ### 3. Install (Team Member)
+
 ```bash
 # Unzip
 unzip pm-automation.zip -d .claude/plugins/
@@ -235,6 +250,7 @@ nano .env  # Add credentials
 ```
 
 ### 4. Use (Team Member)
+
 ```bash
 /pm:next
 /pm:review
@@ -246,6 +262,7 @@ nano .env  # Add credentials
 ## Versioning
 
 Use semantic versioning:
+
 - `1.0.0` - Initial release
 - `1.1.0` - New features (commands)
 - `1.0.1` - Bug fixes

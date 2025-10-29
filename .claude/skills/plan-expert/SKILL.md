@@ -80,11 +80,13 @@ The complete planning-to-execution workflow:
 ### Creating ADRs
 
 When you say:
+
 - "I want to document our decision about PostgreSQL"
 - "Create an ADR for the API authentication approach"
 - "We decided to use REST instead of GraphQL, let's document that"
 
 Claude will:
+
 1. Ask clarifying questions about the decision
 2. Create ADR file in `docs/adr/ADR-XXX-{topic}.md`
 3. Populate template from `.claude/templates/adr-template.md`
@@ -93,11 +95,13 @@ Claude will:
 ### Creating Specifications
 
 When you say:
+
 - "Write a spec for the user authentication feature"
 - "I need a technical specification for the API layer"
 - "Create a spec for implementing the database migration system"
 
 Claude will:
+
 1. Link to the relevant ADR (if exists)
 2. Create spec file in `docs/specs/spec-{topic}.md`
 3. Populate template from `.claude/templates/spec-template.md`
@@ -107,11 +111,13 @@ Claude will:
 ### Listing Planning Artifacts
 
 When you say:
+
 - "Show me my ADRs"
 - "What specifications do I have?"
 - "List all architectural decisions"
 
 Claude will:
+
 1. Use filesystem MCP to scan directories
 2. Display formatted list with:
    - File names
@@ -122,11 +128,13 @@ Claude will:
 ### Converting to VTM Tasks
 
 When you say:
+
 - "Turn this ADR and spec into VTM tasks"
 - "Add these tasks to my VTM"
 - "Make this executable"
 
 Claude will:
+
 1. Verify ADR+Spec pair exists
 2. Call `/plan:to-vtm <adr-file> <spec-file>`
 3. Show preview of extracted tasks with dependencies
@@ -154,9 +162,11 @@ What did we decide to do and why?
 ## Consequences
 
 ### Positive
+
 - What benefits come from this decision?
 
 ### Negative
+
 - What drawbacks or costs?
 - What mitigations exist?
 
@@ -173,18 +183,23 @@ When creating a spec, the plan-expert follows this template:
 # Technical Specification: {Feature Name}
 
 ## Related ADR
+
 - ADR-XXX: {Link to decision}
 
 ## Overview
+
 Brief description of what we're building and why.
 
 ## Architecture
+
 High-level design with components and data flow.
 
 ## Implementation Details
+
 Detailed breakdown of what needs to be built.
 
 ## Tasks
+
 1. Task 1 description
    - Dependencies: None
    - Test strategy: TDD/Unit/Integration/Direct
@@ -196,13 +211,16 @@ Detailed breakdown of what needs to be built.
    - Estimated hours: Y
 
 ## Acceptance Criteria
+
 - AC1: Specific, testable criterion
 - AC2: Another testable criterion
 
 ## Test Strategy
+
 How to verify this works (unit, integration, e2e).
 
 ## Performance Requirements
+
 Any performance constraints or targets.
 ```
 
@@ -211,10 +229,12 @@ Any performance constraints or targets.
 The `/plan:to-vtm` command performs intelligent task extraction:
 
 **Input:**
+
 - ADR file (decision context)
 - Spec file (implementation details)
 
 **Process:**
+
 1. Reads both files with line numbers
 2. Generates VTM summary (incomplete tasks only)
 3. Launches AI agent to extract tasks
@@ -223,6 +243,7 @@ The `/plan:to-vtm` command performs intelligent task extraction:
 6. Shows preview with dependency chains
 
 **Output:**
+
 - Validated tasks added to vtm.json
 - Dependencies correctly linked
 - Rich context preserved (links to source docs)
@@ -231,6 +252,7 @@ The `/plan:to-vtm` command performs intelligent task extraction:
 ## Token Efficiency
 
 The plan-to-vtm bridge achieves 80% token reduction:
+
 - VTM summary filters to incomplete tasks only
 - Completed tasks reduced to capability summaries
 - Agent receives only relevant context
@@ -263,20 +285,24 @@ The plan-to-vtm bridge achieves 80% token reduction:
 The plan-expert skill uses these MCP servers:
 
 **Filesystem MCP:**
+
 - Read/write ADR files (`docs/adr/*.md`)
 - Read/write spec files (`docs/specs/*.md`)
 - List and discover planning artifacts
 - Template population from `.claude/templates/adr-template.md` and `.claude/templates/spec-template.md`
 
 **Firecrawl MCP** (via /helpers:thinking-partner):
+
 - Deep research on GitHub, technical forums, documentation
 - Scrape architecture examples
 
 **Tavily MCP** (via /helpers:thinking-partner):
+
 - General web search for research
 - Find best practices and patterns
 
 **Context7 MCP** (via /helpers:thinking-partner):
+
 - Official library documentation
 - Code examples from package docs
 
@@ -360,14 +386,15 @@ Edit the frontmatter above to include project-specific terms:
 ```yaml
 trigger_phrases:
   - "create an adr"
-  - "new architecture decision"  # Add this
-  - "rfp"                        # Your team uses "RFP" for specs
-  - "implementation plan"        # Alternative to "spec"
+  - "new architecture decision" # Add this
+  - "rfp" # Your team uses "RFP" for specs
+  - "implementation plan" # Alternative to "spec"
 ```
 
 ### Templates
 
 The plan-expert uses these templates:
+
 - `.claude/templates/adr-template.md` - ADR format
 - `.claude/templates/spec-template.md` - Spec format
 
@@ -376,12 +403,14 @@ You can customize these templates to match your team's preferences.
 ## Technical Details
 
 **Architecture:**
+
 - Skill uses filesystem MCP for all file operations
 - Commands wrap VTM CLI for transformation
 - Agent-based extraction (not parsers) for flexibility
 - Multi-layer validation before ingestion
 
 **Data Flow:**
+
 ```
 User intent → plan-expert detects →
 Filesystem MCP (create/list files) →
@@ -394,16 +423,19 @@ VTM updated
 ## Error Handling
 
 **ADR Creation Errors:**
+
 - Directory missing: plan-expert creates `docs/adr/` directory
 - Duplicate ADR number: Suggests next available number
 - Template missing: Falls back to inline template
 
 **Spec Creation Errors:**
+
 - No ADR reference: Warns but allows creation
 - Directory missing: Creates `docs/specs/` directory
 - Template missing: Falls back to inline template
 
 **Transformation Errors:**
+
 - ADR not found: Clear error with path
 - Spec not found: Clear error with path
 - Validation errors: Shows all errors, suggests fixes
@@ -419,12 +451,15 @@ VTM updated
 ## Status
 
 **Implemented:**
+
 - ✅ /plan:to-vtm command (transformation)
 
 **In Progress:**
+
 - 🔄 plan-expert skill (this file)
 
 **Planned:**
+
 - ⏳ /helpers:thinking-partner command
 - ⏳ Validation hooks (pre-commit, pre-to-vtm)
 - ⏳ MCP server registrations

@@ -22,18 +22,22 @@
  *   evolve.rollback('pm:next', 'v1.0.0')
  */
 
+/* eslint-disable no-console */
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 import * as fs from 'fs'
 import * as path from 'path'
 import chalk from 'chalk'
 
-interface EvolveOptions {
+type EvolveOptions = {
   dryRun?: boolean
   force?: boolean
   autoTriggers?: boolean
   depth?: number
 }
 
-interface ComponentMetadata {
+type ComponentMetadata = {
   type: 'command' | 'skill' | 'plugin' | 'domain'
   name: string
   description: string
@@ -48,7 +52,7 @@ interface ComponentMetadata {
   status: 'ready' | 'untested' | 'needs-config' | 'deprecated'
 }
 
-interface EvolutionRecord {
+type EvolutionRecord = {
   component: string
   evolutionType: string
   timestamp: string
@@ -60,7 +64,7 @@ interface EvolutionRecord {
   rollbackCommand: string
 }
 
-interface ChangeRecord {
+type ChangeRecord = {
   file: string
   action: 'created' | 'modified' | 'deleted'
   description: string
@@ -68,7 +72,7 @@ interface ChangeRecord {
   checksumAfter?: string
 }
 
-interface SkillGenerationOptions {
+type SkillGenerationOptions = {
   namespace: string
   operation: string
   triggerPhrases: string[]
@@ -76,7 +80,7 @@ interface SkillGenerationOptions {
   timestamp: string
 }
 
-interface PluginMetadata {
+type PluginMetadata = {
   name: string
   version: string
   description: string
@@ -93,7 +97,7 @@ interface PluginMetadata {
   createdAt: string
 }
 
-interface SplitAnalysis {
+type SplitAnalysis = {
   component: string
   currentComplexity: number
   currentCohesion: number
@@ -103,7 +107,7 @@ interface SplitAnalysis {
   migrationPhases: MigrationPhase[]
 }
 
-interface SplitSuggestion {
+type SplitSuggestion = {
   name: string
   description: string
   components: string[]
@@ -113,14 +117,14 @@ interface SplitSuggestion {
   dependencies: string[]
 }
 
-interface BenefitAnalysis {
+type BenefitAnalysis = {
   maintainabilityImprovement: string
   reusabilityImprovement: string
   testingImprovement: string
   complexityReduction: string
 }
 
-interface MigrationPhase {
+type MigrationPhase = {
   phase: number
   name: string
   estimatedTime: string

@@ -41,11 +41,13 @@ Before building a domain, use `/design:domain` to plan it out.
 **What it asks:** What operations should your domain provide?
 
 **What it means:** These become your slash commands. For example, if you say "next, review, context", you'll get:
+
 - `/pm:next`
 - `/pm:review`
 - `/pm:context`
 
 **Examples to consider:**
+
 - "Getting the next task to work on" → operation: `next`
 - "Checking status or progress" → operation: `review` or `status`
 - "Getting detailed information" → operation: `context` or `details`
@@ -54,6 +56,7 @@ Before building a domain, use `/design:domain` to plan it out.
 - "Updating items" → operation: `update` or `edit`
 
 **How to answer:**
+
 ```
 List operations (comma-separated): next, review, context, list
 ```
@@ -65,27 +68,32 @@ List operations (comma-separated): next, review, context, list
 **What it means:** With auto-discovery enabled, Claude learns trigger phrases. When you mention them, Claude suggests running the command.
 
 **Example without auto-discovery:**
+
 ```
 You: /pm:next
 Claude: Shows next PM task
 ```
 
 **Example with auto-discovery:**
+
 ```
 You: What should I work on?
 Claude: Based on your question, I suggest: /pm:next
 ```
 
 **How to answer:**
+
 ```
 Enable auto-discovery? (yes/no): yes
 ```
 
 If you choose "yes":
+
 - System suggests trigger phrases
 - You can add custom ones
 
 **Suggested phrases include:**
+
 - "what should i work on"
 - "next task"
 - "show my tasks"
@@ -99,11 +107,13 @@ If you choose "yes":
 **What it means:** Many domains need to fetch/update data from external sources. This is handled via MCP (Model Context Protocol).
 
 **Examples of external systems:**
+
 - **Databases:** Notion, Airtable, MongoDB, local database
 - **APIs:** GitHub, Jira, Slack, Linear, Asana
 - **Cloud services:** AWS, Firebase, Supabase, Azure
 
 **How to answer:**
+
 ```
 Need external integration? (yes/no/maybe): yes
 List external systems (comma-separated): Notion
@@ -120,12 +130,14 @@ The "maybe" option means you're not sure yet, but MCP can be added later.
 **What it means:** Add hooks that trigger automatically on certain events.
 
 **Common automation examples:**
+
 - **Pre-commit:** Validate task is linked before allowing commits
 - **Post-commit:** Update task status automatically
 - **Scheduled:** Daily standup digest at 9 AM
 - **On-complete:** When task finishes, update metrics
 
 **How to answer:**
+
 ```
 Need automation? (yes/no): yes
 List hooks (comma-separated): pre-commit
@@ -139,13 +151,14 @@ If you don't need automation, just answer "no".
 
 **Options:**
 
-| Option | Meaning | Use Case |
-|--------|---------|----------|
-| **personal** | Just you, local only | Side projects, personal tools |
-| **team** | Your team, shared repo | Team workflows, shared domains |
-| **community** | Public registry | Open-source tools, shared with everyone |
+| Option        | Meaning                | Use Case                                |
+| ------------- | ---------------------- | --------------------------------------- |
+| **personal**  | Just you, local only   | Side projects, personal tools           |
+| **team**      | Your team, shared repo | Team workflows, shared domains          |
+| **community** | Public registry        | Open-source tools, shared with everyone |
 
 **How to answer:**
+
 ```
 Sharing scope (personal/team/community): personal
 ```
@@ -278,78 +291,75 @@ After completing the questionnaire, you'll have a file at `.claude/designs/{doma
 
 ```json
 {
-  "name": "pm",
-  "description": "Project Management Workflows",
-  "version": "1.0.0",
   "created_at": "2025-10-29T14:30:00Z",
+  "description": "Project Management Workflows",
   "design": {
-    "operations": [
-      {
-        "name": "next",
-        "description": "Get next task",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:next"
-      },
-      {
-        "name": "review",
-        "description": "Review progress",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:review"
-      }
-    ],
     "auto_discovery": {
       "enabled": true,
-      "type": "skill",
       "suggested_triggers": [
         "what should i work on",
         "next task",
         "pm status",
         "pm review"
-      ]
-    },
-    "external_integration": {
-      "needed": true,
-      "type": "mcp",
-      "systems": [
-        {
-          "name": "notion",
-          "type": "api"
-        }
-      ]
+      ],
+      "type": "skill"
     },
     "automation": {
       "enabled": true,
       "hooks": [
         {
-          "event": "pre-commit",
-          "action": "pm_pre_commit"
+          "action": "pm_pre_commit",
+          "event": "pre-commit"
         }
       ]
     },
-    "sharing": {
-      "scope": "team",
-      "team_members": [
-        "alice@company.com",
-        "bob@company.com"
-      ]
-    },
-    "recommendations": {
-      "start_with": [
-        "Create commands for: next, review, context",
-        "Add skill with trigger phrases for auto-discovery",
-        "Create MCP stub(s) for external system connection",
-        "Add hook script(s) for automated tasks",
-        "Create README.md for team documentation"
+    "external_integration": {
+      "needed": true,
+      "systems": [
+        {
+          "name": "notion",
+          "type": "api"
+        }
       ],
+      "type": "mcp"
+    },
+    "operations": [
+      {
+        "description": "Get next task",
+        "manual_invocation": "/pm:next",
+        "name": "next",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Review progress",
+        "manual_invocation": "/pm:review",
+        "name": "review",
+        "triggers_auto_discovery": true
+      }
+    ],
+    "recommendations": {
       "next_steps": [
         "Run: /scaffold:domain pm",
         "Customize generated command files",
         "Test commands locally: /pm:next",
         "Add quality gates and tests when ready",
         "Review with team if team"
+      ],
+      "start_with": [
+        "Create commands for: next, review, context",
+        "Add skill with trigger phrases for auto-discovery",
+        "Create MCP stub(s) for external system connection",
+        "Add hook script(s) for automated tasks",
+        "Create README.md for team documentation"
       ]
+    },
+    "sharing": {
+      "scope": "team",
+      "team_members": ["alice@company.com", "bob@company.com"]
     }
-  }
+  },
+  "name": "pm",
+  "version": "1.0.0"
 }
 ```
 
@@ -386,6 +396,7 @@ Generate all the files and templates:
 ```
 
 This creates:
+
 - Command templates in `.claude/commands/pm/`
 - Skill definition in `.claude/skills/pm-expert/SKILL.md`
 - MCP config stub (if needed)
@@ -425,6 +436,7 @@ After everything is working, verify all components are properly indexed:
 **Problem:** Domain name contains invalid characters
 
 **Solution:** Domain names must be lowercase alphanumeric with hyphens only:
+
 - ✅ Valid: `pm`, `task-manager`, `devops`, `test-utils`
 - ❌ Invalid: `PM`, `task manager`, `task_manager`, `task@pm`
 
@@ -433,6 +445,7 @@ After everything is working, verify all components are properly indexed:
 **Problem:** You've already created a design for this domain
 
 **Solution:** Either use a different domain name or delete the existing design:
+
 ```bash
 rm .claude/designs/pm.json
 ```

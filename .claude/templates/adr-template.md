@@ -36,12 +36,15 @@ CROSS-REFERENCES:
 **Decision Date**: [YYYY-MM-DD when status became APPROVED]
 
 **Supersedes**:
+
 - [Link to previous ADR if applicable, e.g., ADR-001-old-decision.md]
 
 **Superseded By**:
+
 - [Link to newer ADR if deprecated/superseded]
 
 **Related Decisions**:
+
 - [Links to related ADRs that provide context]
 
 ---
@@ -99,10 +102,12 @@ Explain WHY this decision was made.
 **Description**: [PLACEHOLDER: Brief description]
 
 **Pros**:
+
 - [PLACEHOLDER: Advantage 1]
 - [PLACEHOLDER: Advantage 2]
 
 **Cons**:
+
 - [PLACEHOLDER: Disadvantage 1]
 - [PLACEHOLDER: Disadvantage 2]
 
@@ -115,9 +120,11 @@ Explain WHY this decision was made.
 **Description**: [PLACEHOLDER: Brief description]
 
 **Pros**:
+
 - [PLACEHOLDER: Advantage 1]
 
 **Cons**:
+
 - [PLACEHOLDER: Disadvantage 1]
 
 **Rejected Because**: [PLACEHOLDER: Why this wasn't chosen]
@@ -155,6 +162,7 @@ Link to specs, guides, or code examples.
 [PLACEHOLDER: Step-by-step guidance or links to implementation specs]
 
 **Related Documentation**:
+
 - [Link to technical spec implementing this decision]
 - [Link to guide for developers]
 - [Link to code examples if applicable]
@@ -176,6 +184,7 @@ Link to specs, guides, or code examples.
 **Next Review Date**: [YYYY-MM-DD, typically 3-6 months after approval]
 
 **Review Triggers**:
+
 - [PLACEHOLDER: Condition that would trigger early review, e.g., "Major framework version change"]
 - [PLACEHOLDER: Condition 2, e.g., "Team size doubles"]
 
@@ -194,6 +203,7 @@ Include:
 [PLACEHOLDER: Any additional context or historical notes]
 
 **Decision Log**:
+
 - [YYYY-MM-DD]: ADR created (status: DRAFT)
 - [YYYY-MM-DD]: Moved to REVIEW
 - [YYYY-MM-DD]: APPROVED by [stakeholders]

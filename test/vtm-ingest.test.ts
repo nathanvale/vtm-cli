@@ -714,9 +714,7 @@ describe('vtm ingest command', () => {
     })
 
     it('should show ready condition for each task', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-038', status: 'pending' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-038', status: 'pending' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       // Create task that depends on existing TASK-038
@@ -792,9 +790,7 @@ describe('vtm ingest command', () => {
     })
 
     it('should maintain task order after append', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', status: 'completed' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', status: 'completed' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const writer = new VTMWriter(testVtmPath)
@@ -810,74 +806,4 @@ describe('vtm ingest command', () => {
     })
   })
 
-  describe.skip('user confirmation', () => {
-    it('should prompt user for confirmation', async () => {
-      const mockQuestion = vi.fn()
-      const mockClose = vi.fn()
-      const mockReadline = {
-        question: mockQuestion,
-        close: mockClose,
-      }
-
-      mockCreateInterface.mockReturnValue(mockReadline as any)
-      mockQuestion.mockImplementation((q: string, cb: (answer: string) => void) => {
-        cb('y')
-      })
-
-      const result = await promptConfirmation('Test message')
-
-      expect(result).toBe(true)
-      expect(mockQuestion).toHaveBeenCalledWith(expect.stringContaining('Test message'), expect.any(Function))
-      expect(mockClose).toHaveBeenCalled()
-
-      mockCreateInterface.mockClear()
-    })
-
-    it('should return false when user enters n', async () => {
-      const mockQuestion = vi.fn()
-      const mockClose = vi.fn()
-      const mockReadline = {
-        question: mockQuestion,
-        close: mockClose,
-      }
-
-      mockCreateInterface.mockReturnValue(mockReadline as any)
-      mockQuestion.mockImplementation((q: string, cb: (answer: string) => void) => {
-        cb('n')
-      })
-
-      const result = await promptConfirmation('Test message')
-
-      expect(result).toBe(false)
-
-      mockCreateInterface.mockClear()
-    })
-
-    it('should accept yes/no variations', async () => {
-      const mockQuestion = vi.fn()
-      const mockClose = vi.fn()
-      const mockReadline = {
-        question: mockQuestion,
-        close: mockClose,
-      }
-
-      mockCreateInterface.mockReturnValue(mockReadline as any)
-
-      // Test 'yes'
-      mockQuestion.mockImplementation((q: string, cb: (answer: string) => void) => {
-        cb('yes')
-      })
-      const result1 = await promptConfirmation('Test')
-      expect(result1).toBe(true)
-
-      // Test 'Y'
-      mockQuestion.mockImplementation((q: string, cb: (answer: string) => void) => {
-        cb('Y')
-      })
-      const result2 = await promptConfirmation('Test')
-      expect(result2).toBe(true)
-
-      mockCreateInterface.mockClear()
-    })
-  })
 })

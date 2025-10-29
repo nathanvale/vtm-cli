@@ -30,9 +30,9 @@ Scans a domain's components, calculates complexity metrics, and provides recomme
 ## Arguments
 
 ```javascript
-const component = ARGUMENTS[0]; // Domain or component name
-const depth = parseInt(ARGUMENTS[1]) || 2; // Analysis depth (1-5)
-const analyzeOnly = ARGUMENTS.includes('--analyze-only');
+const component = ARGUMENTS[0] // Domain or component name
+const depth = parseInt(ARGUMENTS[1]) || 2 // Analysis depth (1-5)
+const analyzeOnly = ARGUMENTS.includes("--analyze-only")
 ```
 
 ---
@@ -42,14 +42,14 @@ const analyzeOnly = ARGUMENTS.includes('--analyze-only');
 Execute the split analysis using the EvolveManager:
 
 ```javascript
-const { EvolveManager } = require('./.claude/lib/evolve');
-const evolve = new EvolveManager();
+const { EvolveManager } = require("./.claude/lib/evolve")
+const evolve = new EvolveManager()
 
 try {
-  evolve.analyzeSplit(component, depth, { dryRun: analyzeOnly });
+  evolve.analyzeSplit(component, depth, { dryRun: analyzeOnly })
 } catch (error) {
-  console.error('❌ Analysis failed:', error.message);
-  process.exit(1);
+  console.error("❌ Analysis failed:", error.message)
+  process.exit(1)
 }
 ```
 
@@ -142,6 +142,7 @@ Would you like to proceed with this split? (yes/no)
 ## What Gets Analyzed
 
 ### Complexity Metrics
+
 - Number of components
 - Dependency depth
 - Cross-references
@@ -149,6 +150,7 @@ Would you like to proceed with this split? (yes/no)
 - External integrations
 
 ### Cohesion Metrics
+
 - Command grouping
 - Shared dependencies
 - Common purposes
@@ -156,6 +158,7 @@ Would you like to proceed with this split? (yes/no)
 - Data flow patterns
 
 ### Split Opportunities
+
 - Natural boundaries
 - Standalone capabilities
 - Dependency clusters
@@ -167,21 +170,25 @@ Would you like to proceed with this split? (yes/no)
 ## Split Patterns
 
 ### 1. Core + Extensions
+
 ```
 monolith → core + tracking + integrations
 ```
 
 ### 2. Feature-Based
+
 ```
 monolith → feature-a + feature-b + feature-c
 ```
 
 ### 3. Layer-Based
+
 ```
 monolith → data + logic + presentation
 ```
 
 ### 4. Team-Based
+
 ```
 monolith → team-a-domain + team-b-domain
 ```
@@ -191,6 +198,7 @@ monolith → team-a-domain + team-b-domain
 ## When to Split
 
 **Good reasons:**
+
 - ✅ Domain has 10+ commands
 - ✅ Multiple concerns mixed (data + integrations + UI)
 - ✅ High complexity score (>7/10)
@@ -198,6 +206,7 @@ monolith → team-a-domain + team-b-domain
 - ✅ Want to reuse parts independently
 
 **Bad reasons:**
+
 - ❌ "Just because"
 - ❌ Premature optimization
 - ❌ Domain has <5 commands
@@ -209,6 +218,7 @@ monolith → team-a-domain + team-b-domain
 ## Validation
 
 The command will validate:
+
 - ✅ Component exists
 - ✅ Has sufficient components to analyze
 - ✅ Depth is reasonable (1-5)
@@ -219,12 +229,14 @@ The command will validate:
 ## Error Handling
 
 **Component not found:**
+
 ```
 ❌ Component not found: pm
 Create components first: /scaffold:domain pm
 ```
 
 **Too small to split:**
+
 ```
 ⚠️  Domain "pm" is too small to split
   • Only 3 commands
@@ -238,6 +250,7 @@ Consider splitting when:
 ```
 
 **No clear boundaries:**
+
 ```
 ⚠️  No clear split boundaries found
   • All commands tightly coupled
@@ -256,17 +269,20 @@ Refactoring steps:
 ## Migration Safety
 
 **Automated Backups:**
+
 - Original domain archived
 - Can rollback in <15 minutes
 - History preserved
 
 **Verification Steps:**
+
 - Test each sub-domain independently
 - Test integrations between sub-domains
 - Verify registry updated correctly
 - Confirm all features work
 
 **Rollback Plan:**
+
 ```bash
 # If split doesn't work out:
 /evolve:rollback pm split
@@ -288,6 +304,7 @@ Refactoring steps:
 ## Real-World Example
 
 ### Before Split: pm (6.5/10 complexity)
+
 ```
 pm/
 ├── next.md
@@ -304,6 +321,7 @@ pm/
 ### After Split: 3 focused domains
 
 **pm-core (2.1/10)**
+
 ```
 pm-core/
 ├── next.md
@@ -312,6 +330,7 @@ pm-core/
 ```
 
 **pm-tracking (3.8/10)**
+
 ```
 pm-tracking/
 ├── review.md
@@ -321,6 +340,7 @@ pm-tracking/
 ```
 
 **pm-integrations (2.9/10)**
+
 ```
 pm-integrations/
 ├── sync.md

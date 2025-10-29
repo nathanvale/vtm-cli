@@ -34,33 +34,34 @@ Context extracted from Architecture Decision Record documents.
 
 ```typescript
 type ADRContext = {
-  file: string                      // Path to ADR file (e.g., "adr/ADR-042-jwt.md")
-  decision: string                  // The architectural decision
-  rationale: string                 // Why this decision was made
-  constraints: string[]             // Technical constraints
-  relevant_sections: SectionReference[]  // Relevant ADR sections with line numbers
+  file: string // Path to ADR file (e.g., "adr/ADR-042-jwt.md")
+  decision: string // The architectural decision
+  rationale: string // Why this decision was made
+  constraints: string[] // Technical constraints
+  relevant_sections: SectionReference[] // Relevant ADR sections with line numbers
 }
 ```
 
 **Example:**
+
 ```typescript
 const adrContext: ADRContext = {
-  file: 'adr/ADR-042-jwt.md',
-  decision: 'Use JWT tokens for stateless authentication',
-  rationale: 'Enables horizontal scaling and microservices compatibility',
+  file: "adr/ADR-042-jwt.md",
+  decision: "Use JWT tokens for stateless authentication",
+  rationale: "Enables horizontal scaling and microservices compatibility",
   constraints: [
-    '15 minute token expiry',
-    'RS256 signing algorithm',
-    'Include user claims'
+    "15 minute token expiry",
+    "RS256 signing algorithm",
+    "Include user claims",
   ],
   relevant_sections: [
     {
-      section: '## Decision',
-      lines: '10-25',
-      content: 'We will implement JWT tokens using RS256...',
-      relevance: 1.0
-    }
-  ]
+      section: "## Decision",
+      lines: "10-25",
+      content: "We will implement JWT tokens using RS256...",
+      relevance: 1.0,
+    },
+  ],
 }
 ```
 
@@ -70,42 +71,43 @@ Context extracted from specification documents.
 
 ```typescript
 type SpecContext = {
-  file: string                       // Path to spec file (e.g., "specs/spec-auth.md")
-  acceptance_criteria: string[]      // Acceptance criteria
-  test_requirements: TestRequirement[]  // Test requirements
-  code_examples: CodeExample[]       // Code examples with line numbers
-  constraints: string[]              // Technical constraints
-  relevant_sections: SectionReference[]  // Relevant spec sections
+  file: string // Path to spec file (e.g., "specs/spec-auth.md")
+  acceptance_criteria: string[] // Acceptance criteria
+  test_requirements: TestRequirement[] // Test requirements
+  code_examples: CodeExample[] // Code examples with line numbers
+  constraints: string[] // Technical constraints
+  relevant_sections: SectionReference[] // Relevant spec sections
 }
 ```
 
 **Example:**
+
 ```typescript
 const specContext: SpecContext = {
-  file: 'specs/spec-auth.md',
+  file: "specs/spec-auth.md",
   acceptance_criteria: [
-    'Tokens include user ID, role, and expiry',
-    'Tokens are signed with RS256 algorithm'
+    "Tokens include user ID, role, and expiry",
+    "Tokens are signed with RS256 algorithm",
   ],
   test_requirements: [
     {
-      type: 'unit',
-      description: 'Test token generation with valid user data',
-      acceptance_criterion: 'Tokens include user ID, role, and expiry',
-      lines: '65'
-    }
+      type: "unit",
+      description: "Test token generation with valid user data",
+      acceptance_criterion: "Tokens include user ID, role, and expiry",
+      lines: "65",
+    },
   ],
   code_examples: [
     {
-      language: 'typescript',
+      language: "typescript",
       code: 'const token = jwt.sign(payload, privateKey, { algorithm: "RS256" });',
-      description: 'Example JWT token generation',
-      file: 'specs/spec-auth.md',
-      lines: '85-87'
-    }
+      description: "Example JWT token generation",
+      file: "specs/spec-auth.md",
+      lines: "85-87",
+    },
   ],
-  constraints: ['Use RS256 algorithm', 'Token expiry 15 minutes'],
-  relevant_sections: []
+  constraints: ["Use RS256 algorithm", "Token expiry 15 minutes"],
+  relevant_sections: [],
 }
 ```
 
@@ -115,36 +117,37 @@ Maps task elements back to their source document locations.
 
 ```typescript
 type SourceMapping = {
-  acceptance_criteria: LineReference[]  // Line refs for each AC
-  tests: LineReference[]                // Line refs for test requirements
-  examples: LineReference[]             // Line refs for code examples
+  acceptance_criteria: LineReference[] // Line refs for each AC
+  tests: LineReference[] // Line refs for test requirements
+  examples: LineReference[] // Line refs for code examples
 }
 ```
 
 **Example:**
+
 ```typescript
 const sourceMapping: SourceMapping = {
   acceptance_criteria: [
     {
-      file: 'specs/spec-auth.md',
-      lines: '18',
-      text: 'AC1: Tokens include user ID, role, and expiry'
-    }
+      file: "specs/spec-auth.md",
+      lines: "18",
+      text: "AC1: Tokens include user ID, role, and expiry",
+    },
   ],
   tests: [
     {
-      file: 'specs/spec-auth.md',
-      lines: '65',
-      text: 'Unit test: Verify token contains user ID, role, expiry'
-    }
+      file: "specs/spec-auth.md",
+      lines: "65",
+      text: "Unit test: Verify token contains user ID, role, expiry",
+    },
   ],
   examples: [
     {
-      file: 'specs/spec-auth.md',
-      lines: '85-87',
-      text: 'Example: jwt.sign(payload, privateKey, ...)'
-    }
-  ]
+      file: "specs/spec-auth.md",
+      lines: "85-87",
+      text: "Example: jwt.sign(payload, privateKey, ...)",
+    },
+  ],
 }
 ```
 
@@ -156,10 +159,10 @@ References a section in a source document with relevance scoring.
 
 ```typescript
 type SectionReference = {
-  section: string    // Section heading (e.g., "## JWT Token Generation")
-  lines: string      // Line range (e.g., "42-58")
-  content: string    // Actual text content
-  relevance: number  // Relevance score 0.0-1.0
+  section: string // Section heading (e.g., "## JWT Token Generation")
+  lines: string // Line range (e.g., "42-58")
+  content: string // Actual text content
+  relevance: number // Relevance score 0.0-1.0
 }
 ```
 
@@ -169,9 +172,9 @@ References specific lines in a source document.
 
 ```typescript
 type LineReference = {
-  file: string   // Source file path
-  lines: string  // Line number or range (e.g., "18" or "35-40")
-  text: string   // Actual text at location
+  file: string // Source file path
+  lines: string // Line number or range (e.g., "18" or "35-40")
+  text: string // Actual text at location
 }
 ```
 
@@ -181,10 +184,10 @@ Test requirement extracted from specification.
 
 ```typescript
 type TestRequirement = {
-  type: 'unit' | 'integration' | 'e2e' | 'acceptance'
-  description: string              // What should be tested
-  acceptance_criterion: string     // Which AC this validates
-  lines: string                    // Line number in spec
+  type: "unit" | "integration" | "e2e" | "acceptance"
+  description: string // What should be tested
+  acceptance_criterion: string // Which AC this validates
+  lines: string // Line number in spec
 }
 ```
 
@@ -194,11 +197,11 @@ Code example from specification with source traceability.
 
 ```typescript
 type CodeExample = {
-  language: string     // Programming language (e.g., "typescript", "javascript")
-  code: string         // Actual code content
-  description: string  // What this example demonstrates
-  file: string         // Source file location
-  lines: string        // Line range (e.g., "35-40")
+  language: string // Programming language (e.g., "typescript", "javascript")
+  code: string // Actual code content
+  description: string // What this example demonstrates
+  file: string // Source file location
+  lines: string // Line range (e.g., "35-40")
 }
 ```
 
@@ -209,7 +212,7 @@ The `Task` type now includes an optional `context` field:
 ```typescript
 type Task = {
   // ... existing fields ...
-  context?: TaskRichContext  // Optional rich context
+  context?: TaskRichContext // Optional rich context
 }
 ```
 
@@ -240,50 +243,50 @@ Existing code using `TaskContext` will continue to work without changes.
 ### Creating a Task with Rich Context
 
 ```typescript
-import type { Task, ADRContext, SpecContext, SourceMapping } from './lib/types'
+import type { Task, ADRContext, SpecContext, SourceMapping } from "./lib/types"
 
 const task: Task = {
-  id: 'TASK-042',
-  title: 'Implement JWT tokens',
+  id: "TASK-042",
+  title: "Implement JWT tokens",
   // ... standard fields ...
   context: {
     adr: {
-      file: 'adr/ADR-042-jwt.md',
-      decision: 'Use JWT tokens for stateless authentication',
-      rationale: 'Scalability and microservices compatibility',
-      constraints: ['15 min expiry', 'RS256 algorithm'],
+      file: "adr/ADR-042-jwt.md",
+      decision: "Use JWT tokens for stateless authentication",
+      rationale: "Scalability and microservices compatibility",
+      constraints: ["15 min expiry", "RS256 algorithm"],
       relevant_sections: [
         {
-          section: '## Decision',
-          lines: '10-25',
-          content: 'We will implement JWT tokens...',
-          relevance: 1.0
-        }
-      ]
+          section: "## Decision",
+          lines: "10-25",
+          content: "We will implement JWT tokens...",
+          relevance: 1.0,
+        },
+      ],
     },
     spec: {
-      file: 'specs/spec-auth.md',
-      acceptance_criteria: ['AC1', 'AC2'],
+      file: "specs/spec-auth.md",
+      acceptance_criteria: ["AC1", "AC2"],
       test_requirements: [
         {
-          type: 'unit',
-          description: 'Test token generation',
-          acceptance_criterion: 'AC1',
-          lines: '65'
-        }
+          type: "unit",
+          description: "Test token generation",
+          acceptance_criterion: "AC1",
+          lines: "65",
+        },
       ],
       code_examples: [],
       constraints: [],
-      relevant_sections: []
+      relevant_sections: [],
     },
     source_mapping: {
       acceptance_criteria: [
-        { file: 'specs/spec-auth.md', lines: '18', text: 'AC1: ...' }
+        { file: "specs/spec-auth.md", lines: "18", text: "AC1: ..." },
       ],
       tests: [],
-      examples: []
-    }
-  }
+      examples: [],
+    },
+  },
 }
 ```
 
@@ -291,8 +294,8 @@ const task: Task = {
 
 ```typescript
 const simpleTask: Task = {
-  id: 'TASK-001',
-  title: 'Simple task',
+  id: "TASK-001",
+  title: "Simple task",
   // ... standard fields ...
   // No context field - works perfectly
 }
@@ -308,17 +311,17 @@ function displayTaskContext(task: Task): void {
     console.info(`Spec: ${task.context.spec.file}`)
 
     // Display test requirements
-    task.context.spec.test_requirements.forEach(req => {
+    task.context.spec.test_requirements.forEach((req) => {
       console.info(`Test [${req.type}]: ${req.description} (line ${req.lines})`)
     })
 
     // Display code examples
-    task.context.spec.code_examples.forEach(ex => {
+    task.context.spec.code_examples.forEach((ex) => {
       console.info(`Example (${ex.language}): ${ex.description}`)
       console.info(`  Location: ${ex.file}:${ex.lines}`)
     })
   } else {
-    console.info('No rich context available')
+    console.info("No rich context available")
   }
 }
 ```
@@ -334,6 +337,7 @@ vtm context TASK-042
 ```
 
 Output includes:
+
 - Task details
 - ADR decision and rationale
 - Spec acceptance criteria with line numbers

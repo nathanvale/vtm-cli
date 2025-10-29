@@ -11,14 +11,8 @@ This document shows what actual generated files look like after running:
 
 ```json
 {
-  "name": "pm",
   "description": "Project Management Workflows",
   "design": {
-    "operations": [
-      { "name": "next", "description": "Get next PM task" },
-      { "name": "context", "description": "Get task context" },
-      { "name": "list", "description": "List all tasks" }
-    ],
     "auto_discovery": {
       "enabled": true,
       "suggested_triggers": [
@@ -28,16 +22,22 @@ This document shows what actual generated files look like after running:
         "show my tasks"
       ]
     },
-    "external_integration": {
-      "needed": true,
-      "systems": [{"name": "notion", "type": "database"}]
-    },
     "automation": {
       "enabled": true,
-      "hooks": [{"event": "pre-commit", "action": "validate"}]
+      "hooks": [{ "action": "validate", "event": "pre-commit" }]
     },
-    "sharing": {"scope": "team", "team_members": ["user1", "user2"]}
-  }
+    "external_integration": {
+      "needed": true,
+      "systems": [{ "name": "notion", "type": "database" }]
+    },
+    "operations": [
+      { "description": "Get next PM task", "name": "next" },
+      { "description": "Get task context", "name": "context" },
+      { "description": "List all tasks", "name": "list" }
+    ],
+    "sharing": { "scope": "team", "team_members": ["user1", "user2"] }
+  },
+  "name": "pm"
 }
 ```
 
@@ -89,6 +89,7 @@ FILTER="${ARGUMENTS[0]:-all}"
 LIMIT="${ARGUMENTS[1]:-5}"
 
 # TODO: Implement fetching next task
+
 # Connect to your PM system (Notion, database, etc.)
 
 echo "Getting next $LIMIT PM tasks (filter: $FILTER)"
@@ -151,6 +152,7 @@ Helps you manage your PM workflow with smart command suggestions.
 ## When Claude Uses This
 
 When you mention things like:
+
 - "What should I work on?" → Suggests \`/pm:next\`
 - "Show me my tasks" → Suggests \`/pm:list\`
 - "I need context" → Suggests \`/pm:context\`
@@ -166,43 +168,37 @@ When you mention things like:
 
 ```json
 {
-  "name": "pm-notion",
-  "type": "mcp",
-  "description": "Notion database integration for PM tasks",
-  "version": "1.0.0",
-
-  "connection": {
-    "type": "api",
-    "service": "notion",
-    "auth_type": "bearer_token"
-  },
-
   "configuration": {
-    "endpoint": "https://api.notion.com/v1",
-    "required_env_vars": [
-      "PM_NOTION_API_KEY",
-      "PM_NOTION_DATABASE_ID"
-    ],
     "credentials": {
       "api_key": "${PM_NOTION_API_KEY}",
       "database_id": "${PM_NOTION_DATABASE_ID}"
-    }
+    },
+    "endpoint": "https://api.notion.com/v1",
+    "required_env_vars": ["PM_NOTION_API_KEY", "PM_NOTION_DATABASE_ID"]
   },
 
+  "connection": {
+    "auth_type": "bearer_token",
+    "service": "notion",
+    "type": "api"
+  },
+
+  "description": "Notion database integration for PM tasks",
+  "name": "pm-notion",
   "operations": {
     "read": {
       "queries": [
         {
-          "name": "list_tasks",
           "description": "List all PM tasks from Notion",
+          "name": "list_tasks",
           "parameters": {
             "filter": "optional - status filter",
             "limit": "max results"
           }
         },
         {
-          "name": "get_task_details",
           "description": "Get detailed task information",
+          "name": "get_task_details",
           "parameters": {
             "task_id": "required - task ID"
           }
@@ -212,11 +208,11 @@ When you mention things like:
     "write": {
       "mutations": [
         {
-          "name": "update_task_status",
           "description": "Update task status",
+          "name": "update_task_status",
           "parameters": {
-            "task_id": "required",
-            "status": "pending|in-progress|completed"
+            "status": "pending|in-progress|completed",
+            "task_id": "required"
           }
         }
       ]
@@ -226,17 +222,19 @@ When you mention things like:
   "setup": {
     "required_env_vars": [
       {
+        "example": "secret_abc123...",
         "name": "PM_NOTION_API_KEY",
-        "where_to_get": "https://developers.notion.com/tokens",
-        "example": "secret_abc123..."
+        "where_to_get": "https://developers.notion.com/tokens"
       },
       {
+        "example": "abc123def456",
         "name": "PM_NOTION_DATABASE_ID",
-        "where_to_get": "From Notion dashboard",
-        "example": "abc123def456"
+        "where_to_get": "From Notion dashboard"
       }
     ]
-  }
+  },
+  "type": "mcp",
+  "version": "1.0.0"
 }
 ```
 
@@ -354,9 +352,9 @@ Complete PM domain plugin with commands, auto-discovery, and Notion integration.
 Already installed? Use immediately:
 
 \`\`\`bash
-/pm:next              # Get next task
-/pm:context TASK-123  # Get details
-/pm:list              # See all tasks
+/pm:next # Get next task
+/pm:context TASK-123 # Get details
+/pm:list # See all tasks
 \`\`\`
 
 ## Setup
@@ -378,7 +376,9 @@ export PM_NOTION_DATABASE_ID="abc123def456"
 
 \`\`\`bash
 /pm:test-connection
+
 # Should output: ✓ Connected to Notion
+
 \`\`\`
 
 ## Features
@@ -396,16 +396,20 @@ export PM_NOTION_DATABASE_ID="abc123def456"
 \`\`\`bash
 You: "What should I work on?"
 Claude: /pm:next
+
 # → Shows: TASK-123: Implement feature
+
 \`\`\`
 
 ### Ensure Commits Link to Tasks
 
 \`\`\`bash
-git commit -m "TASK-123: Your work"  # ✓ Succeeds
+git commit -m "TASK-123: Your work" # ✓ Succeeds
 
-git commit -m "Random fix"           # ✗ Fails
+git commit -m "Random fix" # ✗ Fails
+
 # Error: Commit must reference a task ID
+
 \`\`\`
 
 ## Customization
@@ -416,10 +420,11 @@ Edit \`.claude/skills/pm-expert/SKILL.md\`:
 
 \`\`\`yaml
 trigger_phrases:
-  - "what should I work on"
-  - "next item"
-  - "show my queue"
-\`\`\`
+
+- "what should I work on"
+- "next item"
+- "show my queue"
+  \`\`\`
 
 ### Add More Commands
 
@@ -427,7 +432,9 @@ Copy a command file and customize:
 
 \`\`\`bash
 cp .claude/commands/pm/next.md .claude/commands/pm/review.md
+
 # Edit review.md with new logic
+
 \`\`\`
 
 ## Troubleshooting
@@ -439,10 +446,13 @@ Make sure trigger phrases match your vocabulary.
 ### Connection errors?
 
 \`\`\`bash
+
 # Check credentials
+
 echo $PM_NOTION_API_KEY
 
 # Test connection
+
 /pm:test-connection
 \`\`\`
 

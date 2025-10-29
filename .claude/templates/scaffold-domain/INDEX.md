@@ -25,6 +25,7 @@ The scaffold command generates a complete domain structure from a design specifi
 **Generated To:** `.claude/commands/{domain}/{action}.md`
 
 **Key Features:**
+
 - Frontmatter with name, description, namespace, version
 - Usage examples with parameter documentation
 - Implementation stub with customization points
@@ -34,6 +35,7 @@ The scaffold command generates a complete domain structure from a design specifi
 - Multiple customization examples (database, API, file-based)
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace (e.g., "pm", "devops")
 - `{action}` - Command action (e.g., "next", "review")
 - `{ACTION_DESCRIPTION}` - What the command does
@@ -41,10 +43,12 @@ The scaffold command generates a complete domain structure from a design specifi
 - `{ACTION_1_DESCRIPTION}` - Description of first action
 
 **When It's Generated:**
+
 - Once for each operation defined in the design spec
 - For actions like: next, context, list, update, create
 
 **Example Generated File:**
+
 ```markdown
 ---
 name: pm:next
@@ -53,6 +57,7 @@ namespace: pm
 ---
 
 # PM: Next Task
+
 ...
 ```
 
@@ -65,6 +70,7 @@ namespace: pm
 **Generated To:** `.claude/skills/{domain}-expert/SKILL.md`
 
 **Key Features:**
+
 - Frontmatter with name, description, trigger phrases
 - Clear documentation of what skill does
 - Command references with descriptions
@@ -75,6 +81,7 @@ namespace: pm
 - Troubleshooting guide
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace
 - `{DOMAIN}` - Uppercase domain name
 - `{action1}`, `{action2}`, `{action3}` - Command actions
@@ -83,10 +90,12 @@ namespace: pm
 - `{TRIGGER_PHRASE_1}` - Capitalized trigger phrases
 
 **When It's Generated:**
+
 - Once per domain if auto-discovery is enabled
 - Includes all commands from the design spec
 
 **Example Generated File:**
+
 ```markdown
 ---
 name: pm-expert
@@ -97,6 +106,7 @@ trigger_phrases:
 ---
 
 # PM Expert Skill
+
 ...
 ```
 
@@ -109,6 +119,7 @@ trigger_phrases:
 **Generated To:** `.claude/mcp-servers/{domain}-{system}/mcp.json`
 
 **Key Features:**
+
 - Connection configuration (type, service, auth)
 - Environment variable definitions
 - Read operations (queries)
@@ -125,6 +136,7 @@ trigger_phrases:
 - Troubleshooting guide
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace
 - `{system}` - External system name (e.g., "notion")
 - `{SYSTEM_NAME}` - Full system name
@@ -137,10 +149,12 @@ trigger_phrases:
 - `{AUTHOR}` - Who created it
 
 **When It's Generated:**
+
 - Once per external system in the design spec
 - If external_integration.needed = true
 
 **Example Generated File:**
+
 ```json
 {
   "name": "pm-notion",
@@ -164,6 +178,7 @@ trigger_phrases:
 **Generated To:** `.claude/hooks/pre-commit/{domain}-handler.sh`
 
 **Key Features:**
+
 - Proper bash setup with error handling
 - Color-coded logging (info, warn, error, action)
 - 6 example validation functions
@@ -177,14 +192,17 @@ trigger_phrases:
 - Error instructions for users
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace
 - `{DOMAIN}` - Uppercase domain name
 - `{HOOK_PURPOSE}` - What the hook validates
 
 **When It's Generated:**
+
 - Once per domain if automation.enabled = true and hook type = pre-commit
 
 **Example Generated File:**
+
 ```bash
 #!/bin/bash
 # Pre-commit Hook: pm Validation
@@ -202,6 +220,7 @@ trigger_phrases:
 **Generated To:** `.claude/hooks/post-tool-use/{domain}-handler.sh`
 
 **Key Features:**
+
 - Color-coded logging and output formatting
 - 6 auto-action functions (status update, commit linking, item creation, metrics, notifications, documentation)
 - Smart trigger detection
@@ -216,14 +235,17 @@ trigger_phrases:
 - Main execution loop
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace
 - `{DOMAIN}` - Uppercase domain name
 - `{HOOK_PURPOSE}` - What auto-actions the hook performs
 
 **When It's Generated:**
+
 - Once per domain if automation.enabled = true and hook type = post-tool-use
 
 **Example Generated File:**
+
 ```bash
 #!/bin/bash
 # Post-Tool-Use Hook: pm Auto-Actions
@@ -242,6 +264,7 @@ trigger_phrases:
 **Generated To:** `.claude/plugins/{domain}-automation/plugin.yaml`
 
 **Key Features:**
+
 - Name, version, description
 - Comprehensive metadata (author, created, sharing, tags)
 - Component references (commands, skills, MCP, hooks)
@@ -261,6 +284,7 @@ trigger_phrases:
 - Next steps for users
 
 **Customization Placeholders:**
+
 - `{domain}` - Domain namespace
 - `{DOMAIN}` - Uppercase domain name
 - `{SYSTEM}` - External system name
@@ -272,9 +296,11 @@ trigger_phrases:
 - `{TEAM_NAME}` - Team name for sharing
 
 **When It's Generated:**
+
 - Once per domain, serves as metadata package
 
 **Example Generated File:**
+
 ```yaml
 name: pm-automation
 version: 1.0.0
@@ -294,6 +320,7 @@ metadata:
 **Generated To:** `.claude/plugins/{domain}-automation/README.md`
 
 **Key Features:**
+
 - Quick start section with command examples
 - What the plugin does
 - Installation instructions
@@ -316,6 +343,7 @@ metadata:
 - Next steps
 
 **Customization Placeholders:**
+
 - `{DOMAIN}` - Uppercase domain name
 - `{domain}` - Lowercase domain name
 - `{SYSTEM_NAME}` - Full service name
@@ -329,9 +357,11 @@ metadata:
 - `{LICENSE_TYPE}` - License type
 
 **When It's Generated:**
+
 - Once per domain, serves as user documentation
 
 **Example Generated File:**
+
 ```markdown
 # PM Automation Plugin
 
@@ -445,6 +475,7 @@ Plugin README:    .claude/plugins/{domain}-automation/README.md
 Before using a generated file, verify:
 
 ### For Commands
+
 - [ ] Frontmatter has name, description, namespace
 - [ ] Usage examples show with and without parameters
 - [ ] Error handling handles invalid input
@@ -452,6 +483,7 @@ Before using a generated file, verify:
 - [ ] Testing section covers main scenarios
 
 ### For Skills
+
 - [ ] Trigger phrases are specific to domain
 - [ ] All referenced commands actually exist
 - [ ] Related commands section is complete
@@ -459,6 +491,7 @@ Before using a generated file, verify:
 - [ ] Description accurately reflects capabilities
 
 ### For MCP
+
 - [ ] Connection type matches service
 - [ ] Auth configuration is correct
 - [ ] Required env vars are clearly documented
@@ -467,6 +500,7 @@ Before using a generated file, verify:
 - [ ] Setup instructions are clear
 
 ### For Hooks
+
 - [ ] Bash syntax is valid (no errors)
 - [ ] Validation logic is sound
 - [ ] Error messages are helpful
@@ -474,6 +508,7 @@ Before using a generated file, verify:
 - [ ] Can be bypassed if needed (--no-verify)
 
 ### For Plugins
+
 - [ ] All component paths are correct
 - [ ] Command references are valid
 - [ ] Skill trigger phrases are relevant
@@ -481,6 +516,7 @@ Before using a generated file, verify:
 - [ ] Status is documented
 
 ### For READMEs
+
 - [ ] Setup instructions are complete
 - [ ] Examples are tested
 - [ ] Troubleshooting covers common issues
@@ -577,6 +613,7 @@ When `/scaffold:domain {domain}` is executed:
 ### v1.0.0 (2025-10-29)
 
 Initial template library with 6 template types:
+
 - Command template for slash commands
 - Skill template for auto-discovery
 - MCP template for external integrations
@@ -585,6 +622,7 @@ Initial template library with 6 template types:
 - Plugin manifest and README templates
 
 All templates are feature-complete with:
+
 - Comprehensive placeholder system
 - Customization guidance comments
 - Example implementations

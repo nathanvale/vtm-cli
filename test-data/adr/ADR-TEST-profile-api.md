@@ -24,7 +24,7 @@ We will implement a simple JSON-based profile storage system with a TypeScript A
 interface UserProfile {
   username: string
   preferences: {
-    defaultTestStrategy: 'TDD' | 'Unit' | 'Integration' | 'Direct'
+    defaultTestStrategy: "TDD" | "Unit" | "Integration" | "Direct"
     autoGenerateSummary: boolean
   }
   recentProjects: string[]

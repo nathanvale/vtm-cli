@@ -1,38 +1,9 @@
 {
-  "name": "pm",
-  "description": "Project Management Workflows for Claude Code",
-  "version": "1.0.0",
   "created_at": "2025-10-29T14:30:00Z",
+  "description": "Project Management Workflows for Claude Code",
   "design": {
-    "operations": [
-      {
-        "name": "next",
-        "description": "next for pm domain",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:next"
-      },
-      {
-        "name": "review",
-        "description": "review for pm domain",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:review"
-      },
-      {
-        "name": "context",
-        "description": "context for pm domain",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:context"
-      },
-      {
-        "name": "list",
-        "description": "list for pm domain",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:list"
-      }
-    ],
     "auto_discovery": {
       "enabled": true,
-      "type": "skill",
       "suggested_triggers": [
         "what should i work on",
         "next task",
@@ -42,49 +13,75 @@
         "show progress",
         "context",
         "what is the context"
-      ]
-    },
-    "external_integration": {
-      "needed": true,
-      "type": "mcp",
-      "systems": [
-        {
-          "name": "notion",
-          "type": "api"
-        }
-      ]
+      ],
+      "type": "skill"
     },
     "automation": {
       "enabled": true,
       "hooks": [
         {
-          "event": "pre-commit",
-          "action": "pm_pre_commit"
+          "action": "pm_pre_commit",
+          "event": "pre-commit"
         }
       ]
     },
-    "sharing": {
-      "scope": "team",
-      "team_members": [
-        "alice@example.com",
-        "bob@example.com"
-      ]
-    },
-    "recommendations": {
-      "start_with": [
-        "Create commands for: next, review, context",
-        "Add skill with trigger phrases for auto-discovery",
-        "Create MCP stub(s) for external system connection",
-        "Add hook script(s) for automated tasks",
-        "Create README.md for team documentation"
+    "external_integration": {
+      "needed": true,
+      "systems": [
+        {
+          "name": "notion",
+          "type": "api"
+        }
       ],
+      "type": "mcp"
+    },
+    "operations": [
+      {
+        "description": "next for pm domain",
+        "manual_invocation": "/pm:next",
+        "name": "next",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "review for pm domain",
+        "manual_invocation": "/pm:review",
+        "name": "review",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "context for pm domain",
+        "manual_invocation": "/pm:context",
+        "name": "context",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "list for pm domain",
+        "manual_invocation": "/pm:list",
+        "name": "list",
+        "triggers_auto_discovery": true
+      }
+    ],
+    "recommendations": {
       "next_steps": [
         "Run: /scaffold:domain pm",
         "Customize generated command files",
         "Test commands locally: /pm:next",
         "Add quality gates and tests when ready",
         "Review with team if team"
+      ],
+      "start_with": [
+        "Create commands for: next, review, context",
+        "Add skill with trigger phrases for auto-discovery",
+        "Create MCP stub(s) for external system connection",
+        "Add hook script(s) for automated tasks",
+        "Create README.md for team documentation"
       ]
+    },
+    "sharing": {
+      "scope": "team",
+      "team_members": ["alice@example.com", "bob@example.com"]
     }
-  }
+  },
+  "name": "pm",
+  "version": "1.0.0"
 }

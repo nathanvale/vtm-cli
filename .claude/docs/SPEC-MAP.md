@@ -8,10 +8,12 @@
 ## Master System Specs (The Big Picture)
 
 ### 1. **SPEC-composable-system.md**
+
 **Location:** `.claude/docs/SPEC-composable-system.md`
 **Lines:** 512
 **Purpose:** The master architecture for the entire 8-layer system
 **What it defines:**
+
 - All 8 layers (Foundation → Sustainability)
 - The Minimum Composable Core (MCC) - 3 commands
 - The full vision and roadmap
@@ -25,10 +27,12 @@
 ---
 
 ### 2. **SPEC-minimum-composable-core.md**
+
 **Location:** `.claude/docs/SPEC-minimum-composable-core.md`
 **Lines:** ~1,100
 **Purpose:** Complete specification for Phase 1 - the 3 core commands
 **What it defines:**
+
 - `/design:domain` - Interactive design wizard
 - `/scaffold:domain` - Code generator
 - `/registry:scan` - Component discovery
@@ -41,10 +45,12 @@
 ---
 
 ### 3. **SPEC-lifecycle-layer.md**
+
 **Location:** `.claude/docs/SPEC-lifecycle-layer.md`
 **Lines:** 2,571
 **Purpose:** Complete specification for Phase 2 - Layer 2 (Lifecycle)
 **What it defines:**
+
 - 7 commands for testing and evolution
 - `/test:command`, `/test:integration`
 - `/evolve:add-skill`, `/evolve:to-plugin`, `/evolve:split`, `/evolve:remove-skill`, `/evolve:rollback`
@@ -57,6 +63,7 @@
 ---
 
 ### 4. **SPEC-lifecycle-layer-quickref.md**
+
 **Location:** `.claude/docs/SPEC-lifecycle-layer-quickref.md`
 **Lines:** 308
 **Purpose:** Quick reference for the lifecycle layer
@@ -67,6 +74,7 @@
 ---
 
 ### 5. **SPEC-lifecycle-layer-evolve.md**
+
 **Location:** `.claude/docs/SPEC-lifecycle-layer-evolve.md`
 **Lines:** 1,456
 **Purpose:** Deep dive on just the `/evolve` command family
@@ -79,9 +87,11 @@
 ## Interface & Developer Specs
 
 ### 6. **SPEC-interfaces.md**
+
 **Location:** `.claude/docs/SPEC-interfaces.md`
 **Purpose:** Standard interfaces all components must implement
 **What it defines:**
+
 - Component metadata interface
 - Lifecycle operations interface
 - Event interface
@@ -92,6 +102,7 @@
 ---
 
 ### 7. **SPEC-developer-guide.md**
+
 **Location:** `.claude/docs/SPEC-developer-guide.md`
 **Purpose:** How developers should build on this system
 **What it defines:** Best practices, patterns, how to extend
@@ -102,13 +113,16 @@
 
 ## Implementation Guides (Not Specs, but Related)
 
-### 8. **DESIGN-DOMAIN-*.md files**
+### 8. **DESIGN-DOMAIN-\*.md files**
+
 These are implementation guides for specific deliverables, not architectural specs.
 
-### 9. **TEST-*.md files**
+### 9. **TEST-\*.md files**
+
 These document the testing system, not the overall architecture.
 
-### 10. **EVOLVE-*.md files**
+### 10. **EVOLVE-\*.md files**
+
 These are user guides for the evolve commands, not specs.
 
 ---
@@ -116,6 +130,7 @@ These are user guides for the evolve commands, not specs.
 ## The Design Spec (Different Category)
 
 ### **lifecycle-design-spec.json** (root level)
+
 **Purpose:** Example design specification created by `/design:domain`
 **Format:** JSON data file
 **Not an architectural spec** - this is a data artifact
@@ -163,6 +178,7 @@ SPEC-composable-system.md (Master Vision)
 ## What's NOT a Spec
 
 These are implementation docs, not architectural specs:
+
 - `PHASE-2-COMPLETION-REPORT.md` - Progress report
 - `SELF-EXTENSION-*.md` - Test documentation
 - `EVOLVE-GUIDE.md` - User guide
@@ -175,11 +191,13 @@ These are implementation docs, not architectural specs:
 ## Summary
 
 **3 Primary Architectural Specs:**
+
 1. `SPEC-composable-system.md` - The full 8-layer vision
 2. `SPEC-minimum-composable-core.md` - Phase 1 details
 3. `SPEC-lifecycle-layer.md` - Phase 2 details
 
 **Everything else is either:**
+
 - Deep-dives on specific parts
 - Quick references
 - Implementation guides

@@ -73,6 +73,7 @@ echo "   • View all: /vtm:list"
 ## Task Information
 
 Shows complete task details:
+
 - **ID & Title**: Task identifier and description
 - **Status**: pending, in-progress, completed, or blocked
 - **Test Strategy**: TDD, Unit, Integration, or Direct

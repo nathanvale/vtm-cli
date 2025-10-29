@@ -13,3 +13,7 @@ yarn.lock
 logs
 .vault-id
 
+# VTM session state
+.vtm-session
+
+coverage/

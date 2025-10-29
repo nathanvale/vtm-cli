@@ -1,284 +1,988 @@
 {
-  "version": "2.0.0",
-  "project": {
-    "name": "VTM CLI",
-    "description": "Virtual Task Manager for AI-assisted development"
-  },
+  "project": "vtm-cli",
   "stats": {
-    "total_tasks": 7,
-    "completed": 1,
-    "in_progress": 1,
-    "pending": 5,
-    "blocked": 0
+    "blocked": 0,
+    "completed": 29,
+    "in_progress": 0,
+    "pending": 0,
+    "total_tasks": 29
   },
   "tasks": [
     {
+      "acceptance_criteria": [
+        "AC1: decision-engine.ts exists in src/lib/ directory",
+        "AC2: Original file removed from .claude/lib/ directory",
+        "AC3: TypeScript compilation succeeds without errors",
+        "AC4: Compiled decision-engine.js appears in dist/lib/"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:55:11.781Z",
+      "dependencies": [],
+      "description": "Relocate decision-engine.ts from .claude/lib/ to src/lib/ so it gets compiled by TypeScript build process. This will make it available as a proper library module in the VTM CLI distribution.",
+      "estimated_hours": 0.25,
+      "files": {
+        "create": ["src/lib/decision-engine.ts"],
+        "delete": [".claude/lib/decision-engine.ts"],
+        "modify": []
+      },
       "id": "TASK-001",
-      "adr_source": "adr/ADR-001-vtm-architecture.md",
-      "spec_source": "specs/spec-vtm-core.md",
-      "title": "Set up VTM project structure",
-      "description": "Initialize project with TypeScript, testing framework, and build tooling",
-      "acceptance_criteria": [
-        "TypeScript configured with strict mode",
-        "Vitest test framework installed",
-        "Build scripts in package.json",
-        "Project compiles without errors"
-      ],
-      "dependencies": [],
-      "blocks": [
-        "TASK-002",
-        "TASK-003"
-      ],
-      "test_strategy": "Direct",
-      "test_strategy_rationale": "Setup task, verified by successful build",
-      "estimated_hours": 2,
       "risk": "low",
-      "files": {
-        "create": [
-          "tsconfig.json",
-          "package.json",
-          "src/"
-        ],
-        "modify": [],
-        "delete": []
-      },
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T12:53:28.475Z",
       "status": "completed",
-      "started_at": "2025-10-28T10:00:00Z",
-      "completed_at": "2025-10-28T11:30:00Z",
-      "commits": [
-        "abc123"
-      ],
-      "validation": {
-        "tests_pass": true,
-        "ac_verified": [
-          "TypeScript configured with strict mode",
-          "Build scripts in package.json"
-        ]
-      }
-    },
-    {
-      "id": "TASK-002",
-      "adr_source": "adr/ADR-002-vtm-reader.md",
-      "spec_source": "specs/spec-vtm-reader.md",
-      "title": "Implement VTMReader class",
-      "description": "Create VTMReader for loading and parsing vtm.json files with caching",
-      "acceptance_criteria": [
-        "Can load vtm.json from disk",
-        "Validates JSON schema",
-        "Caches loaded VTM in memory",
-        "Provides getTask() method",
-        "All tests pass"
-      ],
-      "dependencies": [
-        "TASK-001"
-      ],
-      "blocks": [],
-      "test_strategy": "TDD",
-      "test_strategy_rationale": "Core data access layer, high-risk file operations",
-      "estimated_hours": 4,
-      "risk": "high",
-      "files": {
-        "create": [
-          "src/lib/vtm-reader.ts",
-          "test/vtm-reader.test.ts"
-        ],
-        "modify": [
-          "src/lib/types.ts"
-        ],
-        "delete": []
-      },
-      "status": "in-progress",
-      "started_at": "2025-10-28T12:00:00Z",
-      "completed_at": null,
-      "commits": [],
-      "validation": {
-        "tests_pass": false,
-        "ac_verified": []
-      }
-    },
-    {
-      "id": "TASK-003",
-      "adr_source": "adr/ADR-003-vtm-writer.md",
-      "spec_source": "specs/spec-vtm-writer.md",
-      "title": "Implement VTMWriter class",
-      "description": "Create VTMWriter for atomic writes to vtm.json with stats recalculation",
-      "acceptance_criteria": [
-        "Atomic writes using temp file + rename",
-        "Automatic stats recalculation",
-        "updateTask() method for task updates",
-        "Crash-safe file operations",
-        "All tests pass"
-      ],
-      "dependencies": [
-        "TASK-001"
-      ],
-      "blocks": [],
-      "test_strategy": "TDD",
-      "test_strategy_rationale": "Critical data integrity, must prevent corruption",
-      "estimated_hours": 5,
-      "risk": "high",
-      "files": {
-        "create": [
-          "src/lib/vtm-writer.ts",
-          "test/vtm-writer.test.ts"
-        ],
-        "modify": [],
-        "delete": []
-      },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "commits": [],
-      "validation": {
-        "tests_pass": false,
-        "ac_verified": []
-      }
-    },
-    {
-      "id": "TASK-004",
-      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
-      "spec_source": "test-data/specs/spec-profile-api.md",
-      "title": "Create Profile Data Model",
-      "description": "Define TypeScript types and interfaces for user profile data structure including UserProfile, UserProfilePreferences, and UserStatistics. Export default profile constant for initialization.",
-      "acceptance_criteria": [
-        "UserProfile interface defined with all required fields",
-        "Type exports available from src/lib/types.ts",
-        "JSDoc comments documenting each field",
-        "Default profile constant defined"
-      ],
-      "dependencies": [],
-      "blocks": [],
       "test_strategy": "Direct",
-      "test_strategy_rationale": "Type definitions only require TypeScript compilation validation",
-      "estimated_hours": 1,
-      "risk": "low",
-      "files": {
-        "create": [],
-        "modify": [
-          "src/lib/types.ts"
-        ],
-        "delete": []
-      },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "commits": [],
+      "test_strategy_rationale": "Simple file move operation verified by compilation success and file existence checks",
+      "title": "Move decision-engine.ts to src/lib/",
       "validation": {
-        "tests_pass": false,
-        "ac_verified": []
+        "ac_verified": [],
+        "tests_pass": false
       }
     },
     {
-      "id": "TASK-005",
-      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
-      "spec_source": "test-data/specs/spec-profile-api.md",
-      "title": "Implement Profile Storage Manager",
-      "description": "Create ProfileStorage class to handle reading and writing profile.json with atomic operations",
       "acceptance_criteria": [
-        "Can create profile directory if missing",
-        "Can initialize default profile",
-        "Atomic writes using temp file + rename",
-        "Validates profile schema on read",
-        "Returns default profile if file missing/corrupted"
+        "AC1: architecture-patterns.json exists in src/lib/data/ directory",
+        "AC2: Original file removed from .claude/lib/ directory",
+        "AC3: JSON file is valid and parseable",
+        "AC4: File is included in npm package distribution"
       ],
-      "dependencies": [
-        "TASK-004"
-      ],
+      "adr_source": "planning-session/decision-engine-refactor",
       "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:58:28.934Z",
+      "dependencies": ["TASK-001"],
+      "description": "Relocate architecture-patterns.json from .claude/lib/ to src/lib/data/ to keep pattern definitions with the library code. Create data directory if it doesn't exist.",
+      "estimated_hours": 0.25,
+      "files": {
+        "create": ["src/lib/data/architecture-patterns.json"],
+        "delete": [".claude/lib/architecture-patterns.json"],
+        "modify": []
+      },
+      "id": "TASK-002",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T12:57:24.829Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "File move with JSON validation, verified by successful parsing",
+      "title": "Move architecture-patterns.json to src/lib/data/",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Test file src/lib/__tests__/decision-engine.test.ts created",
+        "AC2: Test fixtures directory created with sample patterns JSON",
+        "AC3: Test can import DecisionEngine successfully",
+        "AC4: Test runner configuration includes new test file"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:00:38.626Z",
+      "dependencies": ["TASK-001"],
+      "description": "Create test file structure and setup for DecisionEngine tests. Configure test runner, create test fixtures with sample patterns, and establish test data directories.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [
+          "src/lib/__tests__/decision-engine.test.ts",
+          "src/lib/__tests__/fixtures/test-patterns.json"
+        ],
+        "delete": [],
+        "modify": []
+      },
+      "id": "TASK-003",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T12:59:34.230Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Setting up test infrastructure, verified by successful test execution",
+      "title": "Setup test infrastructure for DecisionEngine",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Test for loading patterns from valid file path (FAILS)",
+        "AC2: Test for fallback to default patterns when file not found (FAILS)",
+        "AC3: Test for handling invalid JSON gracefully (FAILS)",
+        "AC4: All tests run and fail with clear error messages",
+        "AC5: Test expectations clearly document desired behavior"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:02:29.332Z",
+      "dependencies": ["TASK-003"],
+      "description": "Write failing tests for DecisionEngine pattern loading functionality. Test should verify loading patterns from file path, fallback to defaults when file missing, and proper error handling for invalid JSON.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+      },
+      "id": "TASK-004",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:01:29.934Z",
+      "status": "completed",
       "test_strategy": "TDD",
-      "test_strategy_rationale": "High-risk file operations require TDD approach",
-      "estimated_hours": 4,
-      "risk": "high",
-      "files": {
-        "create": [
-          "src/lib/profile-storage.ts",
-          "test/profile-storage.test.ts"
-        ],
-        "modify": [],
-        "delete": []
-      },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "commits": [],
+      "test_strategy_rationale": "Red phase of TDD - write failing tests first to define expected behavior for pattern loading",
+      "title": "TDD Red: Write failing test for pattern loading",
       "validation": {
-        "tests_pass": false,
-        "ac_verified": []
+        "ac_verified": [],
+        "tests_pass": false
       }
     },
     {
-      "id": "TASK-006",
-      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
-      "spec_source": "test-data/specs/spec-profile-api.md",
-      "title": "Create Profile API Facade",
-      "description": "Implement ProfileManager class providing high-level API for profile operations",
       "acceptance_criteria": [
-        "Provides getProfile(), updateProfile(), resetProfile() methods",
-        "Caches profile in memory after first load",
-        "Type-safe updates using Partial<UserProfile>",
-        "Singleton pattern for consistent state"
+        "AC1: All pattern loading tests from TASK-004 now PASS",
+        "AC2: Default patternsPath updated to use new location",
+        "AC3: Path resolution works for both development and installed scenarios",
+        "AC4: DecisionEngine can successfully load patterns from new location",
+        "AC5: Fallback to default patterns works when file not found"
       ],
-      "dependencies": [
-        "TASK-005"
-      ],
+      "adr_source": "planning-session/decision-engine-refactor",
       "blocks": [],
-      "test_strategy": "Unit",
-      "test_strategy_rationale": "Medium-risk business logic with clear inputs/outputs",
-      "estimated_hours": 3,
-      "risk": "medium",
-      "files": {
-        "create": [
-          "src/lib/profile.ts",
-          "test/profile.test.ts"
-        ],
-        "modify": [],
-        "delete": []
-      },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
       "commits": [],
-      "validation": {
-        "tests_pass": false,
-        "ac_verified": []
-      }
-    },
-    {
-      "id": "TASK-007",
-      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
-      "spec_source": "test-data/specs/spec-profile-api.md",
-      "title": "Add CLI Commands",
-      "description": "Add vtm profile commands to CLI including view, set, and reset subcommands",
-      "acceptance_criteria": [
-        "vtm profile view displays current profile",
-        "vtm profile set <key> <value> updates preference",
-        "vtm profile reset restores defaults",
-        "Colored output using chalk",
-        "Error handling for invalid keys/values"
-      ],
-      "dependencies": [
-        "TASK-006"
-      ],
-      "blocks": [],
-      "test_strategy": "Integration",
-      "test_strategy_rationale": "CLI integration testing validates end-to-end workflow",
-      "estimated_hours": 2,
-      "risk": "low",
+      "completed_at": "2025-10-29T13:06:36.663Z",
+      "dependencies": ["TASK-002", "TASK-004"],
+      "description": "Update the default patternsPath in DecisionEngine constructor to reference src/lib/data/. Implement pattern loading to make tests pass. Ensure path resolution works for both development and installed scenarios.",
+      "estimated_hours": 1,
       "files": {
         "create": [],
-        "modify": [
-          "src/index.ts"
-        ],
-        "delete": []
+        "delete": [],
+        "modify": ["src/lib/decision-engine.ts"]
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
-      "commits": [],
+      "id": "TASK-005",
+      "risk": "medium",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:04:39.658Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Green phase of TDD - implement minimal code to make failing tests pass",
+      "title": "TDD Green: Update decision-engine.ts default patterns path",
       "validation": {
-        "tests_pass": false,
-        "ac_verified": []
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Test for extracting keywords from description (FAILS)",
+        "AC2: Test for matching patterns based on keywords (FAILS)",
+        "AC3: Test for calculating pattern confidence scores (FAILS)",
+        "AC4: Test for ranking patterns by relevance (FAILS)",
+        "AC5: Test cases cover edge cases (empty input, no matches, multiple matches)"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:12:14.683Z",
+      "dependencies": ["TASK-005"],
+      "description": "Write failing tests for DecisionEngine pattern matching algorithm. Test keyword extraction, pattern scoring, confidence calculation, and pattern ranking.",
+      "estimated_hours": 0.75,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+      },
+      "id": "TASK-006",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:07:19.143Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Red phase - define expected behavior for pattern matching algorithm",
+      "title": "TDD Red: Write failing tests for pattern matching",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: All pattern matching tests from TASK-006 now PASS",
+        "AC2: Keyword extraction works correctly",
+        "AC3: Pattern scoring algorithm implemented",
+        "AC4: Confidence calculation works as expected",
+        "AC5: No regressions in existing tests"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:16:29.048Z",
+      "dependencies": ["TASK-006"],
+      "description": "Implement or refactor pattern matching methods in DecisionEngine to make all tests pass. Focus on minimal implementation that satisfies test requirements.",
+      "estimated_hours": 1.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/decision-engine.ts"]
+      },
+      "id": "TASK-007",
+      "risk": "medium",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:15:05.228Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Green phase - implement pattern matching to satisfy tests",
+      "title": "TDD Green: Implement pattern matching to pass tests",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Test for suggesting domain name from description (FAILS)",
+        "AC2: Test for generating appropriate commands (FAILS)",
+        "AC3: Test for suggesting skills based on commands (FAILS)",
+        "AC4: Test for recommending MCPs based on keywords (FAILS)",
+        "AC5: Test for complete recommendation structure (FAILS)"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:19:01.621Z",
+      "dependencies": ["TASK-007"],
+      "description": "Write failing tests for DecisionEngine.recommendArchitecture() method. Test domain name suggestion, command generation, skill suggestions, MCP recommendations, and full recommendation output.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+      },
+      "id": "TASK-008",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:17:14.080Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Red phase - define expected behavior for architecture recommendation",
+      "title": "TDD Red: Write failing tests for architecture recommendation",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: All recommendation tests from TASK-008 now PASS",
+        "AC2: Domain name suggestion works correctly",
+        "AC3: Command generation based on patterns works",
+        "AC4: Skill and MCP recommendations work as expected",
+        "AC5: All existing tests still pass (no regressions)"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T13:22:24.976Z",
+      "dependencies": ["TASK-008"],
+      "description": "Implement or refactor recommendArchitecture() and related methods to make all tests pass. Ensure proper integration between pattern matching and recommendation generation.",
+      "estimated_hours": 2,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/decision-engine.ts"]
+      },
+      "id": "TASK-009",
+      "risk": "medium",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:20:44.267Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Green phase - implement recommendation logic to satisfy tests",
+      "title": "TDD Green: Implement recommendation logic to pass tests",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Test for scanning domain directory structure (FAILS)",
+        "AC2: Test for identifying domain strengths (FAILS)",
+        "AC3: Test for detecting architectural issues (FAILS)",
+        "AC4: Test for generating improvement recommendations (FAILS)",
+        "AC5: Test with mock domain structures in fixtures"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:31:45.812Z",
+      "dependencies": ["TASK-009"],
+      "description": "Write failing tests for DecisionEngine.analyzeDomain() method. Test scanning domain structure, identifying strengths, detecting issues, and generating refactoring recommendations.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [
+          "src/lib/__tests__/fixtures/mock-domain/command1.md",
+          "src/lib/__tests__/fixtures/mock-domain/command2.md"
+        ],
+        "delete": [],
+        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+      },
+      "id": "TASK-010",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T18:27:30.723Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Red phase - define expected behavior for domain analysis",
+      "title": "TDD Red: Write failing tests for domain analysis",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: All domain analysis tests from TASK-010 now PASS",
+        "AC2: Domain scanning works correctly",
+        "AC3: Strength identification logic implemented",
+        "AC4: Issue detection works as expected",
+        "AC5: All existing tests still pass"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:36:14.143Z",
+      "dependencies": ["TASK-010"],
+      "description": "Implement or refactor analyzeDomain() and related methods to make all tests pass. Focus on file scanning, metrics calculation, and issue detection logic.",
+      "estimated_hours": 2,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/decision-engine.ts"]
+      },
+      "id": "TASK-011",
+      "risk": "medium",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T18:35:11.363Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Green phase - implement domain analysis to satisfy tests",
+      "title": "TDD Green: Implement domain analysis to pass tests",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: All tests remain PASSING after refactoring",
+        "AC2: Code duplication reduced (DRY principle)",
+        "AC3: Function and variable names are clear and descriptive",
+        "AC4: Complex logic has explanatory comments",
+        "AC5: Code follows TypeScript best practices"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:47:32.531Z",
+      "dependencies": ["TASK-011"],
+      "description": "Refactor DecisionEngine implementation to improve code quality while keeping all tests green. Extract helper functions, reduce duplication, improve naming, and add code comments.",
+      "estimated_hours": 1.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/decision-engine.ts"]
+      },
+      "id": "TASK-012",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T18:45:19.453Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Refactor phase - improve code quality while maintaining green tests",
+      "title": "TDD Refactor: Improve DecisionEngine code quality",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: 'vtm analyze <domain>' command exists in CLI",
+        "AC2: Command supports --suggest-refactoring flag",
+        "AC3: Command outputs formatted analysis to console",
+        "AC4: Help text documents the command and its options",
+        "AC5: Error handling for invalid domains"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:58:52.592Z",
+      "dependencies": ["TASK-012"],
+      "description": "Add a new 'vtm analyze <domain>' command to the CLI that wraps the DecisionEngine functionality. This exposes architecture analysis as a first-class VTM CLI feature. Now that DecisionEngine is tested, we can safely integrate it.",
+      "estimated_hours": 1.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/index.ts"]
+      },
+      "id": "TASK-013",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T18:56:58.021Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "CLI integration tested manually, DecisionEngine unit tested via TDD",
+      "title": "Create vtm analyze CLI command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: package.json 'files' array includes 'dist/lib/data/'",
+        "AC2: 'npm pack' includes architecture-patterns.json in tarball",
+        "AC3: File is readable after npm link installation",
+        "AC4: Path resolution works in installed package"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:24:32.784Z",
+      "dependencies": ["TASK-002"],
+      "description": "Update package.json files array to ensure architecture-patterns.json is included in the npm package distribution. Verify that the file is accessible after npm install.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["package.json"]
+      },
+      "id": "TASK-014",
+      "risk": "medium",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T13:23:29.297Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Requires testing npm packaging and installation process",
+      "title": "Update package.json to include data files",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Command uses 'vtm analyze' via Bash tool",
+        "AC2: All existing command functionality preserved",
+        "AC3: Error handling remains robust",
+        "AC4: Output formatting matches previous behavior"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T19:05:45.072Z",
+      "dependencies": ["TASK-013"],
+      "description": "Refactor the /decide-architecture slash command to call 'vtm analyze' instead of directly requiring the decision-engine module. This simplifies the command and ensures consistent behavior.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/commands/decide-architecture.md"]
+      },
+      "id": "TASK-015",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T19:05:01.030Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Must verify command behavior matches existing functionality",
+      "title": "Update /decide-architecture command to use CLI",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: DecisionEngine exported from src/lib/index.ts",
+        "AC2: TypeScript types are exported correctly",
+        "AC3: Library can be imported with 'import { DecisionEngine } from \"vtm-cli/lib\"'",
+        "AC4: API documentation updated to show exported classes"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T18:54:27.255Z",
+      "dependencies": ["TASK-012"],
+      "description": "Export DecisionEngine class from src/lib/index.ts to make it available for programmatic use. This allows other tools to import and use the decision engine as a library.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["src/lib/index.ts"]
+      },
+      "id": "TASK-016",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T18:52:29.095Z",
+      "status": "completed",
+      "test_strategy": "Unit",
+      "test_strategy_rationale": "Simple export verification with import test",
+      "title": "Add DecisionEngine to lib exports",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: 'vtm:analyze' entry added to registry.json",
+        "AC2: Entry includes correct metadata (description, version, location)",
+        "AC3: Dependencies properly linked to decision-engine",
+        "AC4: Registry validation passes"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T19:04:13.816Z",
+      "dependencies": ["TASK-013"],
+      "description": "Add the new 'vtm analyze' command to .claude/registry.json so it's properly indexed and discoverable by the component registry system.",
+      "estimated_hours": 0.25,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/registry.json"]
+      },
+      "id": "TASK-017",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T19:02:24.422Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Simple registry update verified by running /registry-scan",
+      "title": "Update registry.json with analyze command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: All unit tests pass (100% of TDD tests green)",
+        "AC2: 'vtm analyze vtm' runs successfully and produces output",
+        "AC3: 'vtm analyze plan --suggest-refactoring' runs successfully",
+        "AC4: Output format matches expected structure",
+        "AC5: Pattern matching produces relevant recommendations"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T19:09:30.286Z",
+      "dependencies": ["TASK-013", "TASK-014", "TASK-016"],
+      "description": "Perform comprehensive end-to-end testing of the refactored decision engine by analyzing the 'vtm' and 'plan' domains. Verify all functionality works correctly after the migration and TDD implementation.",
+      "estimated_hours": 0.75,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": []
+      },
+      "id": "TASK-018",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T19:07:47.417Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "End-to-end verification of complete refactored system with real use cases",
+      "title": "End-to-end testing with real domains",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: CLAUDE.md updated with new file locations",
+        "AC2: 'vtm analyze' command documented in Build & Development Commands section",
+        "AC3: DecisionEngine mentioned in Core Components section",
+        "AC4: Architecture patterns location documented",
+        "AC5: TDD test coverage and test running instructions documented"
+      ],
+      "adr_source": "planning-session/decision-engine-refactor",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T19:12:02.190Z",
+      "dependencies": ["TASK-018"],
+      "description": "Update the project documentation in CLAUDE.md to reflect the new location of decision-engine.ts, document the vtm analyze command, and describe the TDD test coverage.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["CLAUDE.md"]
+      },
+      "id": "TASK-019",
+      "risk": "low",
+      "spec_source": "planning-session/decision-engine-refactor",
+      "started_at": "2025-10-29T19:10:52.155Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Documentation update verified by review",
+      "title": "Update CLAUDE.md with DecisionEngine location and testing",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: VTMSession class created in src/lib/vtm-session.ts",
+        "AC2: Can set and get current task ID",
+        "AC3: State persists to .vtm-session file",
+        "AC4: Can clear current task when completed",
+        "AC5: Session state is project-specific (uses cwd)"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:13:03.541Z",
+      "dependencies": [],
+      "description": "Implement session state management to remember the current task a user is working on. This eliminates the need to re-type task IDs and enables smart workflow commands. Store state in a .vtm-session file in the project root.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [
+          "src/lib/vtm-session.ts",
+          "src/lib/__tests__/vtm-session.test.ts"
+        ],
+        "delete": [],
+        "modify": [".gitignore"]
+      },
+      "id": "TASK-020",
+      "risk": "medium",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:08:31.294Z",
+      "status": "completed",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Core state management requires tests to ensure reliability - write tests first to define expected behavior",
+      "title": "Add session state tracking for current task",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: /vtm:work <task-id> command exists in .claude/commands/vtm/work.md",
+        "AC2: Command shows task context automatically",
+        "AC3: Command marks task as in-progress",
+        "AC4: Command sets task as current in session",
+        "AC5: Helpful output shows next steps and /vtm:done usage"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:18:59.166Z",
+      "dependencies": ["TASK-020"],
+      "description": "Create new /vtm:work command that combines context display and task starting into one step. Automatically sets the task as current and shows context, eliminating the need for separate /vtm:context and /vtm:start calls.",
+      "estimated_hours": 1.5,
+      "files": {
+        "create": [".claude/commands/vtm/work.md"],
+        "delete": [],
+        "modify": []
+      },
+      "id": "TASK-021",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": null,
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Slash command integration tested manually, depends on session state unit tests",
+      "title": "Create /vtm:work slash command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: /vtm:done command exists in .claude/commands/vtm/done.md",
+        "AC2: Command completes current task when no ID provided",
+        "AC3: Command accepts optional task ID to complete specific task",
+        "AC4: Command clears current task from session",
+        "AC5: Command shows next available tasks after completion",
+        "AC6: Error handling when no current task and no ID provided"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:26:26.116Z",
+      "dependencies": ["TASK-020"],
+      "description": "Create new /vtm:done command that completes the current task without requiring task ID. If a task ID is provided, it completes that specific task. After completion, shows next available tasks automatically.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [".claude/commands/vtm/done.md"],
+        "delete": [],
+        "modify": []
+      },
+      "id": "TASK-022",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:21:05.735Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Slash command with session integration, tested manually",
+      "title": "Create /vtm:done slash command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Command detects if user hasn't run /vtm:context for this task",
+        "AC2: Shows warning: 'Consider running /vtm:work instead for context + start'",
+        "AC3: Detects if task is already current task (duplicate start)",
+        "AC4: Allows --force flag to bypass hints",
+        "AC5: All existing functionality preserved"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:34:54.043Z",
+      "dependencies": ["TASK-020"],
+      "description": "Update /vtm:start to detect when user hasn't viewed context yet and provide helpful guidance. Check if user is starting a task they're already working on (duplicate start).",
+      "estimated_hours": 0.75,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/commands/vtm/start.md"]
+      },
+      "id": "TASK-023",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:28:37.947Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Behavior enhancement to existing command, tested manually",
+      "title": "Add smart hints to /vtm:start command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Command detects if task status is 'pending' (never started)",
+        "AC2: Shows warning: 'This task was never started. Use /vtm:start first or /vtm:work'",
+        "AC3: Detects if completing different task than current task",
+        "AC4: Asks: 'Complete TASK-X instead of current TASK-Y? (y/n)'",
+        "AC5: Allows --force flag to bypass prompts",
+        "AC6: All existing functionality preserved"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:38:22.476Z",
+      "dependencies": ["TASK-020"],
+      "description": "Update /vtm:complete to detect common mistakes like completing a task that was never started, or completing a different task than the current one. Provide helpful guidance.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/commands/vtm/complete.md"]
+      },
+      "id": "TASK-024",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:35:28.468Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Enhancement to existing command with new validation logic",
+      "title": "Add smart hints to /vtm:complete command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Command shows hint: 'To view context AND start, use /vtm:work TASK-X'",
+        "AC2: Shows task status (pending/in-progress/completed)",
+        "AC3: If task is already current task, shows: 'This is your current task'",
+        "AC4: Hint is subtle and doesn't clutter output",
+        "AC5: All existing functionality preserved"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:41:10.838Z",
+      "dependencies": ["TASK-020"],
+      "description": "Update /vtm:context to suggest using /vtm:work if the user wants to start working immediately. Show current task status if it's already started.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/commands/vtm/context.md"]
+      },
+      "id": "TASK-025",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:39:00.383Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Enhancement to existing command, tested manually",
+      "title": "Add smart hints to /vtm:context command",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Output includes: 'Quick start: /vtm:work TASK-X'",
+        "AC2: Shows current task if one exists: 'Currently working on: TASK-Y'",
+        "AC3: Hint section shows both old and new workflow options",
+        "AC4: Output remains clean and not overwhelming",
+        "AC5: All existing functionality preserved"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:43:54.654Z",
+      "dependencies": ["TASK-020", "TASK-021"],
+      "description": "Update /vtm:next output to guide users on the new workflow commands. Suggest /vtm:work instead of separate context + start steps.",
+      "estimated_hours": 0.5,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/commands/vtm/next.md"]
+      },
+      "id": "TASK-026",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:42:17.816Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "Enhancement to existing command output",
+      "title": "Update /vtm:next to show workflow hints",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: New commands documented in VTM CLI section",
+        "AC2: Workflow examples updated to show /vtm:work and /vtm:done",
+        "AC3: Session state concept explained",
+        "AC4: Both simplified and advanced workflows documented",
+        "AC5: Migration guide for users of old workflow"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:46:33.887Z",
+      "dependencies": [
+        "TASK-021",
+        "TASK-022",
+        "TASK-023",
+        "TASK-024",
+        "TASK-025",
+        "TASK-026"
+      ],
+      "description": "Document the new workflow commands (/vtm:work, /vtm:done) and smart hints in CLAUDE.md. Update workflow examples to show both simple and advanced usage patterns.",
+      "estimated_hours": 0.75,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": ["CLAUDE.md"]
+      },
+      "id": "TASK-027",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:44:52.175Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Documentation update verified by review",
+      "title": "Update CLAUDE.md with new workflow commands",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: vtm:work entry added to registry.json",
+        "AC2: vtm:done entry added to registry.json",
+        "AC3: Entries include correct metadata and dependencies",
+        "AC4: Registry validation passes",
+        "AC5: Dependencies link to session state"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:48:42.175Z",
+      "dependencies": ["TASK-021", "TASK-022"],
+      "description": "Add the new /vtm:work and /vtm:done commands to .claude/registry.json for proper indexing and discoverability.",
+      "estimated_hours": 0.25,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": [".claude/registry.json"]
+      },
+      "id": "TASK-028",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:47:07.327Z",
+      "status": "completed",
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Registry update verified by /registry-scan",
+      "title": "Update registry.json with new VTM commands",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
+      }
+    },
+    {
+      "acceptance_criteria": [
+        "AC1: Complete workflow /vtm:work → work → /vtm:done succeeds",
+        "AC2: Smart hints appear in appropriate situations",
+        "AC3: Session state persists across command invocations",
+        "AC4: Error handling works for edge cases (no current task, invalid task, etc.)",
+        "AC5: Old workflow (/vtm:context, /vtm:start, /vtm:complete) still works"
+      ],
+      "adr_source": "user-feedback/workflow-command-order",
+      "blocks": [],
+      "commits": [],
+      "completed_at": "2025-10-29T12:51:42.080Z",
+      "dependencies": [
+        "TASK-021",
+        "TASK-022",
+        "TASK-023",
+        "TASK-024",
+        "TASK-025",
+        "TASK-026"
+      ],
+      "description": "Perform comprehensive testing of the new workflow commands and smart hints. Test both happy path and error cases, verify session state management works correctly.",
+      "estimated_hours": 1,
+      "files": {
+        "create": [],
+        "delete": [],
+        "modify": []
+      },
+      "id": "TASK-029",
+      "risk": "low",
+      "spec_source": "user-feedback/workflow-command-order",
+      "started_at": "2025-10-29T12:49:12.669Z",
+      "status": "completed",
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "End-to-end verification of complete workflow improvements",
+      "title": "End-to-end testing of new workflow",
+      "validation": {
+        "ac_verified": [],
+        "tests_pass": false
       }
     }
-  ]
+  ],
+  "version": "1.0.0"
 }

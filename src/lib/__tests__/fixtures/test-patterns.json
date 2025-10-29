@@ -1,0 +1,42 @@
+{
+  "data-visualization": {
+    "commands": [
+      {
+        "args": [],
+        "complexity": "medium",
+        "description": "Show analytics dashboard",
+        "name": "dashboard"
+      }
+    ],
+    "confidence": 0.85,
+    "description": "Pattern for visualizing data and analytics",
+    "hooks": [],
+    "keywords": ["chart", "graph", "dashboard", "analytics", "visualize"],
+    "mcps": [],
+    "name": "data-visualization",
+    "skills": []
+  },
+  "task-management": {
+    "commands": [
+      {
+        "args": [],
+        "complexity": "low",
+        "description": "Get next task",
+        "name": "next"
+      },
+      {
+        "args": ["task-id"],
+        "complexity": "low",
+        "description": "Mark task complete",
+        "name": "complete"
+      }
+    ],
+    "confidence": 0.9,
+    "description": "Pattern for managing tasks and workflows",
+    "hooks": [],
+    "keywords": ["task", "todo", "workflow", "manage", "track"],
+    "mcps": [],
+    "name": "task-management",
+    "skills": []
+  }
+}

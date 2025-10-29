@@ -57,6 +57,7 @@ Creates detailed test reports with results, metrics, and recommendations.
 ### Parameters
 
 **Name** (required)
+
 - Component to test (slash command, skill, MCP server, hook, agent)
 - Format: `domain:command` or `plugin-name` or `component-id`
 - Examples: `pm:next`, `pm-expert`, `notion-mcp`, `deploy-hook`
@@ -64,33 +65,39 @@ Creates detailed test reports with results, metrics, and recommendations.
 ### Options
 
 **--args "arg1 arg2"**
+
 - Arguments to pass to the command
 - Required for commands with parameters
 - Example: `--args "TASK-001 --verbose"`
 
 **--mode {quick|comprehensive}**
+
 - Test depth level
 - `quick`: Smoke test only (~5 seconds)
 - `comprehensive`: All test types (30-60 seconds)
 - Default: `quick`
 
 **--expected "value"**
+
 - Expected output for validation
 - Test passes if output contains this string
 - Case-insensitive matching
 - Example: `--expected "Ready Tasks"`
 
 **--timeout {seconds}**
+
 - Maximum execution time (1-300 seconds)
 - Default: 30
 - Useful for long-running operations
 
 **--env KEY=value**
+
 - Environment variables (repeatable)
 - Sets variables for component execution
 - Example: `--env "API_KEY=xxx" --env "REGION=us-west"`
 
 **--report**
+
 - Generate HTML test report
 - Saves to `.claude/test-results/report-{timestamp}.html`
 - Includes all metrics and recommendations
@@ -123,15 +130,15 @@ Output:
 ✅ FUNCTIONAL TEST (passed)
   Output contains: "Ready Tasks" ✓
   Response time: 245ms
-  
+
 ✅ INTEGRATION TEST (passed)
   Dependencies resolved: 2/2
   Child commands: pm:start, pm:complete
-  
+
 ✅ PERFORMANCE TEST (passed)
   Execution time: 245ms (target: 5000ms) ✓
   Token usage: ~450 (estimate)
-  
+
 ✅ QUALITY TEST (passed)
   Documentation: complete ✓
   Metadata: complete ✓
@@ -155,10 +162,10 @@ Output:
 ✅ FUNCTIONAL TEST (passed)
   Input: TASK-001
   Output contains: "dependencies" ✓
-  
+
 ✅ INTEGRATION TEST (passed)
   Resolved dependency: TASK-001 found
-  
+
 [... additional tests ...]
 ```
 
@@ -173,7 +180,7 @@ Output:
   Component exists: pm-expert
   Type: skill
   Trigger phrases: "what should I work on?", "current status"
-  
+
 🔄 FUNCTIONAL TEST (skipped - use --mode comprehensive)
 ```
 
@@ -187,22 +194,22 @@ Output:
 ✅ SMOKE TEST (passed)
   Component exists: notion-mcp
   Type: mcp-server
-  
+
 ✅ FUNCTIONAL TEST (passed)
   Connection: established
   Available operations: 8
-  
+
 ✅ INTEGRATION TEST (passed)
   Authentication: valid
   API version: 1.0
-  
+
 ✅ PERFORMANCE TEST (passed)
   Response time: 120ms
-  
+
 ✅ QUALITY TEST (passed)
   Documentation: complete
   Error handling: yes
-  
+
 📊 Summary
 ━━━━━━━━━━━━━━━━
 All tests passed. Ready to use.
@@ -227,6 +234,7 @@ Output:
 **Purpose:** Verify component exists and can be invoked
 
 **Checks:**
+
 - Component file exists at expected location
 - Component can be parsed (syntax valid)
 - Component metadata is present and valid
@@ -241,6 +249,7 @@ Output:
 **Purpose:** Verify component produces expected output
 
 **Checks:**
+
 - Component executes without errors
 - Output matches expected value (if provided)
 - Response contains no error messages
@@ -255,6 +264,7 @@ Output:
 **Purpose:** Verify component works with dependencies
 
 **Checks:**
+
 - All dependencies are resolvable
 - Dependencies execute successfully
 - Data flows correctly between components
@@ -269,6 +279,7 @@ Output:
 **Purpose:** Verify performance is within acceptable limits
 
 **Checks:**
+
 - Execution time under timeout
 - Estimated token usage reasonable
 - Memory usage acceptable
@@ -283,6 +294,7 @@ Output:
 **Purpose:** Verify documentation and metadata standards
 
 **Checks:**
+
 - Component has documentation
 - Metadata is complete
 - Error messages are helpful
@@ -358,7 +370,7 @@ Status: ❌ FAILED
   Expected: "Ready Tasks"
   Got: "Error: Task file not found"
   Severity: High
-  
+
 [Quality Test]
   Warning: Documentation missing
   File: .claude/commands/pm-next.md
@@ -369,13 +381,13 @@ Status: ❌ FAILED
 ────────────────────────────────
 1. Check if vtm.json exists in your working directory
    $ ls -la vtm.json
-   
+
 2. Verify VTM file is valid JSON
    $ jq . vtm.json
-   
+
 3. Add documentation to pm-next
    $ cat > .claude/commands/pm-next.md
-   
+
 4. Run test again
    $ /test:command pm:next --mode comprehensive
 
@@ -445,15 +457,15 @@ Create test cases in `.claude/test-templates/{component-id}.json`:
   "component_id": "pm:next",
   "test_cases": [
     {
-      "name": "basic_smoke_test",
+      "expected": "Ready Tasks",
       "mode": "quick",
-      "expected": "Ready Tasks"
+      "name": "basic_smoke_test"
     },
     {
-      "name": "with_filters",
-      "mode": "comprehensive",
       "args": "--number 10",
-      "expected": "Tasks"
+      "expected": "Tasks",
+      "mode": "comprehensive",
+      "name": "with_filters"
     }
   ]
 }
@@ -462,6 +474,7 @@ Create test cases in `.claude/test-templates/{component-id}.json`:
 ## Common Issues & Solutions
 
 ### Test Fails: "Component not found"
+
 ```bash
 # Verify component exists
 /registry:scan
@@ -474,6 +487,7 @@ cat .claude/commands/component-name.md | head -10
 ```
 
 ### Test Fails: "Expected output not found"
+
 ```bash
 # Run without expected filter to see actual output
 /test:command pm:next --mode comprehensive
@@ -484,6 +498,7 @@ cat .claude/commands/component-name.md | head -10
 ```
 
 ### Test Fails: "Dependency resolution failed"
+
 ```bash
 # Check dependency exists
 /test:command {dependency-name} --mode quick
@@ -496,6 +511,7 @@ grep "dependencies:" .claude/commands/component.md
 ```
 
 ### Performance Test Fails
+
 ```bash
 # Run with longer timeout
 /test:command pm:next --timeout 60 --mode comprehensive
@@ -540,12 +556,14 @@ Typical testing workflow:
 ## Implementation Details
 
 Test execution framework:
+
 - `.claude/lib/test-framework.ts` - Core testing engine
 - `.claude/lib/test-templates.json` - Test case library
 - `.claude/test-results/` - Test result storage
 - `.claude/lib/registry.json` - Component registry
 
 Test types:
+
 - Smoke: Fast validation (100-500ms)
 - Functional: Output verification (1-5s)
 - Integration: Dependency testing (2-10s)
@@ -553,6 +571,7 @@ Test types:
 - Quality: Standards checking (500ms-2s)
 
 Report formats:
+
 - Console: Inline results
 - HTML: Detailed report with metrics
 - JSON: Machine-readable results
@@ -565,55 +584,55 @@ Report formats:
 Execute the test framework to validate the component:
 
 ```javascript
-const { TestFramework } = require('./.claude/lib/test-framework');
+const { TestFramework } = require("./.claude/lib/test-framework")
 
 // Parse arguments
-const componentName = ARGUMENTS[0];
+const componentName = ARGUMENTS[0]
 if (!componentName) {
-  console.error('❌ Component name required');
-  console.error('Usage: /test:command {name} [options]');
-  process.exit(1);
+  console.error("❌ Component name required")
+  console.error("Usage: /test:command {name} [options]")
+  process.exit(1)
 }
 
 // Parse options
 const options = {
-  mode: 'quick',  // Default mode
-  args: '',
-  expected: '',
+  mode: "quick", // Default mode
+  args: "",
+  expected: "",
   timeout: 30,
   envVars: [],
-  generateReport: false
-};
+  generateReport: false,
+}
 
 // Parse command line options
 for (let i = 1; i < ARGUMENTS.length; i++) {
-  const arg = ARGUMENTS[i];
+  const arg = ARGUMENTS[i]
 
-  if (arg === '--mode' && ARGUMENTS[i + 1]) {
-    options.mode = ARGUMENTS[i + 1];
-    i++;
-  } else if (arg === '--args' && ARGUMENTS[i + 1]) {
-    options.args = ARGUMENTS[i + 1];
-    i++;
-  } else if (arg === '--expected' && ARGUMENTS[i + 1]) {
-    options.expected = ARGUMENTS[i + 1];
-    i++;
-  } else if (arg === '--timeout' && ARGUMENTS[i + 1]) {
-    options.timeout = parseInt(ARGUMENTS[i + 1]);
-    i++;
-  } else if (arg === '--env' && ARGUMENTS[i + 1]) {
-    options.envVars.push(ARGUMENTS[i + 1]);
-    i++;
-  } else if (arg === '--report') {
-    options.generateReport = true;
+  if (arg === "--mode" && ARGUMENTS[i + 1]) {
+    options.mode = ARGUMENTS[i + 1]
+    i++
+  } else if (arg === "--args" && ARGUMENTS[i + 1]) {
+    options.args = ARGUMENTS[i + 1]
+    i++
+  } else if (arg === "--expected" && ARGUMENTS[i + 1]) {
+    options.expected = ARGUMENTS[i + 1]
+    i++
+  } else if (arg === "--timeout" && ARGUMENTS[i + 1]) {
+    options.timeout = parseInt(ARGUMENTS[i + 1])
+    i++
+  } else if (arg === "--env" && ARGUMENTS[i + 1]) {
+    options.envVars.push(ARGUMENTS[i + 1])
+    i++
+  } else if (arg === "--report") {
+    options.generateReport = true
   }
 }
 
 // Initialize test framework
 const testFramework = new TestFramework({
   basePath: process.cwd(),
-  verbose: options.mode === 'comprehensive'
-});
+  verbose: options.mode === "comprehensive",
+})
 
 // Run tests
 try {
@@ -623,27 +642,27 @@ try {
     expectedOutput: options.expected,
     timeout: options.timeout,
     env: options.envVars.reduce((acc, envVar) => {
-      const [key, value] = envVar.split('=');
-      acc[key] = value;
-      return acc;
+      const [key, value] = envVar.split("=")
+      acc[key] = value
+      return acc
     }, {}),
-    generateReport: options.generateReport
-  });
+    generateReport: options.generateReport,
+  })
 
   // Display results
   if (results.passed) {
-    console.log('\n✅ All tests passed');
+    console.log("\n✅ All tests passed")
   } else {
-    console.error('\n❌ Some tests failed');
-    process.exit(1);
+    console.error("\n❌ Some tests failed")
+    process.exit(1)
   }
 
   // Show report location if generated
   if (options.generateReport && results.reportPath) {
-    console.log(`\n📄 Report generated: ${results.reportPath}`);
+    console.log(`\n📄 Report generated: ${results.reportPath}`)
   }
 } catch (error) {
-  console.error('❌ Test execution failed:', error.message);
-  process.exit(1);
+  console.error("❌ Test execution failed:", error.message)
+  process.exit(1)
 }
 ```

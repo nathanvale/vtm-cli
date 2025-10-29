@@ -60,7 +60,40 @@ if [[ ! -f "vtm.json" ]]; then
     exit 1
 fi
 
+# AC2: Get task status
+TASK_STATUS=$(vtm task "$TASK_ID" 2>/dev/null | grep "^Status:" | awk '{print $2}')
+
+if [[ -z "$TASK_STATUS" ]]; then
+    echo "❌ Error: Task $TASK_ID not found"
+    echo ""
+    echo "Check available tasks: /vtm:list"
+    exit 1
+fi
+
+# AC3: Check if this is the current task
+IS_CURRENT_TASK=false
+if [[ -f ".vtm-session" ]]; then
+    CURRENT_TASK=$(cat .vtm-session 2>/dev/null | grep -o '"currentTask":"[^"]*"' | cut -d'"' -f4)
+    if [[ "$CURRENT_TASK" == "$TASK_ID" ]]; then
+        IS_CURRENT_TASK=true
+    fi
+fi
+
 echo "📋 Task Context: $TASK_ID"
+
+# AC2: Show task status
+if [[ "$TASK_STATUS" == "completed" ]]; then
+    echo "Status: ✅ completed"
+elif [[ "$TASK_STATUS" == "in-progress" ]]; then
+    echo "Status: ▶️  in-progress"
+    # AC3: Show if this is current task
+    if [[ "$IS_CURRENT_TASK" == true ]]; then
+        echo "📌 This is your current task"
+    fi
+elif [[ "$TASK_STATUS" == "pending" ]]; then
+    echo "Status: ⏸️  pending"
+fi
+
 echo ""
 
 # Call vtm context command
@@ -72,6 +105,12 @@ fi
 
 echo ""
 echo "💡 Next steps:"
+
+# AC1 & AC4: Smart hint for /vtm:work (subtle placement)
+if [[ "$TASK_STATUS" == "pending" ]]; then
+    echo "   • Quick start: /vtm:work $TASK_ID (context + start in one step)"
+fi
+
 echo "   • Copy context above"
 echo "   • Use with PROMPT 2 (prompts/2-execute-task.md)"
 echo "   • Implement with TDD based on test_strategy"
@@ -81,12 +120,14 @@ echo "   • Mark complete: /vtm:complete $TASK_ID"
 ## Token Efficiency
 
 VTM achieves 99% token reduction by:
+
 - Only including the target task
 - Resolving dependencies (no need to load entire VTM)
 - Minimal formatting
 - Compact mode for ultra-low token usage
 
 **Context Modes:**
+
 - `minimal`: ~2000 tokens (full context with dependencies)
 - `compact`: ~500 tokens (ultra-minimal for simple tasks)
 

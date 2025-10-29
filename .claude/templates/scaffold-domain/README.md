@@ -1,15 +1,16 @@
 # Scaffold Domain Template Library
 
-**Version:** 1.0.0
-**Status:** Production Ready
-**Location:** `.claude/templates/scaffold-domain/`
-**Purpose:** Complete template system for the `/scaffold:domain` command
+**Version:** 1.0.0 **Status:** Production Ready **Location:**
+`.claude/templates/scaffold-domain/` **Purpose:** Complete template system for
+the `/scaffold:domain` command
 
-This directory contains all templates and documentation needed to automatically generate complete domain structures in Claude Code.
+This directory contains all templates and documentation needed to automatically
+generate complete domain structures in Claude Code.
 
 ## What Is This?
 
-A comprehensive template library that enables the `/scaffold:domain` command to transform design specifications into fully-functional Claude Code domains with:
+A comprehensive template library that enables the `/scaffold:domain` command to
+transform design specifications into fully-functional Claude Code domains with:
 
 - Slash commands for domain operations
 - Auto-discovery skills with trigger phrases
@@ -22,12 +23,15 @@ A comprehensive template library that enables the `/scaffold:domain` command to 
 
 ### For Users Scaffolding Domains
 
-**Start here:** Read [EXAMPLE-GENERATED-DOMAIN.md](./EXAMPLE-GENERATED-DOMAIN.md)
+**Start here:** Read
+[EXAMPLE-GENERATED-DOMAIN.md](./EXAMPLE-GENERATED-DOMAIN.md)
+
 - See what files get generated
 - Understand the structure
 - Learn the workflow
 
 **Reference:** [INDEX.md](./INDEX.md)
+
 - Complete description of each template
 - Placeholder reference
 - Validation checklists
@@ -35,6 +39,7 @@ A comprehensive template library that enables the `/scaffold:domain` command to 
 ### For Developers Building the Scaffold Command
 
 **Implementation:** [IMPLEMENTATION-GUIDE.md](./IMPLEMENTATION-GUIDE.md)
+
 - Technical architecture
 - Code examples for each step
 - Error handling strategies
@@ -47,52 +52,58 @@ A comprehensive template library that enables the `/scaffold:domain` command to 
 All 6 template types are included:
 
 ### 1. Command Template
-**File:** `command-template.md`
-**Generates:** `.claude/commands/{domain}/{action}.md`
-**Count:** One per operation in design spec
-**Size:** ~4.2 KB each
 
-Individual slash commands for domain operations with implementation stub, error handling, and customization guidance.
+**File:** `command-template.md` **Generates:**
+`.claude/commands/{domain}/{action}.md` **Count:** One per operation in design
+spec **Size:** ~4.2 KB each
+
+Individual slash commands for domain operations with implementation stub, error
+handling, and customization guidance.
 
 ### 2. Skill Template
-**File:** `skill-template.md`
-**Generates:** `.claude/skills/{domain}-expert/SKILL.md`
-**Count:** One per domain (if auto-discovery enabled)
-**Size:** ~7.5 KB
 
-Auto-discovery skill with trigger phrases that suggests commands automatically based on natural language.
+**File:** `skill-template.md` **Generates:**
+`.claude/skills/{domain}-expert/SKILL.md` **Count:** One per domain (if
+auto-discovery enabled) **Size:** ~7.5 KB
+
+Auto-discovery skill with trigger phrases that suggests commands automatically
+based on natural language.
 
 ### 3. MCP Server Template
-**File:** `mcp-template.json`
-**Generates:** `.claude/mcp-servers/{domain}-{system}/mcp.json`
-**Count:** One per external system in design
-**Size:** ~14 KB each
 
-External service integration configuration with operations, auth setup, error handling, and security guidance.
+**File:** `mcp-template.json` **Generates:**
+`.claude/mcp-servers/{domain}-{system}/mcp.json` **Count:** One per external
+system in design **Size:** ~14 KB each
+
+External service integration configuration with operations, auth setup, error
+handling, and security guidance.
 
 ### 4. Pre-Commit Hook Template
-**File:** `hook-pre-commit-template.sh`
-**Generates:** `.claude/hooks/pre-commit/{domain}-validate.sh`
-**Count:** One per domain (if automation enabled)
-**Size:** ~7.1 KB
 
-Git pre-commit hook that validates commits according to domain rules before allowing them through.
+**File:** `hook-pre-commit-template.sh` **Generates:**
+`.claude/hooks/pre-commit/{domain}-validate.sh` **Count:** One per domain (if
+automation enabled) **Size:** ~7.1 KB
+
+Git pre-commit hook that validates commits according to domain rules before
+allowing them through.
 
 ### 5. Post-Tool-Use Hook Template
-**File:** `hook-post-tool-use-template.sh`
-**Generates:** `.claude/hooks/post-tool-use/{domain}-handler.sh`
-**Count:** One per domain (if automation enabled)
-**Size:** ~8.8 KB
 
-Automatic action hook that triggers domain-specific workflows based on Claude Code tool usage.
+**File:** `hook-post-tool-use-template.sh` **Generates:**
+`.claude/hooks/post-tool-use/{domain}-handler.sh` **Count:** One per domain (if
+automation enabled) **Size:** ~8.8 KB
+
+Automatic action hook that triggers domain-specific workflows based on Claude
+Code tool usage.
 
 ### 6. Plugin Manifest & README Templates
-**Files:** `plugin-template.yaml` + `plugin-readme-template.md`
-**Generates:** `.claude/plugins/{domain}-automation/plugin.yaml` + `README.md`
-**Count:** One set per domain
-**Size:** ~11 KB + ~12 KB
 
-Complete plugin package with manifest linking all components and user-facing documentation with setup, customization, and troubleshooting.
+**Files:** `plugin-template.yaml` + `plugin-readme-template.md` **Generates:**
+`.claude/plugins/{domain}-automation/plugin.yaml` + `README.md` **Count:** One
+set per domain **Size:** ~11 KB + ~12 KB
+
+Complete plugin package with manifest linking all components and user-facing
+documentation with setup, customization, and troubleshooting.
 
 ## Placeholder System
 
@@ -107,7 +118,8 @@ All templates use clear placeholders:
 {trigger_phrase_*}    → skill trigger phrases
 ```
 
-See [INDEX.md - Placeholder Reference](./INDEX.md#placeholder-reference) for complete list.
+See [INDEX.md - Placeholder Reference](./INDEX.md#placeholder-reference) for
+complete list.
 
 ## How the Scaffold Command Uses These
 
@@ -142,7 +154,8 @@ Show summary and next steps
 
 - **Proper Frontmatter:** Metadata for identification and configuration
 - **Clear Structure:** Logical sections with explanatory comments
-- **Customization Guidance:** "TODO" and "CUSTOMIZE" comments show what to modify
+- **Customization Guidance:** "TODO" and "CUSTOMIZE" comments show what to
+  modify
 - **Example Implementations:** Multiple patterns to choose from
 - **Error Handling:** How to gracefully handle failures
 - **Cross-References:** Links to related components
@@ -204,6 +217,7 @@ Show summary and next steps
 Each generated file must pass validation:
 
 ### Commands
+
 ```bash
 ✓ Frontmatter present and valid
 ✓ Implementation stub with TODO comments
@@ -213,6 +227,7 @@ Each generated file must pass validation:
 ```
 
 ### Skills
+
 ```bash
 ✓ Trigger phrases are specific
 ✓ All referenced commands exist
@@ -221,6 +236,7 @@ Each generated file must pass validation:
 ```
 
 ### MCP Servers
+
 ```bash
 ✓ Connection configuration valid
 ✓ Auth type matches service
@@ -230,6 +246,7 @@ Each generated file must pass validation:
 ```
 
 ### Hooks
+
 ```bash
 ✓ Bash script syntax valid
 ✓ Proper error handling
@@ -238,6 +255,7 @@ Each generated file must pass validation:
 ```
 
 ### Plugins
+
 ```bash
 ✓ All component paths correct
 ✓ Command references exist
@@ -251,6 +269,7 @@ Each generated file must pass validation:
 ### Scenario 1: Basic Domain (like PM)
 
 Template Usage:
+
 1. Create 3-5 commands from command-template
 2. Create 1 skill from skill-template
 3. Create 1 MCP for external system
@@ -261,6 +280,7 @@ Result: Full workflow automation with external integration
 ### Scenario 2: Complex Domain (like DevOps)
 
 Template Usage:
+
 1. Create 5-8 commands from command-template
 2. Create 1 skill from skill-template
 3. Create 2-3 MCPs for multiple systems
@@ -271,6 +291,7 @@ Result: Sophisticated automation with multiple integrations
 ### Scenario 3: Minimal Domain (like Testing)
 
 Template Usage:
+
 1. Create 2-3 commands from command-template
 2. Skip skill (no auto-discovery needed)
 3. Skip MCPs (no external integration)
@@ -299,7 +320,9 @@ Result: Simple command-based workflow
 3. Add team collaboration features
 4. Integrate new external systems
 
-See [INDEX.md - Customization Scenarios](./INDEX.md#common-customization-scenarios) for details.
+See
+[INDEX.md - Customization Scenarios](./INDEX.md#common-customization-scenarios)
+for details.
 
 ## Performance Notes
 
@@ -313,6 +336,7 @@ See [INDEX.md - Customization Scenarios](./INDEX.md#common-customization-scenari
 ## Security Considerations
 
 All templates:
+
 - Never include hardcoded secrets
 - Use environment variables for credentials
 - Provide security best practices
@@ -320,12 +344,14 @@ All templates:
 - Include security checklists
 
 MCP templates specifically:
+
 - Guide auth method selection
 - Document scope/permission requirements
 - Warn about credential exposure
 - Recommend credential rotation
 
 Hook templates:
+
 - Cannot execute arbitrary code
 - Can be reviewed before installation
 - Can be bypassed if needed (--no-verify)
@@ -346,12 +372,14 @@ Initial template library with all 6 template types:
 - Plugin README template
 
 Comprehensive documentation:
+
 - INDEX.md - Complete template reference
 - IMPLEMENTATION-GUIDE.md - Developer guide
 - EXAMPLE-GENERATED-DOMAIN.md - Real example
 - This README
 
-All templates are feature-complete with examples, error handling, and customization guidance.
+All templates are feature-complete with examples, error handling, and
+customization guidance.
 
 ## Dependencies
 
@@ -373,34 +401,39 @@ Before using in production:
 5. Run `/registry:scan test`
 6. Verify integration
 
-See [IMPLEMENTATION-GUIDE.md - Testing](./IMPLEMENTATION-GUIDE.md#testing-the-implementation) for test cases.
+See
+[IMPLEMENTATION-GUIDE.md - Testing](./IMPLEMENTATION-GUIDE.md#testing-the-implementation)
+for test cases.
 
 ## Support
 
 ### Getting Help
 
-1. Read [EXAMPLE-GENERATED-DOMAIN.md](./EXAMPLE-GENERATED-DOMAIN.md) to see what's generated
+1. Read [EXAMPLE-GENERATED-DOMAIN.md](./EXAMPLE-GENERATED-DOMAIN.md) to see
+   what's generated
 2. Check [INDEX.md](./INDEX.md) for complete template reference
-3. Review [IMPLEMENTATION-GUIDE.md](./IMPLEMENTATION-GUIDE.md) for developer questions
+3. Review [IMPLEMENTATION-GUIDE.md](./IMPLEMENTATION-GUIDE.md) for developer
+   questions
 4. Read individual template files for specific customization
 
 ### Common Issues
 
-**Q: Templates have placeholders that aren't replaced**
-A: Placeholder format is `{PLACEHOLDER}` - check spelling and braces
+**Q: Templates have placeholders that aren't replaced** A: Placeholder format is
+`{PLACEHOLDER}` - check spelling and braces
 
-**Q: Generated commands don't work**
-A: They're stubs - implement the TODO sections with your logic
+**Q: Generated commands don't work** A: They're stubs - implement the TODO
+sections with your logic
 
-**Q: MCP connection fails**
-A: Set environment variables and verify credentials at service
+**Q: MCP connection fails** A: Set environment variables and verify credentials
+at service
 
-**Q: Hooks don't trigger**
-A: Check they're installed and executable (`chmod +x`), reload plugins
+**Q: Hooks don't trigger** A: Check they're installed and executable
+(`chmod +x`), reload plugins
 
 ### Reporting Issues
 
 Template library is production-ready. Issues should be reported with:
+
 - Which template is affected
 - What placeholder wasn't replaced
 - What error message was shown
@@ -439,29 +472,32 @@ To improve templates:
 
 ## License
 
-These templates are provided as part of Claude Code infrastructure and follow the same licensing as the main project.
+These templates are provided as part of Claude Code infrastructure and follow
+the same licensing as the main project.
 
 ---
 
 ## Quick Reference
 
-| File | Generates | Count | Use When |
-|------|-----------|-------|----------|
-| command-template.md | .claude/commands/{domain}/{action}.md | Per operation | Creating slash commands |
-| skill-template.md | .claude/skills/{domain}-expert/SKILL.md | 1 per domain | Enabling auto-discovery |
-| mcp-template.json | .claude/mcp-servers/{domain}-{system}/mcp.json | Per system | Integrating external services |
-| hook-pre-commit-template.sh | .claude/hooks/pre-commit/{domain}-validate.sh | 1 per domain | Validating commits |
-| hook-post-tool-use-template.sh | .claude/hooks/post-tool-use/{domain}-handler.sh | 1 per domain | Auto-triggering actions |
-| plugin-template.yaml | .claude/plugins/{domain}-automation/plugin.yaml | 1 per domain | Packaging for sharing |
-| plugin-readme-template.md | .claude/plugins/{domain}-automation/README.md | 1 per domain | User documentation |
+| File                           | Generates                                       | Count         | Use When                      |
+| ------------------------------ | ----------------------------------------------- | ------------- | ----------------------------- |
+| command-template.md            | .claude/commands/{domain}/{action}.md           | Per operation | Creating slash commands       |
+| skill-template.md              | .claude/skills/{domain}-expert/SKILL.md         | 1 per domain  | Enabling auto-discovery       |
+| mcp-template.json              | .claude/mcp-servers/{domain}-{system}/mcp.json  | Per system    | Integrating external services |
+| hook-pre-commit-template.sh    | .claude/hooks/pre-commit/{domain}-validate.sh   | 1 per domain  | Validating commits            |
+| hook-post-tool-use-template.sh | .claude/hooks/post-tool-use/{domain}-handler.sh | 1 per domain  | Auto-triggering actions       |
+| plugin-template.yaml           | .claude/plugins/{domain}-automation/plugin.yaml | 1 per domain  | Packaging for sharing         |
+| plugin-readme-template.md      | .claude/plugins/{domain}-automation/README.md   | 1 per domain  | User documentation            |
 
 ---
 
 **Template Library Ready for Production Use**
 
-All 6 template types are complete, documented, validated, and ready for the `/scaffold:domain` command.
+All 6 template types are complete, documented, validated, and ready for the
+`/scaffold:domain` command.
 
 For more information:
+
 - User view: [EXAMPLE-GENERATED-DOMAIN.md](./EXAMPLE-GENERATED-DOMAIN.md)
 - Reference: [INDEX.md](./INDEX.md)
 - Implementation: [IMPLEMENTATION-GUIDE.md](./IMPLEMENTATION-GUIDE.md)

@@ -35,17 +35,21 @@ You have a command at `.claude/commands/pm/next.md`:
 Get the next PM task from your queue.
 
 ## Usage
+
 /pm:next [filter] [limit]
 
 ## Parameters
+
 - filter: Optional status filter (pending, in-progress, blocked)
 - limit: Max results (default 5)
 
 ## Example
+
 /pm:next pending 10
 ```
 
 At this point:
+
 - ✅ Command works
 - ❌ Claude doesn't auto-suggest it
 - ❌ Not ready to share with team
@@ -55,11 +59,13 @@ At this point:
 You realize users often say "what should I work on?" but don't know about `/pm:next`.
 
 **Run:**
+
 ```bash
 /evolve:add-skill pm:next
 ```
 
 **Interactive:**
+
 ```
 /evolve:add-skill pm:next
 
@@ -91,11 +97,13 @@ Claude suggests /pm:next automatically.
 ```
 
 **What Changed:**
+
 - Created: `.claude/skills/pm-next-discovery/SKILL.md`
 - Modified: `.claude/commands/pm/next.md` (added skill_id)
 - Created: `.claude/history/pm-next.evolution.json`
 
 **New Behavior:**
+
 ```
 User: "I'm ready to start work. What should I do?"
 Claude: "I can help with that! Let me check what's next for you."
@@ -109,6 +117,7 @@ Claude: [runs /pm:next]
 ### Step 3: Package Into Plugin
 
 Now you want to share this with your team. First, you've collected several commands:
+
 - `/pm:next` (with skill)
 - `/pm:review` (review progress)
 - `/pm:context` (get task context)
@@ -117,11 +126,13 @@ Now you want to share this with your team. First, you've collected several comma
 Plus MCP and hooks.
 
 **Run:**
+
 ```bash
 /evolve:to-plugin pm --version 1.0.0
 ```
 
 **Interactive:**
+
 ```
 /evolve:to-plugin pm
 
@@ -156,6 +167,7 @@ Next: Share with team
 ```
 
 **What Changed:**
+
 - Created: `.claude/plugins/pm-automation/` directory with:
   - `plugin.yaml` (complete manifest)
   - `README.md` (user guide)
@@ -166,6 +178,7 @@ Next: Share with team
 - Updated: `.claude/history/pm.evolution.json`
 
 **Sharing:**
+
 ```
 1. Create zip:
    zip -r pm-automation-v1.0.0.zip \
@@ -188,6 +201,7 @@ Next: Share with team
 Made a mistake or want to go back?
 
 **Remove skill:**
+
 ```bash
 /evolve:remove-skill pm:next
 
@@ -196,6 +210,7 @@ Command still works, just manual invocation.
 ```
 
 **Unpackage plugin:**
+
 ```bash
 /evolve:rollback pm to-plugin
 
@@ -205,6 +220,7 @@ Domain still functional.
 ```
 
 **Full history:**
+
 ```bash
 /evolve:rollback pm:next
 
@@ -265,6 +281,7 @@ then users migrate to new split domains.
 ### Using Split Domains
 
 **User gets new structure:**
+
 ```bash
 # Old way (still works, deprecated):
 /pm:next
@@ -288,6 +305,7 @@ You're building a monitoring domain over time:
 ### Week 1: Start Simple
 
 Create basic commands:
+
 ```bash
 /design:domain monitoring "Infrastructure monitoring"
 /scaffold:domain monitoring
@@ -299,6 +317,7 @@ You now have:
 ```
 
 Commands created:
+
 - `/monitor:status` - Check infrastructure status
 - `/monitor:alerts` - View active alerts
 - `/monitor:metrics` - Show key metrics
@@ -379,6 +398,7 @@ Then fix issues and try again.
 ### Scenario: Team Evolves Domain Together
 
 **Monday: Alice Creates Commands**
+
 ```bash
 Alice creates .claude/commands/deploy/
   • start.md - Start deployment
@@ -390,6 +410,7 @@ Team sees them in registry
 ```
 
 **Tuesday: Bob Adds Skill to One Command**
+
 ```bash
 Bob: "Let's make /deploy:start auto-discovered"
 
@@ -403,6 +424,7 @@ Bob:
 ```
 
 **Wednesday: Carol Improves Documentation**
+
 ```bash
 Carol sees commands need better docs
 
@@ -411,6 +433,7 @@ Updates .claude/commands/deploy/*.md
 ```
 
 **Thursday: Team Packages as Plugin**
+
 ```bash
 /evolve:to-plugin deploy --version 1.0.0
 
@@ -424,6 +447,7 @@ Team shares zip with other teams
 ```
 
 **Friday: First Team Using It**
+
 ```bash
 New team installs plugin:
   /install:plugin deploy-automation
@@ -566,6 +590,7 @@ Apply skill addition? → yes
 ### Problem: Skill Has Conflicting Triggers
 
 **Symptom:**
+
 ```
 /evolve:add-skill pm:next
 
@@ -579,6 +604,7 @@ Commands conflict: pm:next vs test:next
 ```
 
 **Solution:**
+
 ```
 Option 1: Use unique triggers
   /evolve:add-skill pm:next
@@ -601,6 +627,7 @@ Option 3: Resolve conflict
 ### Problem: Rollback Says "Rollback Not Available"
 
 **Symptom:**
+
 ```
 /evolve:rollback pm:next
 
@@ -613,6 +640,7 @@ Available versions:
 ```
 
 **Solution:**
+
 ```
 Option 1: Rollback to most recent
   /evolve:rollback pm:next 1.0.1
@@ -630,6 +658,7 @@ Option 3: Manual restore
 ### Problem: Circular Dependencies After Split
 
 **Symptom:**
+
 ```
 /evolve:split pm
 
@@ -642,6 +671,7 @@ Cannot proceed.
 ```
 
 **Solution:**
+
 ```
 Move shared code to avoid cycle:
 
@@ -663,6 +693,7 @@ Option 2: Adjust split boundaries
 ### Problem: Can't Package Domain as Plugin
 
 **Symptom:**
+
 ```
 /evolve:to-plugin pm
 
@@ -677,6 +708,7 @@ Quality score: 4/10 (minimum 5 required)
 ```
 
 **Solution:**
+
 ```
 Address quality issues:
 
@@ -710,6 +742,7 @@ Plugin created successfully!
 ### 1. Evolve Deliberately
 
 **Good:**
+
 ```bash
 # Test first
 /test:command pm:next
@@ -725,6 +758,7 @@ Plugin created successfully!
 ```
 
 **Avoid:**
+
 ```bash
 # Just add skill without testing
 /evolve:add-skill pm:next
@@ -752,6 +786,7 @@ Plugin created successfully!
 ### 3. Communicate Evolution Steps
 
 **Tell your team:**
+
 ```
 Subject: PM Domain Update - Now with Auto-Discovery
 
@@ -813,41 +848,53 @@ rm -rf .claude/commands/pm/
 ## FAQ
 
 ### Q: Can I rollback an evolution?
+
 **A:** Yes! Every evolution is reversible.
+
 ```bash
 /evolve:rollback {component}
 # Shows history and lets you pick version
 ```
 
 ### Q: What if my team uses old invocation after split?
+
 **A:** That's fine! Create shims that forward to new commands:
+
 ```bash
 /pm:next → /pm-core:next (automatically)
 # Old invocation keeps working
 ```
 
 ### Q: Do I need to evolve every component?
+
 **A:** No! Simple commands can stay simple. Evolve when needed:
+
 - Add skill when users need auto-discovery
 - Package as plugin when sharing with team
 - Split when domain gets too complex
 
 ### Q: Can evolutions fail safely?
+
 **A:** Yes. Before any evolution:
+
 - Preview shown
 - Confirmation required
 - Backups created
 - Rollback path always available
 
 ### Q: What about merge conflicts in team?
+
 **A:** Evolution happens atomically:
+
 - One person runs `/evolve:to-plugin`
 - Commits changes
 - Team pulls updates
 - `/registry:scan` shows new plugin
 
 ### Q: How do I know if split is safe?
+
 **A:** Let the tool analyze first:
+
 ```bash
 /evolve:split my-domain --analyze-only
 # Shows impact without changes
@@ -855,7 +902,9 @@ rm -rf .claude/commands/pm/
 ```
 
 ### Q: Can I undo a split?
+
 **A:** Yes, fully reversible:
+
 ```bash
 /evolve:rollback my-domain split
 # Back to pre-split state
@@ -866,11 +915,13 @@ rm -rf .claude/commands/pm/
 ## Next Steps
 
 1. **Design your domain** (if not done)
+
    ```bash
    /design:domain my-feature
    ```
 
 2. **Scaffold it**
+
    ```bash
    /scaffold:domain my-feature
    ```
@@ -878,11 +929,13 @@ rm -rf .claude/commands/pm/
 3. **Create commands** (implement your operations)
 
 4. **Test thoroughly**
+
    ```bash
    /test:command my-feature:*
    ```
 
 5. **Evolve as needed**
+
    ```bash
    /evolve:add-skill my-feature:main
    /evolve:to-plugin my-feature
@@ -897,6 +950,7 @@ rm -rf .claude/commands/pm/
 ## Support
 
 For issues or questions:
+
 - Check `.claude/SPEC-lifecycle-layer-evolve.md` for full spec
 - Run `/registry:scan` to understand current state
 - See troubleshooting section above

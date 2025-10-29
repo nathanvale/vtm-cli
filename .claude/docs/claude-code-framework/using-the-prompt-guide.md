@@ -3,6 +3,7 @@
 ## Quick Setup
 
 ### Option 1: Save as .claude/skills/ Skill
+
 ```
 .claude/skills/
   claude-code-expert/
@@ -12,12 +13,15 @@
 Then just mention Claude Code workflow and Claude auto-loads the expertise.
 
 ### Option 2: Reference in CLAUDE.md
+
 ```markdown
 # Project Context
 
 ## Claude Code Expertise
-This project uses advanced Claude Code patterns. Reference the Claude Code 
+
+This project uses advanced Claude Code patterns. Reference the Claude Code
 Extensibility Expert framework for guidance on:
+
 - Slash command vs Skills vs MCP decisions
 - .claude/ directory structure
 - Plugin architecture
@@ -27,11 +31,13 @@ Extensibility Expert framework for guidance on:
 ```
 
 ### Option 3: Use as Chat Context
+
 Paste the prompt into Claude Code when you ask:
+
 ```
 <paste entire claude-code-expert-prompt.md>
 
-I want to create a workflow that automates X. What's the best Claude Code 
+I want to create a workflow that automates X. What's the best Claude Code
 architecture for this?
 ```
 
@@ -42,12 +48,14 @@ architecture for this?
 ### Conversation 1: "Should I use slash commands or skills?"
 
 **You ask:**
+
 ```
-I have a repetitive task that my team does every day. Should I create a slash 
+I have a repetitive task that my team does every day. Should I create a slash
 command or a skill for it?
 ```
 
 **Claude (with expert prompt) responds:**
+
 ```
 Great question! Here's how to think about it:
 
@@ -66,7 +74,7 @@ For a daily team task, I'd recommend:
 2. Add SKILL so Claude auto-detects when relevant
 3. If whole team needs it, package as PLUGIN
 
-This pattern (matching what Jeremy Longshore does) scales you from 
+This pattern (matching what Jeremy Longshore does) scales you from
 individual→team→community usage.
 
 Show me the workflow and I'll help structure the .claude/ directory.
@@ -77,12 +85,14 @@ Show me the workflow and I'll help structure the .claude/ directory.
 ### Conversation 2: "How do I share this with my team?"
 
 **You ask:**
+
 ```
-I've built a great git workflow system with slash commands. How do I share 
+I've built a great git workflow system with slash commands. How do I share
 this with the team?
 ```
 
 **Claude responds with:**
+
 ```
 Perfect timing! Here's the evolution path:
 
@@ -117,12 +127,14 @@ Want me to generate the plugin structure?
 ### Conversation 3: "How do I know what components I need?"
 
 **You ask:**
+
 ```
-I'm building a deployment automation workflow. I need slash commands, but 
+I'm building a deployment automation workflow. I need slash commands, but
 also external API access, and some validation steps. What else?
 ```
 
 **Claude responds:**
+
 ```
 This is exactly when the decision framework helps! Let me walk through:
 
@@ -131,7 +143,7 @@ YOUR DEPLOYMENT WORKFLOW NEEDS:
 ✓ SLASH COMMANDS
   → User invokes deployment commands: /deploy:staging, /deploy:production
 
-✓ SKILLS  
+✓ SKILLS
   → Claude knows *when* to suggest deployment (post-tests, pre-release)
   → Teaches Claude your safety philosophy
 
@@ -143,7 +155,7 @@ YOUR DEPLOYMENT WORKFLOW NEEDS:
   → Pre-deployment: run tests, security scans
   → Post-deployment: update docs, notify team
 
-✓ SUBAGENTS  
+✓ SUBAGENTS
   → Validator: pre-flight checks
   → Deployer: execute deployment
   → Notifier: post-deployment communications
@@ -165,7 +177,7 @@ Create plugin: .claude/plugins/deployment-orchestration/
       ├── deployer.yaml
       └── notifier.yaml
 
-This matches Jeremy Longshore's DevOps automation patterns. Want help 
+This matches Jeremy Longshore's DevOps automation patterns. Want help
 structuring each component?
 ```
 
@@ -174,12 +186,14 @@ structuring each component?
 ### Conversation 4: "How do I write a good Skill?"
 
 **You ask:**
+
 ```
-I'm creating a Skill for testing automation. How do I write the trigger 
+I'm creating a Skill for testing automation. How do I write the trigger
 phrases and description so Claude actually uses it?
 ```
 
 **Claude responds:**
+
 ```
 This is Kenny Liao's core teaching! Here's what makes Skills auto-discoverable:
 
@@ -194,19 +208,19 @@ GOOD (Will trigger):
 name: testing-framework-expert
 description: |
   Expert in your project's testing strategy and best practices.
-  
+
   Knows:
   - When tests should run (pre-commit, PR, pre-deploy)
   - What test coverage targets are
   - Which test types apply (unit, integration, e2e)
   - Performance benchmarks and thresholds
-  
+
   Use when:
   - Developer asks "are we ready for PR?"
   - Implementing new feature (needs tests)
   - Debugging failing tests
   - Optimizing performance
-  
+
 trigger_phrases:
   - "run tests"
   - "test this code"
@@ -223,7 +237,7 @@ KEY INSIGHTS:
 4. Give SPECIFIC trigger phrases (not vague)
 5. Use phrases Claude will actually hear
 
-Claude loads trigger phrases at startup (30-50 tokens). When user says any 
+Claude loads trigger phrases at startup (30-50 tokens). When user says any
 phrase, full Skill content loads with instructions + examples.
 
 Test it:
@@ -239,12 +253,14 @@ Want me to refine your testing Skill description?
 ### Conversation 5: "How do I organize a complex plugin?"
 
 **You ask:**
+
 ```
-I'm building a plugin that does 10+ different things. How do I organize 
+I'm building a plugin that does 10+ different things. How do I organize
 .claude/plugins/ so it's not a mess?
 ```
 
 **Claude responds:**
+
 ```
 Great question! This is how Jeremy Longshore structures his 234+ plugins.
 Here's the philosophy:
@@ -297,7 +313,7 @@ EXAMPLE: If your plugin does both testing AND deployment
 Skill description mentions BOTH, with trigger phrases for each:
   - "run tests" → suggests test commands
   - "deploy to staging" → suggests deploy commands
-  
+
 Both handled by ONE Skill.md that understands the full workflow.
 
 This keeps plugin namespace clean and discoverable.
@@ -312,6 +328,7 @@ Show me your 10 things and I'll help you group them by domain!
 Use these as starting points:
 
 ### Template A: "I'm building something new"
+
 ```
 I want to automate [task]. My team is [size]. This needs to:
 - [requirement 1]
@@ -322,6 +339,7 @@ What Claude Code architecture should I use? Where do I start in .claude/?
 ```
 
 ### Template B: "I want to improve existing workflow"
+
 ```
 I have this existing [command/script/process]. It works but:
 - [problem 1]
@@ -331,6 +349,7 @@ Could Claude Code make this better? What would the evolution look like?
 ```
 
 ### Template C: "I want to share with team"
+
 ```
 I built this [workflow/automation]. Now I want:
 - [goal 1: distribution, standardization, etc]
@@ -340,6 +359,7 @@ How do I package this as a plugin? What's the path from here to team usage?
 ```
 
 ### Template D: "I'm exploring patterns"
+
 ```
 I noticed [behavior/pattern] in my workflow. Is this a good pattern?
 
@@ -350,6 +370,7 @@ Can you show me how to structure this properly?
 ```
 
 ### Template E: "I'm stuck on architecture"
+
 ```
 I'm trying to build [system] but I'm not sure:
 - Should I use [option A] or [option B]?
@@ -369,7 +390,7 @@ Walk me through the decision tree.
 ✅ **Real-World Patterns:** References Kenny Liao, Leon van Zyl, Jeremy Longshore
 ✅ **Examples:** Shows practical templates and implementations
 ✅ **Team Scaling:** Guides from local→team→community sharing
-✅ **Education:** Explains *why* certain patterns work
+✅ **Education:** Explains _why_ certain patterns work
 
 ---
 
@@ -404,5 +425,5 @@ With this prompt, Claude will help you:
 - ✅ Package reusable workflows (Plugins with versioning)
 - ✅ Make architectural decisions confidently
 
-**Result:** Instead of wondering "how do successful Claude Code users do this?", 
+**Result:** Instead of wondering "how do successful Claude Code users do this?",
 you're building systems that match how they actually do it.

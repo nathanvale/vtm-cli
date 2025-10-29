@@ -19,16 +19,19 @@ Complete guide for creating and maintaining tests for your Claude Code component
 ### 5-Minute Test Setup
 
 **Step 1: Run Quick Test**
+
 ```bash
 /test:command pm:next --mode quick
 ```
 
 **Step 2: Run Full Test**
+
 ```bash
 /test:command pm:next --mode comprehensive --report
 ```
 
 **Step 3: View Report**
+
 ```
 Open .claude/test-results/report-*.html in your browser
 ```
@@ -46,6 +49,7 @@ The framework validates components through five test dimensions:
 **What it tests:** Does the component exist and can it be invoked?
 
 **Checks:**
+
 - Component file exists
 - Can be parsed (valid syntax)
 - Has metadata
@@ -57,6 +61,7 @@ The framework validates components through five test dimensions:
 **When it fails:** Component file missing or malformed
 
 **Example:**
+
 ```bash
 /test:command my-command --mode quick
 
@@ -71,6 +76,7 @@ Output:
 **What it tests:** Does it produce expected output?
 
 **Checks:**
+
 - Component executes without errors
 - Output matches expected value
 - Response contains no error messages
@@ -79,6 +85,7 @@ Output:
 **When to use:** Validate component behavior
 
 **Example:**
+
 ```bash
 /test:command pm:next --mode comprehensive --expected "Ready Tasks"
 
@@ -93,6 +100,7 @@ Output:
 **What it tests:** Does it work with dependencies?
 
 **Checks:**
+
 - All dependencies are resolvable
 - Dependencies execute successfully
 - Data flows correctly
@@ -101,6 +109,7 @@ Output:
 **When to use:** Complex components with dependencies
 
 **Example:**
+
 ```bash
 Component: pm:next
 Dependencies: [vtm-reader, vtm-data]
@@ -112,6 +121,7 @@ Status: ✅ All 2 dependencies resolved
 **What it tests:** Is it fast enough?
 
 **Checks:**
+
 - Execution time under timeout
 - Token usage acceptable
 - Memory usage reasonable
@@ -120,6 +130,7 @@ Status: ✅ All 2 dependencies resolved
 **Thresholds:** Configurable per component
 
 **Example:**
+
 ```bash
 Execution time: 245ms (target: 1000ms) ✓
 Estimated tokens: 450 (target: 1000) ✓
@@ -130,12 +141,14 @@ Estimated tokens: 450 (target: 1000) ✓
 **What it tests:** Is it production-ready?
 
 **Checks:**
+
 - Documentation exists
 - Metadata is complete
 - Error handling implemented
 - No deprecated dependencies
 
 **Example:**
+
 ```bash
 ✅ QUALITY TEST (passed)
   Documentation: complete ✓
@@ -156,17 +169,17 @@ All test cases follow this structure in `test-templates.json`:
   "component_id": "my-command",
   "test_cases": [
     {
-      "id": "unique-test-id",
-      "name": "Human-readable test name",
-      "mode": "quick|comprehensive",
-      "type": "smoke|functional|integration|performance|quality",
-      "description": "What this test validates",
-      "command": "my-command",
       "args": ["arg1", "arg2"],
+      "command": "my-command",
+      "description": "What this test validates",
       "expected": "Expected output string",
-      "timeout": 30,
+      "id": "unique-test-id",
+      "mode": "quick|comprehensive",
+      "name": "Human-readable test name",
+      "notes": "Additional context",
       "should_pass": true,
-      "notes": "Additional context"
+      "timeout": 30,
+      "type": "smoke|functional|integration|performance|quality"
     }
   ]
 }
@@ -178,11 +191,11 @@ Simplest possible test case:
 
 ```json
 {
+  "command": "my-command",
   "id": "basic-smoke",
-  "name": "Basic Smoke Test",
   "mode": "quick",
-  "type": "smoke",
-  "command": "my-command"
+  "name": "Basic Smoke Test",
+  "type": "smoke"
 }
 ```
 
@@ -192,28 +205,28 @@ Full-featured test case:
 
 ```json
 {
-  "id": "pm-context-full",
-  "name": "Context with All Options",
-  "mode": "comprehensive",
-  "type": "functional",
-  "description": "Test context generation with all available options",
-  "command": "pm:context",
   "args": ["TASK-001", "--compact"],
+  "command": "pm:context",
+  "description": "Test context generation with all available options",
+  "env_vars": ["DEBUG=false"],
   "expected": "dependencies",
-  "timeout": 15,
-  "should_pass": true,
-  "side_effects": {
-    "reads_file": true,
-    "modifies_state": false,
-    "network_call": false
-  },
-  "requires": ["TASK-001 in vtm.json"],
+  "id": "pm-context-full",
+  "mode": "comprehensive",
+  "name": "Context with All Options",
   "notes": "Compact mode should reduce token usage significantly",
   "performance": {
-    "max_execution_time_ms": 5000,
-    "expected_tokens": 500
+    "expected_tokens": 500,
+    "max_execution_time_ms": 5000
   },
-  "env_vars": ["DEBUG=false"]
+  "requires": ["TASK-001 in vtm.json"],
+  "should_pass": true,
+  "side_effects": {
+    "modifies_state": false,
+    "network_call": false,
+    "reads_file": true
+  },
+  "timeout": 15,
+  "type": "functional"
 }
 ```
 
@@ -231,37 +244,38 @@ Full-featured test case:
   "component_type": "command",
   "test_cases": [
     {
-      "id": "pm-next-default",
-      "name": "Default Behavior",
-      "mode": "comprehensive",
-      "type": "functional",
       "command": "pm:next",
       "expected": "Ready Tasks",
-      "timeout": 10
+      "id": "pm-next-default",
+      "mode": "comprehensive",
+      "name": "Default Behavior",
+      "timeout": 10,
+      "type": "functional"
     },
     {
-      "id": "pm-next-custom-count",
-      "name": "Custom Count",
-      "mode": "comprehensive",
-      "type": "functional",
-      "command": "pm:next",
       "args": ["--number", "20"],
+      "command": "pm:next",
       "expected": "Tasks",
-      "timeout": 10
+      "id": "pm-next-custom-count",
+      "mode": "comprehensive",
+      "name": "Custom Count",
+      "timeout": 10,
+      "type": "functional"
     },
     {
-      "id": "pm-next-no-tasks",
-      "name": "Handle Empty List",
-      "mode": "comprehensive",
-      "type": "functional",
       "command": "pm:next",
-      "expected_output_pattern": "No tasks|Tasks|Ready"
+      "expected_output_pattern": "No tasks|Tasks|Ready",
+      "id": "pm-next-no-tasks",
+      "mode": "comprehensive",
+      "name": "Handle Empty List",
+      "type": "functional"
     }
   ]
 }
 ```
 
 **Testing checklist for commands:**
+
 - [ ] Command exists and can be invoked
 - [ ] Works with no arguments
 - [ ] Works with various argument combinations
@@ -282,33 +296,34 @@ Full-featured test case:
   "test_cases": [
     {
       "id": "pm-expert-smoke",
-      "name": "Skill Exists",
       "mode": "quick",
-      "type": "smoke",
-      "trigger_phrases": ["what should I work on", "next task"]
+      "name": "Skill Exists",
+      "trigger_phrases": ["what should I work on", "next task"],
+      "type": "smoke"
     },
     {
-      "id": "pm-expert-trigger",
-      "name": "Trigger Detection",
-      "mode": "comprehensive",
-      "type": "functional",
-      "trigger_input": "What should I work on?",
       "expected": "TASK",
-      "should_activate": true
+      "id": "pm-expert-trigger",
+      "mode": "comprehensive",
+      "name": "Trigger Detection",
+      "should_activate": true,
+      "trigger_input": "What should I work on?",
+      "type": "functional"
     },
     {
+      "expected_output": ["task id", "description", "estimated hours"],
       "id": "pm-expert-context",
-      "name": "Provides Context",
       "mode": "comprehensive",
-      "type": "functional",
+      "name": "Provides Context",
       "trigger_input": "Tell me what to do next",
-      "expected_output": ["task id", "description", "estimated hours"]
+      "type": "functional"
     }
   ]
 }
 ```
 
 **Testing checklist for skills:**
+
 - [ ] Skill metadata is complete
 - [ ] Trigger phrases are effective
 - [ ] Skill activates appropriately
@@ -327,43 +342,44 @@ Full-featured test case:
   "description": "Notion database integration",
   "test_cases": [
     {
-      "id": "notion-connection",
-      "name": "Connection Test",
-      "mode": "comprehensive",
-      "type": "functional",
-      "operation": "health_check",
-      "expected": "ok",
-      "requires_auth": true,
       "env_vars": ["NOTION_API_KEY"],
-      "timeout": 15
+      "expected": "ok",
+      "id": "notion-connection",
+      "mode": "comprehensive",
+      "name": "Connection Test",
+      "operation": "health_check",
+      "requires_auth": true,
+      "timeout": 15,
+      "type": "functional"
     },
     {
-      "id": "notion-list-databases",
-      "name": "List Databases",
-      "mode": "comprehensive",
-      "type": "functional",
-      "operation": "list_databases",
       "expected_type": "array",
+      "id": "notion-list-databases",
       "min_items": 1,
-      "timeout": 20
+      "mode": "comprehensive",
+      "name": "List Databases",
+      "operation": "list_databases",
+      "timeout": 20,
+      "type": "functional"
     },
     {
+      "expected_type": "array",
       "id": "notion-query",
-      "name": "Query Database",
       "mode": "comprehensive",
-      "type": "functional",
+      "name": "Query Database",
       "operation": "query",
       "params": {
         "database_id": "test-db-id",
         "filter": {}
       },
-      "expected_type": "array"
+      "type": "functional"
     }
   ]
 }
 ```
 
 **Testing checklist for MCP servers:**
+
 - [ ] Server can be reached/connected
 - [ ] Authentication works
 - [ ] All operations are available
@@ -384,40 +400,41 @@ Full-featured test case:
   "test_cases": [
     {
       "id": "deploy-hook-smoke",
-      "name": "Hook Exists",
       "mode": "quick",
+      "name": "Hook Exists",
       "type": "smoke"
     },
     {
-      "id": "deploy-hook-trigger",
-      "name": "Triggers on Event",
-      "mode": "comprehensive",
-      "type": "functional",
+      "can_modify_system": true,
+      "env_vars": ["DEPLOY_TOKEN"],
       "event": "on:git-push",
       "event_data": {
         "branch": "main",
         "commits": 1
       },
       "expected": "deployment started",
+      "id": "deploy-hook-trigger",
+      "mode": "comprehensive",
+      "name": "Triggers on Event",
       "timeout": 60,
-      "can_modify_system": true,
-      "env_vars": ["DEPLOY_TOKEN"]
+      "type": "functional"
     },
     {
-      "id": "deploy-hook-rollback",
-      "name": "Handles Failures",
-      "mode": "comprehensive",
-      "type": "functional",
       "event": "on:git-push",
-      "simulate_failure": true,
       "expected": "rollback initiated",
-      "timeout": 60
+      "id": "deploy-hook-rollback",
+      "mode": "comprehensive",
+      "name": "Handles Failures",
+      "simulate_failure": true,
+      "timeout": 60,
+      "type": "functional"
     }
   ]
 }
 ```
 
 **Testing checklist for hooks:**
+
 - [ ] Hook triggers on correct event
 - [ ] Receives event data correctly
 - [ ] Executes action successfully
@@ -438,37 +455,38 @@ Full-featured test case:
   "test_cases": [
     {
       "id": "analyzer-smoke",
-      "name": "Agent Loads",
       "mode": "quick",
+      "name": "Agent Loads",
       "type": "smoke"
     },
     {
+      "expected": ["quality", "issues", "suggestions"],
       "id": "analyzer-analyze",
-      "name": "Analyzes Code",
-      "mode": "comprehensive",
-      "type": "functional",
-      "task": "analyze",
       "input": {
         "code": "function test() { return true; }",
         "language": "javascript"
       },
-      "expected": ["quality", "issues", "suggestions"],
-      "timeout": 30
+      "mode": "comprehensive",
+      "name": "Analyzes Code",
+      "task": "analyze",
+      "timeout": 30,
+      "type": "functional"
     },
     {
       "id": "analyzer-performance",
-      "name": "Handles Large Files",
-      "mode": "comprehensive",
-      "type": "performance",
-      "task": "analyze",
       "input_size": "large_file",
-      "max_execution_time_ms": 30000
+      "max_execution_time_ms": 30000,
+      "mode": "comprehensive",
+      "name": "Handles Large Files",
+      "task": "analyze",
+      "type": "performance"
     }
   ]
 }
 ```
 
 **Testing checklist for agents:**
+
 - [ ] Agent initializes correctly
 - [ ] Can process various input types
 - [ ] Produces structured output
@@ -487,29 +505,30 @@ Test and track component performance over time:
 
 ```json
 {
-  "id": "pm-context-benchmark",
-  "name": "Performance Benchmark",
-  "mode": "comprehensive",
-  "type": "performance",
-  "command": "pm:context",
+  "allow_regression_ms": 200,
   "args": ["TASK-001"],
-  "performance": {
-    "max_execution_time_ms": 10000,
-    "target_execution_time_ms": 2000,
-    "max_token_estimate": 5000,
-    "memory_limit_mb": 100
-  },
   "baseline": {
     "execution_time_ms": 1800,
-    "token_estimate": 450,
-    "memory_usage_mb": 25
+    "memory_usage_mb": 25,
+    "token_estimate": 450
   },
-  "allow_regression_ms": 200,
-  "track_history": true
+  "command": "pm:context",
+  "id": "pm-context-benchmark",
+  "mode": "comprehensive",
+  "name": "Performance Benchmark",
+  "performance": {
+    "max_execution_time_ms": 10000,
+    "max_token_estimate": 5000,
+    "memory_limit_mb": 100,
+    "target_execution_time_ms": 2000
+  },
+  "track_history": true,
+  "type": "performance"
 }
 ```
 
 Run benchmark:
+
 ```bash
 /test:command pm:context --args "TASK-001" --mode comprehensive --report
 ```
@@ -520,22 +539,23 @@ Test components that depend on environment configuration:
 
 ```json
 {
-  "id": "deploy-with-env",
-  "name": "Deploy with Custom Env",
-  "mode": "comprehensive",
-  "type": "functional",
   "command": "deploy",
   "env_vars": {
-    "ENVIRONMENT": "staging",
+    "DEBUG": "true",
     "DEPLOY_TOKEN": "test-token-xyz",
-    "SLACK_WEBHOOK": "https://hooks.slack.com/...",
-    "DEBUG": "true"
+    "ENVIRONMENT": "staging",
+    "SLACK_WEBHOOK": "https://hooks.slack.com/..."
   },
-  "expected": "deployment complete"
+  "expected": "deployment complete",
+  "id": "deploy-with-env",
+  "mode": "comprehensive",
+  "name": "Deploy with Custom Env",
+  "type": "functional"
 }
 ```
 
 Run with environment:
+
 ```bash
 /test:command deploy --env "ENVIRONMENT=staging" --env "DEBUG=true" --mode comprehensive
 ```
@@ -546,39 +566,39 @@ Test multiple components working together:
 
 ```json
 {
-  "id": "pm-workflow-integration",
-  "name": "Complete PM Workflow",
-  "mode": "comprehensive",
-  "type": "integration",
+  "dependencies": ["pm:next", "pm:context", "pm:start", "pm:complete"],
   "description": "Test complete task workflow: next → context → start → complete",
+  "id": "pm-workflow-integration",
+  "mode": "comprehensive",
+  "name": "Complete PM Workflow",
   "steps": [
     {
-      "step": 1,
+      "capture_output": true,
       "command": "pm:next",
       "expected": "Ready Tasks",
-      "capture_output": true
+      "step": 1
     },
     {
-      "step": 2,
+      "args": ["${CAPTURED_TASK_ID}"],
       "command": "pm:context",
-      "args": ["${CAPTURED_TASK_ID}"],
-      "expected": "dependencies"
+      "expected": "dependencies",
+      "step": 2
     },
     {
-      "step": 3,
+      "args": ["${CAPTURED_TASK_ID}"],
       "command": "pm:start",
-      "args": ["${CAPTURED_TASK_ID}"],
-      "expected": "in-progress"
+      "expected": "in-progress",
+      "step": 3
     },
     {
-      "step": 4,
-      "command": "pm:complete",
       "args": ["${CAPTURED_TASK_ID}"],
-      "expected": "completed"
+      "command": "pm:complete",
+      "expected": "completed",
+      "step": 4
     }
   ],
-  "dependencies": ["pm:next", "pm:context", "pm:start", "pm:complete"],
-  "timeout": 60
+  "timeout": 60,
+  "type": "integration"
 }
 ```
 
@@ -588,20 +608,20 @@ Test how components handle failures:
 
 ```json
 {
-  "id": "pm-context-missing-file",
-  "name": "Handle Missing VTM File",
-  "mode": "comprehensive",
-  "type": "functional",
-  "command": "pm:context",
   "args": ["TASK-001"],
+  "cleanup": {
+    "restore_files": ["vtm.json"]
+  },
+  "command": "pm:context",
+  "expected_error_contains": "not found",
+  "id": "pm-context-missing-file",
+  "mode": "comprehensive",
+  "name": "Handle Missing VTM File",
   "precondition": {
     "remove_files": ["vtm.json"]
   },
   "should_fail": true,
-  "expected_error_contains": "not found",
-  "cleanup": {
-    "restore_files": ["vtm.json"]
-  }
+  "type": "functional"
 }
 ```
 
@@ -611,14 +631,14 @@ Test complex output against saved snapshots:
 
 ```json
 {
-  "id": "pm-stats-snapshot",
-  "name": "Stats Output Snapshot",
-  "mode": "comprehensive",
-  "type": "functional",
+  "allow_snapshot_update": true,
   "command": "pm:stats",
-  "use_snapshot": true,
+  "id": "pm-stats-snapshot",
+  "mode": "comprehensive",
+  "name": "Stats Output Snapshot",
   "snapshot_file": ".claude/test-snapshots/pm-stats.json",
-  "allow_snapshot_update": true
+  "type": "functional",
+  "use_snapshot": true
 }
 ```
 
@@ -632,17 +652,18 @@ Use clear, descriptive test names:
 
 ```json
 {
-  "id": "pm-next-default",           // ✅ Clear
-  "name": "Default Behavior",        // ✅ Descriptive
-  "description": "Test pm:next with no arguments"  // ✅ Detailed
+  "description": "Test pm:next with no arguments", // ✅ Detailed
+  "id": "pm-next-default", // ✅ Clear
+  "name": "Default Behavior" // ✅ Descriptive
 }
 ```
 
 NOT:
+
 ```json
 {
-  "id": "test1",          // ❌ Too vague
-  "name": "Test"          // ❌ Not descriptive
+  "id": "test1", // ❌ Too vague
+  "name": "Test" // ❌ Not descriptive
 }
 ```
 
@@ -652,12 +673,12 @@ Each test should be independent:
 
 ```json
 {
+  "cleanup": {
+    "teardown": ["remove test data"]
+  },
   "id": "test-a",
   "precondition": {
     "setup": ["create test data"]
-  },
-  "cleanup": {
-    "teardown": ["remove test data"]
   }
 }
 ```
@@ -668,18 +689,19 @@ Test one thing per test case:
 
 ```json
 {
-  "id": "pm-next-returns-list",
-  "expected": "Ready Tasks"
+  "expected": "Ready Tasks",
   // ✅ Tests one thing: output format
+  "id": "pm-next-returns-list"
 }
 ```
 
 NOT:
+
 ```json
 {
-  "id": "pm-next-full-test",
-  "expected": ["Ready Tasks", "Status", "Risk", "Duration"]
+  "expected": ["Ready Tasks", "Status", "Risk", "Duration"],
   // ❌ Tests too many things
+  "id": "pm-next-full-test"
 }
 ```
 
@@ -704,16 +726,17 @@ Use specific, testable expectations:
 
 ```json
 {
-  "id": "test-a",
-  "expected": "Ready Tasks"     // ✅ Specific, exact match
+  "expected": "Ready Tasks", // ✅ Specific, exact match
+  "id": "test-a"
 }
 ```
 
 NOT:
+
 ```json
 {
-  "id": "test-a",
-  "expected": "task"            // ❌ Too generic, many false positives
+  "expected": "task", // ❌ Too generic, many false positives
+  "id": "test-a"
 }
 ```
 
@@ -723,14 +746,14 @@ Explain the purpose of complex tests:
 
 ```json
 {
+  "description": "Verify compact mode reduces token usage",
   "id": "pm-context-compact",
   "name": "Compact Mode",
-  "description": "Verify compact mode reduces token usage",
   "notes": "Compact mode should use 70% fewer tokens than full context",
   "performance": {
-    "full_context_tokens": 5000,
     "compact_context_tokens": 1000,
-    "expected_reduction_percent": 70
+    "expected_reduction_percent": 70,
+    "full_context_tokens": 5000
   }
 }
 ```
@@ -742,17 +765,17 @@ Test happy path AND edge cases:
 ```json
 [
   {
+    "args": ["TASK-001"],
     "id": "pm-context-valid-task",
     "name": "Valid Task",
-    "args": ["TASK-001"],
     "should_pass": true
   },
   {
+    "args": ["INVALID-999"],
+    "expected_error": "not found",
     "id": "pm-context-invalid-task",
     "name": "Invalid Task",
-    "args": ["INVALID-999"],
-    "should_fail": true,
-    "expected_error": "not found"
+    "should_fail": true
   }
 ]
 ```
@@ -766,6 +789,7 @@ Test happy path AND edge cases:
 **Cause:** Component file doesn't exist at expected location
 
 **Solution:**
+
 ```bash
 # Find component
 find .claude -name "*component-name*" -type f
@@ -782,6 +806,7 @@ head -10 .claude/commands/component-name.md
 **Cause:** Component output differs from expectation
 
 **Solution:**
+
 ```bash
 # Run without expected filter to see actual output
 /test:command pm:next --mode comprehensive
@@ -798,6 +823,7 @@ head -10 .claude/commands/component-name.md
 **Cause:** Component takes longer than timeout
 
 **Solution:**
+
 ```bash
 # Increase timeout
 /test:command pm:context --timeout 60 --mode comprehensive
@@ -820,6 +846,7 @@ head -10 .claude/commands/component-name.md
 **Cause:** Component depends on missing resource
 
 **Solution:**
+
 ```bash
 # Verify dependency exists
 /test:command dependency-name --mode quick
@@ -837,6 +864,7 @@ grep "dependencies:" .claude/commands/component.md
 **Cause:** Test expects env var that's not set
 
 **Solution:**
+
 ```bash
 # Set environment variable
 /test:command deploy --env "API_KEY=xyz" --mode comprehensive
@@ -857,6 +885,7 @@ grep "dependencies:" .claude/commands/component.md
 Pre-built test suites are available for common scenarios:
 
 ### Quick Smoke Tests
+
 ```bash
 # Test all PM domain commands quickly
 /test:command pm:next --mode quick
@@ -866,18 +895,21 @@ Pre-built test suites are available for common scenarios:
 ```
 
 ### Full PM Domain Tests
+
 ```bash
 # Run comprehensive suite
 /test:suite pm-domain-comprehensive --mode comprehensive --report
 ```
 
 ### Integration Tests
+
 ```bash
 # Test cross-component workflows
 /test:suite integration-tests --mode comprehensive --report
 ```
 
 ### Performance Benchmarks
+
 ```bash
 # Measure and track performance
 /test:suite performance-benchmarks --mode comprehensive --report --baseline
@@ -907,6 +939,7 @@ Description...
 ## Next Steps
 
 1. **Run Your First Test**
+
    ```bash
    /test:command pm:next --mode comprehensive
    ```
@@ -916,6 +949,7 @@ Description...
    - Use examples from this guide
 
 3. **Generate Reports**
+
    ```bash
    /test:command my-component --mode comprehensive --report
    ```
@@ -936,6 +970,7 @@ Description...
 ## Support
 
 For questions or issues:
+
 1. Check troubleshooting section above
 2. Review test examples in test-templates.json
 3. Check component documentation

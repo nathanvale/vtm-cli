@@ -27,8 +27,8 @@ This command guides you through a 5-question design process to create a complete
 Parse the command arguments:
 
 ```javascript
-const domainName = ARGUMENTS[0];
-const description = ARGUMENTS.slice(1).join(' ') || `${domainName} domain`;
+const domainName = ARGUMENTS[0]
+const description = ARGUMENTS.slice(1).join(" ") || `${domainName} domain`
 ```
 
 ---
@@ -74,6 +74,7 @@ Your operations (comma-separated):
 ```
 
 **Processing:**
+
 - Parse their response into operation names
 - For each operation, create:
   - name: lowercase slug (e.g., "next", "review", "list")
@@ -82,13 +83,29 @@ Your operations (comma-separated):
   - triggers_auto_discovery: true (by default)
 
 **Example conversion:**
+
 - Input: "next task, review progress, list all"
 - Output operations:
   ```json
   [
-    {"name": "next", "description": "Get next task", "manual_invocation": "/pm:next", "triggers_auto_discovery": true},
-    {"name": "review", "description": "Review progress", "manual_invocation": "/pm:review", "triggers_auto_discovery": true},
-    {"name": "list", "description": "List all tasks", "manual_invocation": "/pm:list", "triggers_auto_discovery": true}
+    {
+      "description": "Get next task",
+      "manual_invocation": "/pm:next",
+      "name": "next",
+      "triggers_auto_discovery": true
+    },
+    {
+      "description": "Review progress",
+      "manual_invocation": "/pm:review",
+      "name": "review",
+      "triggers_auto_discovery": true
+    },
+    {
+      "description": "List all tasks",
+      "manual_invocation": "/pm:list",
+      "name": "list",
+      "triggers_auto_discovery": true
+    }
   ]
   ```
 
@@ -117,6 +134,7 @@ Enable auto-discovery? (yes/no) [recommended: yes]
 
 **Processing:**
 If yes:
+
 ```json
 "auto_discovery": {
   "enabled": true,
@@ -131,6 +149,7 @@ If yes:
 ```
 
 If no:
+
 ```json
 "auto_discovery": {
   "enabled": false
@@ -162,6 +181,7 @@ If yes, which systems? (comma-separated)
 
 **Processing:**
 If yes:
+
 ```json
 "external_integration": {
   "needed": true,
@@ -174,6 +194,7 @@ If yes:
 ```
 
 If no:
+
 ```json
 "external_integration": {
   "needed": false
@@ -205,6 +226,7 @@ If yes, which events? (pre-commit, post-checkout, pre-push)
 
 **Processing:**
 If yes:
+
 ```json
 "automation": {
   "enabled": true,
@@ -216,6 +238,7 @@ If yes:
 ```
 
 If no:
+
 ```json
 "automation": {
   "enabled": false
@@ -245,6 +268,7 @@ If team, who are the team members? (comma-separated emails)
 ```
 
 **Processing:**
+
 ```json
 "sharing": {
   "scope": "team",
@@ -261,33 +285,43 @@ After collecting all answers, generate the complete design spec:
 
 ```json
 {
-  "name": "{domainName}",
-  "description": "{description}",
-  "version": "1.0.0",
   "created_at": "{ISO8601 timestamp}",
+  "description": "{description}",
   "design": {
-    "operations": [ /* from Q1 */ ],
-    "auto_discovery": { /* from Q2 */ },
-    "external_integration": { /* from Q3 */ },
-    "automation": { /* from Q4 */ },
-    "sharing": { /* from Q5 */ },
+    "auto_discovery": {
+      /* from Q2 */
+    },
+    "automation": {
+      /* from Q4 */
+    },
+    "external_integration": {
+      /* from Q3 */
+    },
+    "operations": [
+      /* from Q1 */
+    ],
     "recommendations": {
-      "start_with": [
-        "Create commands for: {operation names}",
-        "Add skill with trigger phrases for auto-discovery" /* if enabled */,
-        "Create MCP stub(s) for external system connection" /* if enabled */,
-        "Add hook script(s) for automated tasks" /* if enabled */,
-        "Create README.md for documentation"
-      ],
       "next_steps": [
         "Run: /scaffold:domain {domainName}",
         "Customize generated command files",
         "Test commands locally: /{domainName}:{operation}",
         "Add quality gates and tests when ready",
         "Review with team if team scope" /* if team */
+      ],
+      "start_with": [
+        "Create commands for: {operation names}",
+        "Add skill with trigger phrases for auto-discovery" /* if enabled */,
+        "Create MCP stub(s) for external system connection" /* if enabled */,
+        "Add hook script(s) for automated tasks" /* if enabled */,
+        "Create README.md for documentation"
       ]
+    },
+    "sharing": {
+      /* from Q5 */
     }
-  }
+  },
+  "name": "{domainName}",
+  "version": "1.0.0"
 }
 ```
 
@@ -346,6 +380,7 @@ Need to make changes? Run this command again to redesign.
 ## Error Handling
 
 **Domain already exists:**
+
 ```
 ⚠️  Design for "${domainName}" already exists at:
    .claude/designs/${domainName}.json
@@ -357,6 +392,7 @@ Options:
 ```
 
 **Invalid domain name:**
+
 ```
 ❌ Invalid domain name: "${domainName}"
 

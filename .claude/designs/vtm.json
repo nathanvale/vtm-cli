@@ -1,58 +1,10 @@
 {
-  "name": "vtm",
-  "description": "Virtual Task Manager - Token-efficient task management for AI-assisted development",
-  "version": "1.0.0",
   "created_at": "2025-10-29T00:00:00Z",
 
+  "description": "Virtual Task Manager - Token-efficient task management for AI-assisted development",
   "design": {
-    "operations": [
-      {
-        "name": "next",
-        "description": "Get next ready task to work on",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:next"
-      },
-      {
-        "name": "context",
-        "description": "Generate minimal context for a specific task",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:context"
-      },
-      {
-        "name": "task",
-        "description": "View details of a specific task",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:task"
-      },
-      {
-        "name": "start",
-        "description": "Mark a task as in-progress",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:start"
-      },
-      {
-        "name": "complete",
-        "description": "Mark a task as completed",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:complete"
-      },
-      {
-        "name": "stats",
-        "description": "Show VTM statistics and progress",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:stats"
-      },
-      {
-        "name": "list",
-        "description": "List all tasks with their status",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/vtm:list"
-      }
-    ],
-
     "auto_discovery": {
       "enabled": true,
-      "type": "skill",
       "suggested_triggers": [
         "what should i work on",
         "next task",
@@ -65,60 +17,107 @@
         "mark task done",
         "task stats",
         "list tasks"
-      ]
-    },
-
-    "external_integration": {
-      "needed": false,
-      "type": "none",
-      "systems": [],
-      "notes": "Currently file-based (vtm.json). MCP integration can be added later for GitHub Issues, Jira, Notion, etc."
+      ],
+      "type": "skill"
     },
 
     "automation": {
       "enabled": true,
       "hooks": [
         {
-          "event": "pre-commit",
           "action": "validate_vtm",
-          "description": "Validate task dependencies and data integrity before commits"
+          "description": "Validate task dependencies and data integrity before commits",
+          "event": "pre-commit"
         },
         {
-          "event": "post-checkout",
           "action": "refresh_vtm_cache",
-          "description": "Update task cache and validate vtm.json after branch switches"
+          "description": "Update task cache and validate vtm.json after branch switches",
+          "event": "post-checkout"
         },
         {
-          "event": "pre-push",
           "action": "validate_vtm_consistency",
-          "description": "Ensure task states are consistent before pushing"
+          "description": "Ensure task states are consistent before pushing",
+          "event": "pre-push"
         },
         {
-          "event": "post-merge",
           "action": "resolve_vtm_conflicts",
-          "description": "Automatically resolve vtm.json conflicts after merges"
+          "description": "Automatically resolve vtm.json conflicts after merges",
+          "event": "post-merge"
         }
       ]
     },
 
-    "sharing": {
-      "scope": "personal",
-      "team_members": [],
-      "published": false
+    "external_integration": {
+      "needed": false,
+      "notes": "Currently file-based (vtm.json). MCP integration can be added later for GitHub Issues, Jira, Notion, etc.",
+      "systems": [],
+      "type": "none"
     },
 
+    "operations": [
+      {
+        "description": "Get next ready task to work on",
+        "manual_invocation": "/vtm:next",
+        "name": "next",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Generate minimal context for a specific task",
+        "manual_invocation": "/vtm:context",
+        "name": "context",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "View details of a specific task",
+        "manual_invocation": "/vtm:task",
+        "name": "task",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Mark a task as in-progress",
+        "manual_invocation": "/vtm:start",
+        "name": "start",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Mark a task as completed",
+        "manual_invocation": "/vtm:complete",
+        "name": "complete",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Show VTM statistics and progress",
+        "manual_invocation": "/vtm:stats",
+        "name": "stats",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "List all tasks with their status",
+        "manual_invocation": "/vtm:list",
+        "name": "list",
+        "triggers_auto_discovery": true
+      }
+    ],
+
     "recommendations": {
-      "start_with": [
-        "Create slash commands for: next, context, task, start, complete, stats, list",
-        "Add skill with trigger phrases for auto-discovery",
-        "Add hooks for: pre-commit, post-checkout, pre-push, post-merge"
-      ],
       "next_steps": [
         "Run: /scaffold-domain vtm",
         "Customize generated commands to call vtm CLI",
         "Test commands work locally",
         "Run: /registry-scan to verify"
+      ],
+      "start_with": [
+        "Create slash commands for: next, context, task, start, complete, stats, list",
+        "Add skill with trigger phrases for auto-discovery",
+        "Add hooks for: pre-commit, post-checkout, pre-push, post-merge"
       ]
+    },
+    "sharing": {
+      "published": false,
+      "scope": "personal",
+      "team_members": []
     }
-  }
+  },
+  "name": "vtm",
+  "version": "1.0.0"
 }

@@ -13,6 +13,7 @@ The **Composable Claude Code Engineering System (CCCES)** is an operating system
 The vision: **Every operation is an independent building block that can be combined with others without conflicts.**
 
 ### Core Philosophy
+
 - Start simple: Use only what you need
 - Grow organically: Add layers as complexity grows
 - Self-extending: Use the system to build more system
@@ -23,6 +24,7 @@ The vision: **Every operation is an independent building block that can be combi
 ## 8-Layer Architecture
 
 ### Visual Model
+
 ```
 ┌─────────────────────────────────────────────────┐
 │ Layer 8: Sustainability (Migrate, Document, Govern)
@@ -46,9 +48,11 @@ The vision: **Every operation is an independent building block that can be combi
 ### Layer Descriptions
 
 #### **Layer 1: Foundation**
+
 The building blocks that users interact with directly.
 
 Components:
+
 - Slash Commands: User-invoked operations
 - Skills: Auto-discovery instructions
 - MCP Servers: External system integrations
@@ -60,9 +64,11 @@ Storage: `.claude/commands/`, `.claude/skills/`, `.claude/mcp-servers/`, `.claud
 ---
 
 #### **Layer 2: Lifecycle**
+
 Engineering workflow operations - design, generate, test, evolve, share.
 
 Key Commands:
+
 - `/design:domain {name}` - Interactive design thinking partner
 - `/scaffold:domain {name}` - Generate structure from design
 - `/test:command {name}` - Validate individual component
@@ -75,9 +81,11 @@ Storage: `.claude/designs/`, `.claude/test-results/`
 ---
 
 #### **Layer 3: Intelligence**
+
 AI-powered guidance and learning.
 
 Key Commands:
+
 - `/decide:architecture {description}` - Recommend component structure
 - `/learn:analyze` - Analyze usage patterns
 - `/learn:suggest {component}` - AI improvement suggestions
@@ -88,9 +96,11 @@ Storage: `.claude/learning/`, `.claude/decisions/`
 ---
 
 #### **Layer 4: Quality**
+
 Validation, optimization, security, and standards enforcement.
 
 Key Commands:
+
 - `/quality:check {component}` - Multi-dimensional validation
 - `/quality:gate {level}` - Set minimum requirements
 - `/security:audit {component}` - Security validation
@@ -102,9 +112,11 @@ Storage: `.claude/quality/`, `.claude/security/`, `.claude/metrics/`
 ---
 
 #### **Layer 5: Collaboration**
+
 Team coordination, version control, and community features.
 
 Key Commands:
+
 - `/version:create {component} {version}` - Tag version
 - `/version:rollback {component} {version}` - Go back in time
 - `/marketplace:search {query}` - Find community components
@@ -116,9 +128,11 @@ Storage: `.claude/versions/`, `.claude/marketplace/`, `.claude/knowledge/`
 ---
 
 #### **Layer 6: Observability**
+
 Making systems visible and debuggable.
 
 Key Commands:
+
 - `/registry:scan` - Discover all components
 - `/monitor:stats` - Usage and health metrics
 - `/monitor:usage {component}` - Specific component metrics
@@ -131,9 +145,11 @@ Storage: `.claude/registry/`, `.claude/metrics/`, `.claude/debug/`
 ---
 
 #### **Layer 7: Automation**
+
 Event-driven and scheduled operations.
 
 Key Commands:
+
 - `/schedule:cron {component} {schedule}` - Time-based execution
 - `/schedule:trigger {component} {event}` - Event-based execution
 - `/schedule:chain {workflow}` - Multi-step workflows
@@ -145,9 +161,11 @@ Storage: `.claude/schedule/`, `.claude/workflows/`, `.claude/policies/`
 ---
 
 #### **Layer 8: Sustainability**
+
 Long-term management and evolution.
 
 Key Commands:
+
 - `/migrate:export {components...}` - Portable package
 - `/migrate:import {package}` - Install elsewhere
 - `/docs:generate {component}` - Auto-documentation
@@ -161,31 +179,40 @@ Storage: `.claude/migrations/`, `.claude/docs/`, `.claude/experiments/`, `.claud
 ## Composability Principles
 
 ### 1. **Independence**
+
 Each layer operates independently. You can use Layer 1 (Foundation) without any other layers. Layers don't require each other to function.
 
 ### 2. **Clean Interfaces**
+
 Every component exposes a standard interface:
+
 - Metadata (name, version, description, tags)
 - Lifecycle operations (create, read, update, delete, test)
 - Events (started, completed, failed)
 - Config (inputs, parameters, requirements)
 
 ### 3. **Gradual Disclosure**
+
 Complexity reveals itself as needed. Start with 3 commands. Add observability when confused. Add automation when patterns emerge.
 
 ### 4. **No Breaking Changes**
+
 Adding a layer doesn't break existing layers. An old command works the same whether or not the new "Quality" layer exists.
 
 ### 5. **Lazy Loading**
+
 Components and their metadata load only when needed. A skill's trigger phrases consume ~50 tokens until matched. Full skill loads on match.
 
 ### 6. **Self-Extension**
+
 Use the system to build more system. Use `/scaffold:domain` to create the "Quality" domain, which adds quality commands. No external build process.
 
 ### 7. **Testability**
+
 Each layer can be tested independently. Test a command without skills. Test skills without MCP. Test quality gates on any component.
 
 ### 8. **Observability**
+
 The system is always observable. `/registry:scan` shows what exists. `/monitor:stats` shows behavior. You understand the system before optimizing it.
 
 ---
@@ -195,31 +222,34 @@ The system is always observable. `/registry:scan` shows what exists. `/monitor:s
 All components expose these standard interfaces:
 
 ### Component Metadata Interface
+
 ```json
 {
-  "id": "pm:next",
-  "type": "command",
-  "version": "1.0.0",
-  "name": "Get Next PM Task",
+  "created_at": "2025-10-29",
+  "creator": "user",
+  "dependencies": ["pm:list"],
   "description": "...",
-  "tags": ["pm", "task", "workflow"],
+  "id": "pm:next",
   "inputs": {
     "filter": "optional: status filter",
     "limit": "optional: max results"
   },
+  "name": "Get Next PM Task",
   "outputs": {
-    "tasks": "array of task objects",
-    "count": "number of results"
+    "count": "number of results",
+    "tasks": "array of task objects"
   },
-  "dependencies": ["pm:list"],
-  "creator": "user",
-  "created_at": "2025-10-29",
-  "quality_score": 0.92
+  "quality_score": 0.92,
+  "tags": ["pm", "task", "workflow"],
+  "type": "command",
+  "version": "1.0.0"
 }
 ```
 
 ### Lifecycle Operations Interface
+
 Every component supports:
+
 - `create` - Initialize component
 - `read` - Retrieve definition/status
 - `update` - Modify component
@@ -229,7 +259,9 @@ Every component supports:
 - `version` - Track changes
 
 ### Event Interface
+
 Components emit events:
+
 - `component.created`
 - `component.executed`
 - `component.completed`
@@ -237,10 +269,12 @@ Components emit events:
 - `component.updated`
 
 ### Configuration Interface
+
 Every component accepts config in standard format:
+
 ```yaml
-{domain}:
-  {component}:
+{ domain }:
+  { component }:
     enabled: true
     timeout: 30
     retry_policy: exponential
@@ -309,11 +343,13 @@ Every component accepts config in standard format:
 To start, build only 3 commands that enable everything else:
 
 ### **Command 1: `/design:domain`**
+
 Interactive thinking partner that asks questions and outputs design spec.
 
 **Input:** Domain name and optional description
 
 **Process:**
+
 1. Ask: "What operations does this domain need?"
 2. Ask: "Should this auto-discover (skill) or manual (command)?"
 3. Ask: "Need external systems (MCP)?"
@@ -327,11 +363,13 @@ Interactive thinking partner that asks questions and outputs design spec.
 ---
 
 ### **Command 2: `/scaffold:domain`**
+
 Generator that reads design spec and creates working structure.
 
 **Input:** Domain name (reads from designs/{domain}.json)
 
 **Process:**
+
 1. Read design spec
 2. Generate commands with $ARGUMENTS placeholders
 3. Generate skill with trigger phrases
@@ -346,17 +384,20 @@ Generator that reads design spec and creates working structure.
 ---
 
 ### **Command 3: `/registry:scan`**
+
 Observer that discovers all components and their relationships.
 
 **Input:** None (or optional filter)
 
 **Process:**
+
 1. Recursively scan `.claude/` structure
 2. Extract metadata from all components
 3. Detect dependencies and relationships
 4. Generate registry.json
 
 **Output:**
+
 - Console summary
 - `.claude/registry.json` with full index
 - Suggests relationships/conflicts
@@ -368,6 +409,7 @@ Observer that discovers all components and their relationships.
 ## Usage Progression
 
 ### Week 1: Bootstrap
+
 ```bash
 /design:domain pm "Project Management"
 → Creates .claude/designs/pm.json
@@ -380,6 +422,7 @@ Observer that discovers all components and their relationships.
 ```
 
 ### Week 2: Extend
+
 ```bash
 /design:domain testing "Test Automation"
 → Creates design spec
@@ -392,7 +435,9 @@ Observer that discovers all components and their relationships.
 ```
 
 ### Week 3: Observe
+
 Add lifecycle observability:
+
 ```bash
 /design:domain observability "System Monitoring"
 → Design observability layer
@@ -408,21 +453,27 @@ System is now self-extending. Each new domain adds capabilities that can be used
 ## Design Principles
 
 ### Principle 1: Composability First
+
 Every decision prioritizes composition over integration. Can this be broken into smaller pieces that work independently?
 
 ### Principle 2: Standards Over Customization
+
 Use standard interfaces. Don't invent new ones. A component is a component.
 
 ### Principle 3: Gradual Enhancement
+
 Good with 1 layer. Better with 2. Complete with 8. But always works.
 
 ### Principle 4: Observable Always
+
 System should be introspectable. `/registry:scan` shows state. `/monitor:stats` shows behavior.
 
 ### Principle 5: AI-Augmented, Not AI-Dependent
+
 AI provides suggestions, but humans make decisions. `/decide:architecture` recommends, you decide.
 
 ### Principle 6: Cheap to Start, Scales Infinitely
+
 A single slash command takes minutes. A full system takes weeks. Same architecture, different scale.
 
 ---
@@ -430,26 +481,31 @@ A single slash command takes minutes. A full system takes weeks. Same architectu
 ## Implementation Roadmap
 
 ### Phase 1 (Weeks 1-2): MCC
+
 - Build `/design:domain` - Interactive questionnaire
 - Build `/scaffold:domain` - Template generator
 - Build `/registry:scan` - Component discovery
 
 ### Phase 2 (Weeks 3-4): Self-Extension
+
 - Use MCC to scaffold "Lifecycle" domain
 - Build `/test:command`, `/evolve` commands
 - Prove system can extend itself
 
 ### Phase 3 (Weeks 5-6): Intelligence
+
 - Use MCC to scaffold "Intelligence" domain
 - Build `/decide:architecture`, `/learn` commands
 - System now advises its own development
 
 ### Phase 4 (Weeks 7-8): Full System
+
 - Scaffold remaining 5 layers
 - Integration testing
 - Documentation
 
 ### Phase 5 (Week 9+): Community
+
 - Package as plugin
 - Share with team
 - Iterate based on feedback
@@ -459,18 +515,21 @@ A single slash command takes minutes. A full system takes weeks. Same architectu
 ## Success Criteria
 
 ✅ **Phase 1 Complete When:**
+
 - `/design:domain` asks useful questions
 - `/scaffold:domain` generates working templates
 - `/registry:scan` shows accurate inventory
 - All 3 commands tested end-to-end
 
 ✅ **System Complete When:**
+
 - All 8 layers implemented
 - Each layer works independently
 - Layers compose seamlessly
 - User can build new domain in <5 minutes
 
 ✅ **Community Ready When:**
+
 - Shipped as plugin
 - Team adopts without training
 - Self-extends organically

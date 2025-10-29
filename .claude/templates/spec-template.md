@@ -177,9 +177,7 @@ interface AuthResult {
 ```typescript
 // [PLACEHOLDER: Code example or pseudocode]
 
-async function authenticate(
-  credentials: UserCredentials
-): Promise<AuthResult> {
+async function authenticate(credentials: UserCredentials): Promise<AuthResult> {
   // 1. Validate input
   // 2. Hash password
   // 3. Check against database
@@ -264,6 +262,7 @@ These tasks will be extracted by /plan:to-vtm for VTM ingestion.
 **Description**: [PLACEHOLDER: What needs to be built]
 
 **Acceptance Criteria**:
+
 - [PLACEHOLDER: AC1 - Specific, testable criterion]
 - [PLACEHOLDER: AC2 - Another testable criterion]
 
@@ -274,6 +273,7 @@ These tasks will be extracted by /plan:to-vtm for VTM ingestion.
 **Estimated Hours**: [X]
 
 **Files**:
+
 - Create: [PLACEHOLDER: path/to/new/file.ts]
 - Modify: [PLACEHOLDER: path/to/existing/file.ts]
 
@@ -284,6 +284,7 @@ These tasks will be extracted by /plan:to-vtm for VTM ingestion.
 **Description**: [PLACEHOLDER]
 
 **Acceptance Criteria**:
+
 - [PLACEHOLDER]
 
 **Dependencies**: [Task 1]
@@ -293,6 +294,7 @@ These tasks will be extracted by /plan:to-vtm for VTM ingestion.
 **Estimated Hours**: [X]
 
 **Files**:
+
 - Create: [PLACEHOLDER]
 - Modify: [PLACEHOLDER]
 
@@ -300,10 +302,10 @@ These tasks will be extracted by /plan:to-vtm for VTM ingestion.
 
 ## Risks & Mitigations
 
-| Risk                                  | Impact  | Probability | Mitigation                     |
-| ------------------------------------- | ------- | ----------- | ------------------------------ |
-| [PLACEHOLDER: e.g., "Token leakage"] | High    | Low         | [Use httpOnly cookies, HTTPS]  |
-| [PLACEHOLDER: Risk 2]                 | [H/M/L] | [H/M/L]     | [Mitigation strategy]          |
+| Risk                                 | Impact  | Probability | Mitigation                    |
+| ------------------------------------ | ------- | ----------- | ----------------------------- |
+| [PLACEHOLDER: e.g., "Token leakage"] | High    | Low         | [Use httpOnly cookies, HTTPS] |
+| [PLACEHOLDER: Risk 2]                | [H/M/L] | [H/M/L]     | [Mitigation strategy]         |
 
 ---
 

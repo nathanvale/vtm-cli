@@ -418,12 +418,13 @@ System Health Dashboard:
 
 **Content Structure:**
 
-```markdown
+````markdown
 # Lifecycle Domain: Testing and Evolution
 
 ## What This Domain Does
 
 The lifecycle domain provides commands for:
+
 - Testing newly scaffolded domains
 - Evolving and refactoring domains
 - Verifying component quality
@@ -432,14 +433,17 @@ The lifecycle domain provides commands for:
 ## Available Commands
 
 ### `/lifecycle:test`
+
 Test newly scaffolded domains for correctness and completeness.
 
 ```bash
 /lifecycle:test pm
 /lifecycle:test pm verbose
 ```
+````
 
 ### `/lifecycle:evolve`
+
 Evolve and refactor existing domains to improve quality.
 
 ```bash
@@ -448,6 +452,7 @@ Evolve and refactor existing domains to improve quality.
 ```
 
 ### `/lifecycle:verify`
+
 Quality check domain components.
 
 ```bash
@@ -455,6 +460,7 @@ Quality check domain components.
 ```
 
 ### `/lifecycle:monitor`
+
 Monitor domain system health.
 
 ```bash
@@ -465,17 +471,20 @@ Monitor domain system health.
 ## Quick Start
 
 1. Create a domain:
+
    ```bash
    /design:domain pm "Project Management"
    /scaffold:domain pm
    ```
 
 2. Test it:
+
    ```bash
    /lifecycle:test pm
    ```
 
 3. Verify quality:
+
    ```bash
    /lifecycle:verify pm
    ```
@@ -488,7 +497,9 @@ Monitor domain system health.
 ## Use Cases
 
 ### New Domain Development
+
 When you create a new domain:
+
 1. Run `/scaffold:domain myname`
 2. Run `/lifecycle:test myname` to verify structure
 3. Customize command implementations
@@ -496,14 +507,18 @@ When you create a new domain:
 5. Share when satisfied
 
 ### Existing Domain Maintenance
+
 To improve an existing domain:
+
 1. Run `/lifecycle:verify domain` to check quality
 2. Run `/lifecycle:evolve domain` to get suggestions
 3. Implement suggested improvements
 4. Run `/lifecycle:test domain` to verify changes work
 
 ### Team Monitoring
+
 To monitor team domains:
+
 1. Run `/lifecycle:monitor` to see all domains
 2. Run `/lifecycle:monitor domain` for specific health check
 3. Use monitor output to identify issues
@@ -530,6 +545,7 @@ These commands work with the domain development pipeline:
 ## Team Collaboration
 
 The lifecycle domain is configured for team sharing:
+
 - Team members: alice@company.com, bob@company.com, charlie@company.com
 - Scope: team (shared with team members)
 - Plugin: lifecycle-manager (shareable package)
@@ -537,19 +553,25 @@ The lifecycle domain is configured for team sharing:
 ## Troubleshooting
 
 ### "Domain not found" error
+
 Make sure the domain exists:
+
 ```bash
 ls .claude/designs/yourdomain.json
 ```
 
 ### Command didn't complete tests
+
 Check for validation errors:
+
 ```bash
 /lifecycle:test yourdomain verbose
 ```
 
 ### Domain shows warnings
+
 Get improvement suggestions:
+
 ```bash
 /lifecycle:evolve yourdomain
 ```
@@ -561,7 +583,8 @@ Get improvement suggestions:
 - Share domains with team
 - Monitor domain health regularly
 - Use lifecycle commands in CI/CD pipelines
-```
+
+````
 
 ---
 
@@ -668,7 +691,7 @@ Claude suggests:
 
 Just mention testing, evolution, verification, or monitoring in your request,
 and Claude will suggest the appropriate lifecycle command.
-```
+````
 
 **Trigger Phrase Breakdown:**
 
@@ -1007,6 +1030,7 @@ Domain testing, evolution, verification, and monitoring commands.
 ## Overview
 
 The lifecycle-manager plugin provides commands for:
+
 - Testing newly scaffolded domains
 - Evolving and refactoring domains
 - Verifying component quality
@@ -1015,36 +1039,40 @@ The lifecycle-manager plugin provides commands for:
 ## Components
 
 ### Commands (4)
+
 - `/lifecycle:test` - Test domain correctness
 - `/lifecycle:evolve` - Get improvement suggestions
 - `/lifecycle:verify` - Check quality
 - `/lifecycle:monitor` - Monitor health
 
 ### Skill (1)
+
 - `lifecycle-expert` - Auto-discovery with 12 trigger phrases
 
 ### Hooks (2)
+
 - `post-scaffold-lifecycle.sh` - Test after scaffolding
 - `on-domain-create-lifecycle.sh` - Verify on creation
 
 ## Installation
 
 Copy these files to your .claude/ directory:
-
 ```
+
 .claude/
 ├── commands/lifecycle/
-│   ├── test.md
-│   ├── evolve.md
-│   ├── verify.md
-│   ├── monitor.md
-│   └── README.md
+│ ├── test.md
+│ ├── evolve.md
+│ ├── verify.md
+│ ├── monitor.md
+│ └── README.md
 ├── skills/
-│   └── lifecycle-expert-SKILL.md
+│ └── lifecycle-expert-SKILL.md
 └── hooks/
-    ├── post-scaffold-lifecycle.sh
-    └── on-domain-create-lifecycle.sh
-```
+├── post-scaffold-lifecycle.sh
+└── on-domain-create-lifecycle.sh
+
+````
 
 ## Usage
 
@@ -1052,20 +1080,23 @@ Copy these files to your .claude/ directory:
 ```bash
 /lifecycle:test pm
 /lifecycle:test pm verbose
-```
+````
 
 ### Get Improvement Suggestions
+
 ```bash
 /lifecycle:evolve pm --refactor
 /lifecycle:evolve pm --optimize
 ```
 
 ### Verify Quality
+
 ```bash
 /lifecycle:verify pm
 ```
 
 ### Monitor Health
+
 ```bash
 /lifecycle:monitor pm
 /lifecycle:monitor --summary
@@ -1074,6 +1105,7 @@ Copy these files to your .claude/ directory:
 ## Team Sharing
 
 This plugin is configured for team use:
+
 - Members: alice@company.com, bob@company.com, charlie@company.com
 - Scope: team
 - Updates: Shared with team
@@ -1081,11 +1113,13 @@ This plugin is configured for team use:
 ## Support
 
 For issues or questions:
+
 1. Review the command README: `.claude/commands/lifecycle/README.md`
 2. Run `/lifecycle:test` to diagnose issues
 3. Run `/lifecycle:verify` to check quality
 4. Contact team maintainers
-```
+
+````
 
 ---
 
@@ -1273,7 +1307,7 @@ For issues or questions:
     }
   }
 }
-```
+````
 
 ---
 
@@ -1310,21 +1344,21 @@ Component Breakdown:
 
 ### File Size Breakdown
 
-| File | Lines | Size | Type |
-|------|-------|------|------|
-| lifecycle.json | 80 | 3.2 KB | Design Spec |
-| commands/lifecycle/test.md | 120 | 4.5 KB | Command |
-| commands/lifecycle/evolve.md | 100 | 3.8 KB | Command |
-| commands/lifecycle/verify.md | 110 | 4.2 KB | Command |
-| commands/lifecycle/monitor.md | 115 | 4.4 KB | Command |
-| commands/lifecycle/README.md | 180 | 6.8 KB | Documentation |
-| skills/lifecycle-expert-SKILL.md | 90 | 3.5 KB | Skill |
-| hooks/post-scaffold-lifecycle.sh | 40 | 1.2 KB | Hook Script |
-| hooks/on-domain-create-lifecycle.sh | 35 | 1.0 KB | Hook Script |
-| plugins/lifecycle-manager/plugin.yaml | 150 | 5.7 KB | Plugin Manifest |
-| plugins/lifecycle-manager/README.md | 85 | 3.2 KB | Documentation |
-| registry.json (lifecycle entry) | 200 | 7.8 KB | Registry |
-| **TOTAL** | **~1,200** | **~50 KB** | **All files** |
+| File                                  | Lines      | Size       | Type            |
+| ------------------------------------- | ---------- | ---------- | --------------- |
+| lifecycle.json                        | 80         | 3.2 KB     | Design Spec     |
+| commands/lifecycle/test.md            | 120        | 4.5 KB     | Command         |
+| commands/lifecycle/evolve.md          | 100        | 3.8 KB     | Command         |
+| commands/lifecycle/verify.md          | 110        | 4.2 KB     | Command         |
+| commands/lifecycle/monitor.md         | 115        | 4.4 KB     | Command         |
+| commands/lifecycle/README.md          | 180        | 6.8 KB     | Documentation   |
+| skills/lifecycle-expert-SKILL.md      | 90         | 3.5 KB     | Skill           |
+| hooks/post-scaffold-lifecycle.sh      | 40         | 1.2 KB     | Hook Script     |
+| hooks/on-domain-create-lifecycle.sh   | 35         | 1.0 KB     | Hook Script     |
+| plugins/lifecycle-manager/plugin.yaml | 150        | 5.7 KB     | Plugin Manifest |
+| plugins/lifecycle-manager/README.md   | 85         | 3.2 KB     | Documentation   |
+| registry.json (lifecycle entry)       | 200        | 7.8 KB     | Registry        |
+| **TOTAL**                             | **~1,200** | **~50 KB** | **All files**   |
 
 ---
 
@@ -1343,6 +1377,7 @@ Input to: /scaffold:domain
 ```
 
 **Integration:**
+
 - Reads design specifications
 - Validates them against schema
 - Uses for generating commands
@@ -1358,6 +1393,7 @@ Creates: 9 new files in .claude/
 ```
 
 **Integration:**
+
 - Input: Design specification
 - Output: Generated files
 - Verification: Registry updated
@@ -1375,6 +1411,7 @@ Status: verified
 ```
 
 **Integration:**
+
 - Indexes all components
 - Validates structure
 - Reports quality metrics
@@ -1394,6 +1431,7 @@ Monitors: /lifecycle:monitor pm
 ```
 
 **Integration:**
+
 - Works with any domain
 - Improves any domain
 - Monitors all domains

@@ -184,9 +184,7 @@ describe('task-ingest-helper', () => {
 
     it('should pad IDs with leading zeros (TASK-001, TASK-099, TASK-100)', async () => {
       // Create VTM with 98 tasks
-      const vtm = createTestVtm([
-        { id: 'TASK-098', title: 'Task 98' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-098', title: 'Task 98' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const tasks: Partial<Task>[] = [

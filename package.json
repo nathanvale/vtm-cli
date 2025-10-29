@@ -14,7 +14,8 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc -p tsconfig.json",
+    "build": "tsc -p tsconfig.json && pnpm run copy:data",
+    "copy:data": "mkdir -p dist/lib/data && cp src/lib/data/*.json dist/lib/data/",
     "clean": "rm -rf dist .tsbuildinfo 2>/dev/null || true",
     "dev": "pnpm run build && node ./dist/index.js",
     "cli": "node ./dist/index.js",

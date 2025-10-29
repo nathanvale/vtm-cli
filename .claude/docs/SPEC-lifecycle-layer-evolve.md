@@ -31,24 +31,28 @@ Each stage is **fully reversible** and **non-destructive**. You can undo any evo
 ## Core Design Principles
 
 ### 1. Non-Breaking Evolution
+
 - Each evolution adds capability, never removes
 - Old invocation methods always work
 - Backwards compatible by default
 - Clear deprecation path when changing
 
 ### 2. Reversibility
+
 - Every evolution can be undone
 - `rollback` command restores previous state
 - Evolution history tracked in metadata
 - No data loss
 
 ### 3. Observability
+
 - Registry updated automatically
 - Quality gates checked before evolution
 - Migration guides generated
 - Dependencies validated
 
 ### 4. Safety
+
 - Preview before applying
 - Confirmation for major changes
 - Automatic testing after evolution
@@ -58,27 +62,30 @@ Each stage is **fully reversible** and **non-destructive**. You can undo any evo
 
 ## Commands Overview
 
-| Command | Purpose | Safety | Reversible |
-|---------|---------|--------|-----------|
-| `/evolve:add-skill` | Add auto-discovery to command | Wraps existing | Yes |
-| `/evolve:to-plugin` | Package domain into plugin | Creates new manifest | Yes |
-| `/evolve:split` | Break monolithic into focused | Suggests changes | Yes |
-| `/evolve:remove-skill` | Remove auto-discovery | Reverses skill addition | Yes |
-| `/evolve:rollback` | Return to previous version | Full revert | Yes |
+| Command                | Purpose                       | Safety                  | Reversible |
+| ---------------------- | ----------------------------- | ----------------------- | ---------- |
+| `/evolve:add-skill`    | Add auto-discovery to command | Wraps existing          | Yes        |
+| `/evolve:to-plugin`    | Package domain into plugin    | Creates new manifest    | Yes        |
+| `/evolve:split`        | Break monolithic into focused | Suggests changes        | Yes        |
+| `/evolve:remove-skill` | Remove auto-discovery         | Reverses skill addition | Yes        |
+| `/evolve:rollback`     | Return to previous version    | Full revert             | Yes        |
 
 ---
 
 ## Command 1: `/evolve:add-skill`
 
 ### Purpose
+
 Transform a command into auto-discoverable by wrapping it with a skill that has trigger phrases.
 
 ### Command Signature
+
 ```bash
 /evolve:add-skill {command} [--auto-triggers] [--dry-run]
 ```
 
 ### Parameters
+
 - `command` (required): Existing command to add skill to (e.g., `pm:next`, `deploy:status`)
 - `--auto-triggers`: Auto-generate trigger phrases from command description
 - `--dry-run`: Preview changes without applying
@@ -86,6 +93,7 @@ Transform a command into auto-discoverable by wrapping it with a skill that has 
 ### Process Flow
 
 **Step 1: Validate Command**
+
 ```
 /evolve:add-skill pm:next
 
@@ -96,6 +104,7 @@ Transform a command into auto-discoverable by wrapping it with a skill that has 
 ```
 
 **Step 2: Analyze Command**
+
 - Read command documentation
 - Extract description, parameters, examples
 - Identify domain and operation name
@@ -113,6 +122,7 @@ Transform a command into auto-discoverable by wrapping it with a skill that has 
 **Step 3: Generate Trigger Phrases**
 
 Option A: Auto-generate (with `--auto-triggers`)
+
 ```
 🧠 Generated Trigger Phrases:
    • "next task" (from command name)
@@ -125,6 +135,7 @@ Option A: Auto-generate (with `--auto-triggers`)
 ```
 
 Option B: Interactive (default)
+
 ```
 💡 Suggest trigger phrases for this skill
 
@@ -255,6 +266,7 @@ Automatically suggests the `/pm:next` command when you're asking about what to w
 ## When Claude Uses This
 
 When you mention:
+
 - "What should I work on?" → Suggests `/pm:next`
 - "Next task" → Suggests `/pm:next`
 - "Show me next" → Suggests `/pm:next`
@@ -262,6 +274,7 @@ When you mention:
 ## The Underlying Command
 
 This skill wraps the `/pm:next` command, which:
+
 - Shows your next PM task from your task queue
 - Helps you start your next work item
 
@@ -290,25 +303,11 @@ To change trigger phrases, edit this file and update the `trigger_phrases` secti
 
 ```json
 {
-  "command": "pm:next",
-  "evolution_type": "add-skill",
-  "timestamp": "2025-10-29T14:32:00Z",
-  "applied_by": "claude",
-
-  "before": {
-    "type": "command",
-    "location": ".claude/commands/pm/next.md",
-    "has_skill": false,
-    "invocation_methods": ["manual"],
-    "version": "1.0.0"
-  },
-
   "after": {
-    "type": "command",
-    "location": ".claude/commands/pm/next.md",
     "has_skill": true,
-    "skill_name": "pm-next-discovery",
     "invocation_methods": ["manual", "auto-discovery"],
+    "location": ".claude/commands/pm/next.md",
+    "skill_name": "pm-next-discovery",
     "trigger_phrases": [
       "next task",
       "what should I work on",
@@ -316,58 +315,75 @@ To change trigger phrases, edit this file and update the `trigger_phrases` secti
       "show me next",
       "pm:next"
     ],
+    "type": "command",
     "version": "1.0.0"
   },
 
+  "applied_by": "claude",
+
+  "before": {
+    "has_skill": false,
+    "invocation_methods": ["manual"],
+    "location": ".claude/commands/pm/next.md",
+    "type": "command",
+    "version": "1.0.0"
+  },
+
+  "can_rollback": true,
   "changes": [
     {
-      "file": ".claude/skills/pm-next-discovery/SKILL.md",
       "action": "created",
-      "size": 1245,
-      "checksum": "sha256:abc123..."
+      "checksum": "sha256:abc123...",
+      "file": ".claude/skills/pm-next-discovery/SKILL.md",
+      "size": 1245
     },
     {
-      "file": ".claude/commands/pm/next.md",
       "action": "modified",
       "changes": ["added skill_id metadata"],
+      "checksum_after": "sha256:new123...",
       "checksum_before": "sha256:old123...",
-      "checksum_after": "sha256:new123..."
+      "file": ".claude/commands/pm/next.md"
     }
   ],
 
-  "can_rollback": true,
+  "command": "pm:next",
+  "evolution_type": "add-skill",
+  "metadata": {
+    "dependents": [],
+    "domain": "pm",
+    "operation": "next"
+  },
   "rollback_command": "/evolve:rollback pm:next",
 
-  "metadata": {
-    "domain": "pm",
-    "operation": "next",
-    "dependents": []
-  }
+  "timestamp": "2025-10-29T14:32:00Z"
 }
 ```
 
 ### Error Cases
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "Command not found" | Path doesn't exist | Verify command exists: `/registry:scan commands` |
-| "Skill already exists" | Skill already there | Use `/evolve:remove-skill` first |
-| "Invalid trigger phrases" | Duplicates across domain | Remove conflicting phrases |
-| "Domain mismatch" | Command/skill namespaces conflict | Ensure consistent naming |
+| Error                     | Cause                             | Fix                                              |
+| ------------------------- | --------------------------------- | ------------------------------------------------ |
+| "Command not found"       | Path doesn't exist                | Verify command exists: `/registry:scan commands` |
+| "Skill already exists"    | Skill already there               | Use `/evolve:remove-skill` first                 |
+| "Invalid trigger phrases" | Duplicates across domain          | Remove conflicting phrases                       |
+| "Domain mismatch"         | Command/skill namespaces conflict | Ensure consistent naming                         |
 
 ---
 
 ## Command 2: `/evolve:to-plugin`
 
 ### Purpose
+
 Package a domain (commands + skills + MCPs + hooks) into a complete, team-shareable plugin.
 
 ### Command Signature
+
 ```bash
 /evolve:to-plugin {domain} [--version VERSION] [--description TEXT] [--dry-run]
 ```
 
 ### Parameters
+
 - `domain` (required): Domain name to package (e.g., `pm`, `deploy`, `test`)
 - `--version`: Semantic version (defaults to 1.0.0)
 - `--description`: Plugin description (optional)
@@ -376,6 +392,7 @@ Package a domain (commands + skills + MCPs + hooks) into a complete, team-sharea
 ### Process Flow
 
 **Step 1: Validate Domain**
+
 ```
 /evolve:to-plugin pm --version 1.0.0
 
@@ -641,7 +658,7 @@ team_sharing:
 
   distribution:
     format: zip
-    includes_env: false  # .env.example only
+    includes_env: false # .env.example only
     size_estimate: "~25kb"
 
 # Dependencies
@@ -683,14 +700,17 @@ evolution:
 ## Command 3: `/evolve:split`
 
 ### Purpose
+
 Analyze a monolithic domain/component and suggest how to split it into smaller, focused pieces for better reusability.
 
 ### Command Signature
+
 ```bash
 /evolve:split {component} [--analyze-only] [--depth LEVEL]
 ```
 
 ### Parameters
+
 - `component` (required): Component to analyze (e.g., `pm`, `pm:next`, `pm-expert`)
 - `--analyze-only`: Show analysis without suggestions
 - `--depth`: Analysis depth (1=high-level, 5=detailed)
@@ -936,48 +956,52 @@ Proceed? (yes/no)
 
 ```json
 {
-  "component": "pm",
-  "type": "domain",
   "analysis_timestamp": "2025-10-29T14:32:00Z",
 
+  "benefit_analysis": {
+    "complexity_reduction": "25%",
+    "maintainability_improvement": "35%",
+    "reusability_improvement": "45%",
+    "testing_improvement": "40%"
+  },
+  "component": "pm",
   "current_structure": {
-    "total_size": 5124,
-    "total_files": 9,
-    "complexity_score": 6.5,
     "cohesion_score": 5.2,
-    "reusability_score": 7.1
+    "complexity_score": 6.5,
+    "reusability_score": 7.1,
+    "total_files": 9,
+    "total_size": 5124
   },
 
   "suggested_splits": [
     {
-      "name": "pm-core",
-      "description": "Core task management operations",
-      "components": ["commands/pm/next.md", "commands/pm/list.md", "commands/pm/context.md"],
-      "size": 2000,
-      "complexity": 2,
       "cohesion": 9.0,
+      "complexity": 2,
+      "components": [
+        "commands/pm/next.md",
+        "commands/pm/list.md",
+        "commands/pm/context.md"
+      ],
+      "description": "Core task management operations",
+      "name": "pm-core",
       "reusability": 8.5,
+      "size": 2000,
       "standalone_viable": true
     },
     {
-      "name": "pm-tracking",
-      "description": "Progress tracking and reporting",
-      "components": ["commands/pm/review.md", "commands/pm/stats.md"],
-      "size": 1200,
-      "complexity": 4,
       "cohesion": 8.5,
-      "reusability": 6.0,
+      "complexity": 4,
+      "components": ["commands/pm/review.md", "commands/pm/stats.md"],
       "dependencies": ["pm-core"],
+      "description": "Progress tracking and reporting",
+      "name": "pm-tracking",
+      "reusability": 6.0,
+      "size": 1200,
       "standalone_viable": false
     }
   ],
 
-  "benefit_analysis": {
-    "maintainability_improvement": "35%",
-    "reusability_improvement": "45%",
-    "testing_improvement": "40%",
-    "complexity_reduction": "25%"
-  }
+  "type": "domain"
 }
 ```
 
@@ -986,14 +1010,17 @@ Proceed? (yes/no)
 ## Command 4: `/evolve:remove-skill`
 
 ### Purpose
+
 Remove auto-discovery skill from a command, returning it to manual-only invocation.
 
 ### Command Signature
+
 ```bash
 /evolve:remove-skill {command} [--dry-run]
 ```
 
 ### Parameters
+
 - `command` (required): Command to remove skill from (e.g., `pm:next`)
 - `--dry-run`: Preview without applying
 
@@ -1085,14 +1112,17 @@ Redo This Evolution:
 ## Command 5: `/evolve:rollback`
 
 ### Purpose
+
 Revert any component to a previous version, undoing one or more evolutions.
 
 ### Command Signature
+
 ```bash
 /evolve:rollback {component} [{version|evolution-type}] [--force] [--dry-run]
 ```
 
 ### Parameters
+
 - `component` (required): Component to rollback (e.g., `pm:next`, `pm`, `pm-automation`)
 - `version` (optional): Target version or evolution (e.g., `v1.0.0`, `to-plugin`, `add-skill`)
 - `--force`: Skip safety checks
@@ -1208,99 +1238,98 @@ Need to undo further?
 ```json
 {
   "component": "pm:next",
+  "current_sequence": 3,
+  "current_state": {
+    "has_skill": false,
+    "invocation_methods": ["manual"],
+    "type": "command"
+  },
+  "current_version": "1.0.1-restored",
   "evolution_chain": [
     {
-      "sequence": 0,
-      "type": "initial",
-      "timestamp": "2025-10-29 13:45",
-      "version": "1.0.0",
+      "changes": [
+        {
+          "action": "created",
+          "checksum": "sha256:abc123",
+          "file": ".claude/commands/pm/next.md",
+          "size": 1200
+        }
+      ],
       "operation": "Created command",
-      "changes": [
-        {
-          "file": ".claude/commands/pm/next.md",
-          "action": "created",
-          "size": 1200,
-          "checksum": "sha256:abc123"
-        }
-      ],
-      "rollback_available": false
+      "rollback_available": false,
+      "sequence": 0,
+      "timestamp": "2025-10-29 13:45",
+      "type": "initial",
+      "version": "1.0.0"
     },
     {
-      "sequence": 1,
-      "type": "minor",
-      "timestamp": "2025-10-29 13:50",
-      "version": "1.0.1",
-      "operation": "Added limit parameter",
       "changes": [
         {
-          "file": ".claude/commands/pm/next.md",
           "action": "modified",
-          "diff": "Added @param limit",
+          "checksum_after": "sha256:def456",
           "checksum_before": "sha256:abc123",
-          "checksum_after": "sha256:def456"
+          "diff": "Added @param limit",
+          "file": ".claude/commands/pm/next.md"
         }
       ],
-      "rollback_available": true,
-      "rollback_requires": []
-    },
-    {
-      "sequence": 2,
-      "type": "evolve:add-skill",
-      "timestamp": "2025-10-29 14:32",
-      "version": "1.0.2",
-      "operation": "Added auto-discovery skill",
-      "changes": [
-        {
-          "file": ".claude/commands/pm/next.md",
-          "action": "modified",
-          "diff": "Added skill_id metadata",
-          "checksum_before": "sha256:def456",
-          "checksum_after": "sha256:ghi789"
-        },
-        {
-          "file": ".claude/skills/pm-next-discovery/SKILL.md",
-          "action": "created",
-          "size": 1245,
-          "checksum": "sha256:jkl012"
-        }
-      ],
-      "rollback_available": true,
-      "rollback_requires": []
-    },
-    {
-      "sequence": 3,
-      "type": "rollback:evolve:add-skill",
-      "timestamp": "2025-10-29 14:45",
-      "version": "1.0.1-restored",
-      "operation": "Rolled back add-skill evolution",
-      "original_sequence": 2,
-      "changes": [
-        {
-          "file": ".claude/commands/pm/next.md",
-          "action": "modified",
-          "restored_from": "2025-10-29 14:32",
-          "checksum_before": "sha256:ghi789",
-          "checksum_after": "sha256:def456"
-        },
-        {
-          "file": ".claude/skills/pm-next-discovery/SKILL.md",
-          "action": "deleted",
-          "archived_to": ".archive/skills/pm-next-discovery-2025-10-29-14-32/"
-        }
-      ],
+      "operation": "Added limit parameter",
       "rollback_available": true,
       "rollback_requires": [],
-      "can_redo": true
+      "sequence": 1,
+      "timestamp": "2025-10-29 13:50",
+      "type": "minor",
+      "version": "1.0.1"
+    },
+    {
+      "changes": [
+        {
+          "action": "modified",
+          "checksum_after": "sha256:ghi789",
+          "checksum_before": "sha256:def456",
+          "diff": "Added skill_id metadata",
+          "file": ".claude/commands/pm/next.md"
+        },
+        {
+          "action": "created",
+          "checksum": "sha256:jkl012",
+          "file": ".claude/skills/pm-next-discovery/SKILL.md",
+          "size": 1245
+        }
+      ],
+      "operation": "Added auto-discovery skill",
+      "rollback_available": true,
+      "rollback_requires": [],
+      "sequence": 2,
+      "timestamp": "2025-10-29 14:32",
+      "type": "evolve:add-skill",
+      "version": "1.0.2"
+    },
+    {
+      "can_redo": true,
+      "changes": [
+        {
+          "action": "modified",
+          "checksum_after": "sha256:def456",
+          "checksum_before": "sha256:ghi789",
+          "file": ".claude/commands/pm/next.md",
+          "restored_from": "2025-10-29 14:32"
+        },
+        {
+          "action": "deleted",
+          "archived_to": ".archive/skills/pm-next-discovery-2025-10-29-14-32/",
+          "file": ".claude/skills/pm-next-discovery/SKILL.md"
+        }
+      ],
+      "operation": "Rolled back add-skill evolution",
+      "original_sequence": 2,
+      "rollback_available": true,
+      "rollback_requires": [],
+      "sequence": 3,
+      "timestamp": "2025-10-29 14:45",
+      "type": "rollback:evolve:add-skill",
+      "version": "1.0.1-restored"
     }
-  ],
-
-  "current_sequence": 3,
-  "current_version": "1.0.1-restored",
-  "current_state": {
-    "type": "command",
-    "invocation_methods": ["manual"],
-    "has_skill": false
-  }
+  ]
 }
 ```
 
@@ -1309,21 +1338,25 @@ Need to undo further?
 ## Integration Points
 
 ### With Registry
+
 - All evolutions automatically update `.claude/registry.json`
 - Registry shows evolution history for each component
 - Dependencies tracked and validated
 
 ### With Quality Gates
+
 - Preview shows quality impact
 - Certain evolutions blocked if quality too low
 - Suggestions for improving quality before evolution
 
 ### With Testing
+
 - After evolution, can auto-run tests
 - `/test:command {command}` available after evolution
 - Quality gates enforced before major evolutions
 
 ### With Documentation
+
 - Evolution generates migration guides automatically
 - Deprecation notices added to old versions
 - Team communication templates provided
@@ -1334,27 +1367,29 @@ Need to undo further?
 
 ### Common Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "Command not found" | Path doesn't exist | Verify with `/registry:scan` |
-| "Skill already exists" | Skill already attached | Remove skill first |
-| "Skill conflict" | Trigger phrases conflict | Edit trigger phrases |
-| "Dependency exists" | Other components depend on this | Update dependents first |
-| "Rollback not available" | Old version deleted | Use most recent available version |
-| "Safety check failed" | Dependencies would break | Resolve dependencies first |
-| "Quality too low" | Component untested/undocumented | Address quality issues first |
+| Error                    | Cause                           | Fix                               |
+| ------------------------ | ------------------------------- | --------------------------------- |
+| "Command not found"      | Path doesn't exist              | Verify with `/registry:scan`      |
+| "Skill already exists"   | Skill already attached          | Remove skill first                |
+| "Skill conflict"         | Trigger phrases conflict        | Edit trigger phrases              |
+| "Dependency exists"      | Other components depend on this | Update dependents first           |
+| "Rollback not available" | Old version deleted             | Use most recent available version |
+| "Safety check failed"    | Dependencies would break        | Resolve dependencies first        |
+| "Quality too low"        | Component untested/undocumented | Address quality issues first      |
 
 ---
 
 ## Safety Guarantees
 
 ### Backup Strategy
+
 - All evolutions create checkpoints before applying
 - Original files archived in `.archive/` before modification
 - Full evolution history tracked in `.claude/history/`
 - Can restore from any historical state
 
 ### Validation Before Evolution
+
 - Syntax checking (JSON, YAML, Markdown)
 - Dependency resolution
 - Naming conflict detection
@@ -1362,12 +1397,14 @@ Need to undo further?
 - Quality gates evaluated
 
 ### Confirmation
+
 - Preview shown before any changes
 - User confirmation required
 - Rollback instructions shown
 - Estimated impact displayed
 
 ### Recovery
+
 - Every evolution reversible via `/evolve:rollback`
 - Full change history in `.claude/history/`
 - Automatic backups in `.archive/`

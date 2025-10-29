@@ -17,12 +17,14 @@
 ## Where We Are: 100% Core Complete
 
 ### ✅ Phase 1: VTM CLI Core (Complete)
+
 - All 7 core commands working and tested
 - TDD workflow with comprehensive test coverage
 - Token-efficient context generation
 - Dependency management and blocking
 
 ### ✅ Phase 2: Plan-to-VTM Bridge (Complete)
+
 - AI-powered task extraction from ADR + Spec
 - Automatic ID assignment and dependency resolution
 - Multi-layer validation
@@ -42,6 +44,7 @@
 **Why this first:** Prove the system works before adding more features.
 
 **What to do:**
+
 1. Pick a real feature you want to build
 2. Write an ADR documenting your architectural decision
 3. Write a Spec breaking down the implementation
@@ -53,12 +56,14 @@
 **Expected timeline:** 1-2 weeks of real usage
 
 **Success criteria:**
+
 - ✅ Can create real tasks from real documents
 - ✅ Tasks are accurate and complete
 - ✅ Workflow feels natural
 - ✅ System saves significant time
 
 **Deliverables:**
+
 - Real-world usage examples
 - Feedback document
 - List of pain points
@@ -77,6 +82,7 @@
 **Problem:** Tasks lack detailed context from source documents
 
 **Solution:** Enhance agent prompt to extract:
+
 - Exact ADR sections with line numbers
 - Spec sections with code examples
 - Rationale and constraints
@@ -90,6 +96,7 @@
 **Problem:** Hard to understand task relationships in text
 
 **Solution:** Generate visual dependency graphs
+
 ```bash
 vtm graph              # ASCII dependency tree
 vtm graph --mermaid    # Mermaid diagram for GitHub
@@ -104,6 +111,7 @@ vtm graph --dot        # Graphviz DOT format
 **Problem:** Same types of tasks repeatedly
 
 **Solution:** Template system
+
 ```bash
 vtm template list                    # Show available templates
 vtm template apply api-endpoint      # Apply template
@@ -118,6 +126,7 @@ vtm template create my-pattern       # Save as template
 **Problem:** Need to update multiple tasks at once
 
 **Solution:** Batch commands
+
 ```bash
 vtm batch start --tag=frontend      # Start all frontend tasks
 vtm batch complete --sprint=1       # Complete all sprint 1 tasks
@@ -134,6 +143,7 @@ vtm batch update --status=blocked   # Bulk status updates
 **Solutions:**
 
 **GitHub Integration:**
+
 ```bash
 vtm sync github --create-issues     # Create GitHub issues from tasks
 vtm sync github --import-issues     # Import issues to VTM
@@ -144,6 +154,7 @@ vtm sync github --link TASK-001     # Link task to issue #42
 **Value:** High for teams using GitHub
 
 **Linear/Jira Integration:**
+
 ```bash
 vtm export linear     # Export to Linear format
 vtm export jira       # Export to Jira format
@@ -157,6 +168,7 @@ vtm export jira       # Export to Jira format
 **Problem:** Want to measure actual vs estimated time
 
 **Solution:** Enhanced tracking
+
 ```bash
 vtm track start TASK-001             # Start timer
 vtm track stop TASK-001              # Stop timer
@@ -172,6 +184,7 @@ vtm analytics                        # Velocity, accuracy metrics
 **Problem:** Switching between different projects
 
 **Solution:** Project management
+
 ```bash
 vtm project list                     # List all projects
 vtm project switch my-api            # Switch active project
@@ -194,6 +207,7 @@ vtm project create new-project       # Create new VTM
 **Goal:** Make VTM CLI installable via npm
 
 **Steps:**
+
 1. Prepare package.json for publishing
 2. Add installation docs
 3. Create examples directory
@@ -216,6 +230,7 @@ npx vtm-cli next
 **Goal:** Package as Claude Code plugin for easy installation
 
 **Deliverables:**
+
 - Plugin manifest
 - Installation instructions
 - Usage examples
@@ -229,6 +244,7 @@ npx vtm-cli next
 **Goal:** Comprehensive documentation and examples
 
 **Sections:**
+
 - Getting Started guide
 - Tutorial: First feature end-to-end
 - Command reference
@@ -244,6 +260,7 @@ npx vtm-cli next
 **Goal:** Real-world examples showing VTM in action
 
 **Examples:**
+
 - REST API implementation
 - CLI tool development
 - React component library
@@ -259,12 +276,14 @@ npx vtm-cli next
 ### Weeks 1-2: Real-World Usage (Path 1)
 
 **Week 1: First Real Feature**
+
 - Day 1-2: Write ADR + Spec for actual feature
 - Day 3: Run `/plan:to-vtm` and review
 - Day 4-7: Implement tasks using VTM workflow
 - Document experience
 
 **Week 2: Second Feature + Refinement**
+
 - Day 1-3: Another real feature
 - Day 4-5: Note pain points and frustrations
 - Day 6-7: Prioritize improvements
@@ -299,6 +318,7 @@ npx vtm-cli next
 ### Week 5: Package and Share (Path 3)
 
 **Publish to the world:**
+
 - Day 1-2: Prepare npm package
 - Day 3: Publish to npm registry
 - Day 4-5: Create Claude Code plugin
@@ -311,16 +331,19 @@ npx vtm-cli next
 ## Priority Matrix: What to Build When
 
 ### Build FIRST (High Impact, Real Need):
+
 - ✅ Whatever caused you pain in Weeks 1-2
 - ✅ Features you wished existed during real usage
 - ✅ Enhancements that save significant time
 
 ### Build LATER (Nice-to-Have):
+
 - Features that sound cool but aren't painful yet
 - Integrations you don't actively use
 - Analytics you won't look at
 
 ### DON'T Build:
+
 - Features that solve hypothetical problems
 - Tools that duplicate existing solutions
 - Complexity for complexity's sake
@@ -332,25 +355,30 @@ npx vtm-cli next
 ### This Week:
 
 **Day 1: Choose a Real Feature**
+
 - Pick something you actually need to build
 - Could be VTM CLI enhancement
 - Could be separate project
 - Write it down
 
 **Day 2: Document with ADR + Spec**
+
 - Write ADR explaining architectural decision
 - Write Spec breaking down implementation
 - Use your own system's examples as reference
 
 **Day 3: Run Plan-to-VTM**
+
 ```bash
 /plan:to-vtm adr/YOUR-ADR.md specs/YOUR-SPEC.md
 ```
+
 - Review generated tasks
 - Note any issues
 - Document experience
 
 **Day 4-7: Implement Using VTM**
+
 ```bash
 vtm next                    # Get ready tasks
 vtm context TASK-XXX        # Get context
@@ -360,6 +388,7 @@ vtm stats                   # Check progress
 ```
 
 **End of Week: Reflection**
+
 - What worked well?
 - What was frustrating?
 - What features would have helped?
@@ -406,12 +435,14 @@ vtm stats                   # Check progress
 ### After Week 2 (Usage Phase):
 
 **Qualitative:**
+
 - ✅ System saved time vs manual approach?
 - ✅ Workflow felt natural?
 - ✅ Tasks were accurate and complete?
 - ✅ Would use again on next feature?
 
 **Quantitative:**
+
 - Time to create tasks: ADR+Spec → Ready tasks
 - Accuracy: % of generated tasks that were correct
 - Coverage: % of spec requirements captured
@@ -420,6 +451,7 @@ vtm stats                   # Check progress
 ### After Week 4 (Enhancement Phase):
 
 **Impact:**
+
 - Enhancements addressed real pain points?
 - Workflow improved measurably?
 - Would recommend to others?
@@ -427,6 +459,7 @@ vtm stats                   # Check progress
 ### After Week 5 (Share Phase):
 
 **Reach:**
+
 - Package published successfully?
 - Documentation clear for newcomers?
 - Examples demonstrate value?
@@ -450,28 +483,33 @@ Answer that, and you'll know exactly what (if anything) to enhance.
 If you need ideas for what to build using VTM:
 
 ### 1. VTM CLI Enhancements
+
 - Use VTM to manage VTM development
 - Dog-food your own system
 - High value, immediate feedback
 
 ### 2. API Service
+
 - Design RESTful API
 - Generate tasks from spec
 - Implement with TDD
 - Perfect for VTM workflow
 
 ### 3. CLI Tool
+
 - Another command-line tool
 - Similar development pattern
 - Good test case for VTM
 
 ### 4. Library/Package
+
 - Component library
 - Utility package
 - npm module
 - Clear task boundaries
 
 ### 5. Database Migration System
+
 - Well-defined tasks
 - Clear dependencies
 - Good testing story
@@ -484,6 +522,7 @@ If you need ideas for what to build using VTM:
 ## Summary
 
 ### Current Status:
+
 - ✅ VTM CLI Core: Complete (7 commands)
 - ✅ Plan-to-VTM Bridge: Complete (2 commands + slash command)
 - ✅ Tests: 115+ passing
@@ -494,16 +533,19 @@ If you need ideas for what to build using VTM:
 ### Next Steps (Priority Order):
 
 **1. Use It (Weeks 1-2)** ← START HERE
+
 - Build something real
 - Document experience
 - Note pain points
 
 **2. Enhance It (Weeks 3-4)**
+
 - Address real pain points
 - Build features you wished existed
 - Iterate based on usage
 
 **3. Share It (Week 5+)**
+
 - Publish to npm
 - Create Claude Code plugin
 - Write documentation

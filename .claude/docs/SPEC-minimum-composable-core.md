@@ -14,6 +14,7 @@ The Minimum Composable Core consists of **3 slash commands** that enable the ent
 3. **`/registry:scan`** - Component discovery
 
 These three commands are sufficient to:
+
 - Design new workflows
 - Generate working structures
 - Understand existing system
@@ -24,18 +25,22 @@ These three commands are sufficient to:
 ## Command 1: `/design:domain`
 
 ### Purpose
+
 Interactive AI-powered thinking partner that helps users design what a domain should contain before building it.
 
 ### Command Signature
+
 ```bash
 /design:domain {domain-name} [optional-description]
 ```
 
 ### Parameters
+
 - `domain-name` (required): Name for the domain (e.g., "pm", "devops", "testing")
 - `optional-description` (optional): High-level description of domain purpose
 
 ### Input Examples
+
 ```bash
 /design:domain pm
 /design:domain pm "Project Management Workflows"
@@ -45,6 +50,7 @@ Interactive AI-powered thinking partner that helps users design what a domain sh
 ### Process Flow
 
 **Step 1: Initialization**
+
 ```
 User: /design:domain pm "Project Management"
 
@@ -145,36 +151,12 @@ Save to: `.claude/designs/{domain}.json`
 
 ```json
 {
-  "name": "pm",
-  "description": "Project Management Workflows",
-  "version": "1.0.0",
   "created_at": "2025-10-29T14:32:00Z",
 
+  "description": "Project Management Workflows",
   "design": {
-    "operations": [
-      {
-        "name": "next",
-        "description": "Get next PM task to work on",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:next"
-      },
-      {
-        "name": "review",
-        "description": "Review PM progress and status",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:review"
-      },
-      {
-        "name": "context",
-        "description": "Get context for current PM task",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/pm:context"
-      }
-    ],
-
     "auto_discovery": {
       "enabled": true,
-      "type": "skill",
       "suggested_triggers": [
         "what should I work on",
         "next task",
@@ -182,52 +164,75 @@ Save to: `.claude/designs/{domain}.json`
         "show my tasks",
         "pm status",
         "pm review"
-      ]
-    },
-
-    "external_integration": {
-      "needed": true,
-      "type": "mcp",
-      "systems": [
-        {
-          "name": "project_db",
-          "type": "database",
-          "description": "Project management database"
-        }
-      ]
+      ],
+      "type": "skill"
     },
 
     "automation": {
       "enabled": true,
       "hooks": [
         {
-          "event": "pre-commit",
-          "action": "validate_task_linked"
+          "action": "validate_task_linked",
+          "event": "pre-commit"
         }
       ]
     },
 
-    "sharing": {
-      "scope": "team",
-      "team_members": ["user1", "user2"],
-      "published": false
+    "external_integration": {
+      "needed": true,
+      "systems": [
+        {
+          "description": "Project management database",
+          "name": "project_db",
+          "type": "database"
+        }
+      ],
+      "type": "mcp"
     },
 
+    "operations": [
+      {
+        "description": "Get next PM task to work on",
+        "manual_invocation": "/pm:next",
+        "name": "next",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Review PM progress and status",
+        "manual_invocation": "/pm:review",
+        "name": "review",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Get context for current PM task",
+        "manual_invocation": "/pm:context",
+        "name": "context",
+        "triggers_auto_discovery": true
+      }
+    ],
+
     "recommendations": {
-      "start_with": [
-        "Create commands for: next, review, context",
-        "Add skill with trigger phrases for auto-discovery",
-        "Create MCP stub for database connection",
-        "Add pre-commit hook for validation"
-      ],
       "next_steps": [
         "Run: /scaffold:domain pm",
         "Customize generated commands",
         "Test commands work locally",
         "Add quality gates when ready"
+      ],
+      "start_with": [
+        "Create commands for: next, review, context",
+        "Add skill with trigger phrases for auto-discovery",
+        "Create MCP stub for database connection",
+        "Add pre-commit hook for validation"
       ]
+    },
+    "sharing": {
+      "published": false,
+      "scope": "team",
+      "team_members": ["user1", "user2"]
     }
-  }
+  },
+  "name": "pm",
+  "version": "1.0.0"
 }
 ```
 
@@ -336,17 +341,21 @@ Claude:
 ## Command 2: `/scaffold:domain`
 
 ### Purpose
+
 Auto-generate complete `.claude/` structure from a design spec.
 
 ### Command Signature
+
 ```bash
 /scaffold:domain {domain-name}
 ```
 
 ### Parameters
+
 - `domain-name` (required): Name of domain to scaffold (must have .claude/designs/{domain}.json)
 
 ### Input Example
+
 ```bash
 /scaffold:domain pm
 ```
@@ -354,6 +363,7 @@ Auto-generate complete `.claude/` structure from a design spec.
 ### Process Flow
 
 **Step 1: Read Design**
+
 ```
 /scaffold:domain pm
 
@@ -398,6 +408,7 @@ Create the following structure:
 ### Generated Files
 
 #### **1. Command File: `commands/pm/next.md`**
+
 ```markdown
 ---
 name: pm:next
@@ -437,9 +448,13 @@ FILTER="${ARGUMENTS[0]:-all}"
 LIMIT="${ARGUMENTS[1]:-5}"
 
 # TODO: Implement fetching next task
+
 # This is a stub. Customize with:
+
 # - Your task source (Notion, database, etc.)
+
 # - Filtering logic
+
 # - Sorting logic
 
 echo "Getting next $LIMIT PM tasks (filter: $FILTER)"
@@ -460,6 +475,7 @@ echo "4. Link to /pm:context for details"
 ```
 
 #### **2. Skill File: `skills/pm-expert/SKILL.md`**
+
 ```markdown
 ---
 name: pm-expert
@@ -505,6 +521,7 @@ Helps you manage your PM workflow with smart command suggestions.
 ## When Claude Uses This
 
 When you mention things like:
+
 - "What should I work on?" → Suggests `/pm:next`
 - "Show me my tasks" → Suggests `/pm:list`
 - "What's the status?" → Suggests `/pm:review`
@@ -524,53 +541,43 @@ Keep the skill description updated as you evolve the domain.
 ```
 
 #### **3. MCP Configuration: `mcp-servers/pm-notion/mcp.json`**
+
 ```json
 {
-  "name": "pm-notion",
-  "type": "mcp",
-  "description": "Notion database integration for PM tasks",
-  "version": "1.0.0",
-
-  "connection": {
-    "type": "api",
-    "service": "notion",
-    "auth_type": "bearer_token"
-  },
-
   "configuration": {
     "api_key": "${NOTION_API_KEY}",
     "database_id": "${NOTION_DATABASE_ID}",
     "endpoint": "https://api.notion.com/v1"
   },
 
+  "connection": {
+    "auth_type": "bearer_token",
+    "service": "notion",
+    "type": "api"
+  },
+
+  "description": "Notion database integration for PM tasks",
+  "name": "pm-notion",
   "operations": {
     "read": {
-      "queries": [
-        "list_tasks",
-        "get_task_details",
-        "filter_by_status"
-      ]
+      "queries": ["list_tasks", "get_task_details", "filter_by_status"]
     },
     "write": {
-      "mutations": [
-        "update_task_status",
-        "create_task",
-        "delete_task"
-      ]
+      "mutations": ["update_task_status", "create_task", "delete_task"]
     }
   },
 
   "setup": {
-    "required_env_vars": [
-      "NOTION_API_KEY",
-      "NOTION_DATABASE_ID"
-    ],
-    "instructions": "Get credentials from: https://developers.notion.com/"
-  }
+    "instructions": "Get credentials from: https://developers.notion.com/",
+    "required_env_vars": ["NOTION_API_KEY", "NOTION_DATABASE_ID"]
+  },
+  "type": "mcp",
+  "version": "1.0.0"
 }
 ```
 
 #### **4. Hook Script: `hooks/pre-commit/pm-validate.sh`**
+
 ```bash
 #!/bin/bash
 # Pre-commit hook: Validate PM task linkage
@@ -598,6 +605,7 @@ exit 0
 ```
 
 #### **5. Plugin Manifest: `plugins/pm-automation/plugin.yaml`**
+
 ```yaml
 name: pm-automation
 version: 1.0.0
@@ -656,7 +664,8 @@ metadata:
 ```
 
 #### **6. Plugin README: `plugins/pm-automation/README.md`**
-```markdown
+
+````markdown
 # PM Automation Plugin
 
 Complete Project Management domain for Claude Code.
@@ -670,16 +679,19 @@ Complete Project Management domain for Claude Code.
 /pm:context             # Get task context
 /pm:list                # List all tasks
 ```
+````
 
 ## Setup
 
 1. **Configure Notion Integration:**
+
    ```bash
    export NOTION_API_KEY="your-key"
    export NOTION_DATABASE_ID="your-db-id"
    ```
 
 2. **Test the commands:**
+
    ```bash
    /pm:next
    ```
@@ -698,6 +710,7 @@ Complete Project Management domain for Claude Code.
 ## Customization
 
 Edit the command files in `commands/pm/` to:
+
 - Change how "next" task is selected
 - Add filters and sorting
 - Customize output format
@@ -706,46 +719,52 @@ Edit the command files in `commands/pm/` to:
 ## Integration
 
 Works seamlessly with other Claude Code domains:
+
 - Test domain: `@before /pm:context`
 - Deploy domain: `@requires /pm:status == "ready"`
 
 ## Support
 
 Having issues? Check:
+
 1. Notion API credentials are set
 2. Database ID is correct
 3. Run `/test:command pm:next` to debug
 4. Check logs: `/debug:logs pm`
+
 ```
 
 **Step 4: Summary Output**
 
 ```
+
 ✅ Successfully scaffolded pm domain!
 
 📁 Created files:
-  ✓ .claude/commands/pm/ (4 commands)
-  ✓ .claude/skills/pm-expert/SKILL.md
-  ✓ .claude/mcp-servers/pm-notion/mcp.json
-  ✓ .claude/hooks/pre-commit/pm-validate.sh
-  ✓ .claude/plugins/pm-automation/
+✓ .claude/commands/pm/ (4 commands)
+✓ .claude/skills/pm-expert/SKILL.md
+✓ .claude/mcp-servers/pm-notion/mcp.json
+✓ .claude/hooks/pre-commit/pm-validate.sh
+✓ .claude/plugins/pm-automation/
 
 📊 Summary:
-  • 4 slash commands ready to customize
-  • 1 skill with auto-discovery (7 trigger phrases)
-  • 1 MCP stub for Notion
-  • 1 pre-commit hook
-  • 1 plugin ready for team sharing
+• 4 slash commands ready to customize
+• 1 skill with auto-discovery (7 trigger phrases)
+• 1 MCP stub for Notion
+• 1 pre-commit hook
+• 1 plugin ready for team sharing
 
 🚀 Next steps:
-  1. Customize commands (edit .claude/commands/pm/*.md)
-  2. Set up Notion credentials
-  3. Test: /pm:next
-  4. When working: /registry:scan to verify
-  5. When ready: /evolve:to-plugin pm to package
+
+1. Customize commands (edit .claude/commands/pm/\*.md)
+2. Set up Notion credentials
+3. Test: /pm:next
+4. When working: /registry:scan to verify
+5. When ready: /evolve:to-plugin pm to package
 
 💡 Tip: Use /design:domain again to design your next domain!
-```
+
+````
 
 ---
 
@@ -757,12 +776,14 @@ Discover and index all components in the system. Makes the system observable and
 ### Command Signature
 ```bash
 /registry:scan [filter]
-```
+````
 
 ### Parameters
+
 - `filter` (optional): Filter results (e.g., "commands", "skills", "unlinked")
 
 ### Input Examples
+
 ```bash
 /registry:scan                    # Scan everything
 /registry:scan commands           # Just commands
@@ -775,15 +796,17 @@ Discover and index all components in the system. Makes the system observable and
 
 **Step 1: Discover Components**
 Recursively scan `.claude/` and identify:
-- Slash commands (*.md files in commands/)
+
+- Slash commands (\*.md files in commands/)
 - Skills (SKILL.md files)
 - MCP servers (mcp.json files)
 - Hooks (shell scripts in hooks/)
-- Agents (*.yaml files in agents/)
+- Agents (\*.yaml files in agents/)
 - Plugins (plugin.yaml files)
 
 **Step 2: Extract Metadata**
 For each component, parse:
+
 - Name, version, description
 - Dependencies (what it needs)
 - Dependents (what needs it)
@@ -796,56 +819,59 @@ Save to: `.claude/registry.json`
 
 ```json
 {
-  "timestamp": "2025-10-29T14:45:00Z",
-  "total_components": 4,
   "by_type": {
-    "commands": 4,
-    "skills": 1,
-    "mcp_servers": 1,
-    "hooks": 1,
     "agents": 0,
-    "plugins": 1
+    "commands": 4,
+    "hooks": 1,
+    "mcp_servers": 1,
+    "plugins": 1,
+    "skills": 1
   },
 
   "components": [
     {
-      "id": "pm:next",
-      "type": "command",
-      "namespace": "pm",
-      "name": "PM Next Task",
-      "description": "Get next PM task to work on",
-      "version": "1.0.0",
-      "location": ".claude/commands/pm/next.md",
-      "tags": ["pm", "task", "workflow"],
       "dependencies": [],
-      "used_by": ["pm-expert"],
+      "description": "Get next PM task to work on",
+      "id": "pm:next",
+      "location": ".claude/commands/pm/next.md",
+      "name": "PM Next Task",
+      "namespace": "pm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["pm", "task", "workflow"],
+      "type": "command",
+      "used_by": ["pm-expert"],
+      "version": "1.0.0"
     },
     {
-      "id": "pm-expert",
-      "type": "skill",
-      "name": "PM Expert",
-      "description": "Project Management domain expert",
-      "version": "1.0.0",
-      "location": ".claude/skills/pm-expert/SKILL.md",
-      "trigger_phrases": [
-        "next task",
-        "what should I work on",
-        "pm status"
-      ],
       "dependencies": ["pm:next", "pm:review", "pm:context", "pm:list"],
-      "used_by": [],
+      "description": "Project Management domain expert",
+      "id": "pm-expert",
+      "location": ".claude/skills/pm-expert/SKILL.md",
+      "name": "PM Expert",
       "quality": {
-        "triggers_tested": false,
-        "documented": true
-      }
+        "documented": true,
+        "triggers_tested": false
+      },
+      "trigger_phrases": ["next task", "what should I work on", "pm status"],
+      "type": "skill",
+      "used_by": [],
+      "version": "1.0.0"
     }
   ],
 
+  "health": {
+    "circular_dependencies": 0,
+    "missing_implementations": 0,
+    "quality_issues": [
+      "pm:next - needs testing",
+      "pm:notion - needs credentials"
+    ],
+    "unused_components": 0
+  },
   "relationships": {
     "pm:next": {
       "depends_on": ["pm-notion (mcp)"],
@@ -853,15 +879,8 @@ Save to: `.claude/registry.json`
     }
   },
 
-  "health": {
-    "missing_implementations": 0,
-    "unused_components": 0,
-    "circular_dependencies": 0,
-    "quality_issues": [
-      "pm:next - needs testing",
-      "pm:notion - needs credentials"
-    ]
-  }
+  "timestamp": "2025-10-29T14:45:00Z",
+  "total_components": 4
 }
 ```
 
@@ -933,48 +952,47 @@ Claude Registry Scanner:
 
 ```json
 {
-  "name": "string",
-  "description": "string",
-  "version": "semver",
   "created_at": "ISO8601",
 
+  "description": "string",
   "design": {
-    "operations": [
-      {
-        "name": "string",
-        "description": "string",
-        "triggers_auto_discovery": "boolean",
-        "manual_invocation": "string (/namespace:operation)"
-      }
-    ],
-
     "auto_discovery": {
       "enabled": "boolean",
-      "type": "skill|none",
-      "suggested_triggers": ["string"]
-    },
-
-    "external_integration": {
-      "needed": "boolean",
-      "type": "mcp|none",
-      "systems": [{"name": "string", "type": "string"}]
+      "suggested_triggers": ["string"],
+      "type": "skill|none"
     },
 
     "automation": {
       "enabled": "boolean",
-      "hooks": [{"event": "string", "action": "string"}]
+      "hooks": [{ "action": "string", "event": "string" }]
     },
 
+    "external_integration": {
+      "needed": "boolean",
+      "systems": [{ "name": "string", "type": "string" }],
+      "type": "mcp|none"
+    },
+
+    "operations": [
+      {
+        "description": "string",
+        "manual_invocation": "string (/namespace:operation)",
+        "name": "string",
+        "triggers_auto_discovery": "boolean"
+      }
+    ],
+
+    "recommendations": {
+      "next_steps": ["string"],
+      "start_with": ["string"]
+    },
     "sharing": {
       "scope": "personal|team|community",
       "team_members": ["string"]
-    },
-
-    "recommendations": {
-      "start_with": ["string"],
-      "next_steps": ["string"]
     }
-  }
+  },
+  "name": "string",
+  "version": "semver"
 }
 ```
 
@@ -988,26 +1006,26 @@ See Step 3 output above.
 
 ### `/design:domain` Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
+| Error                   | Cause                         | Fix                                          |
+| ----------------------- | ----------------------------- | -------------------------------------------- |
 | "Domain already exists" | Design for that domain exists | Use different name or delete existing design |
-| "Invalid domain name" | Name has invalid characters | Use alphanumeric + hyphens only |
-| "Design incomplete" | User skipped questions | Answer all questions or start over |
+| "Invalid domain name"   | Name has invalid characters   | Use alphanumeric + hyphens only              |
+| "Design incomplete"     | User skipped questions        | Answer all questions or start over           |
 
 ### `/scaffold:domain` Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "No design found" | Missing .claude/designs/{domain}.json | Run /design:domain first |
-| "Files already exist" | Structure partially exists | Delete existing files or use new domain |
-| "MCP config invalid" | Malformed mcp.json template | Validate JSON syntax |
+| Error                 | Cause                                 | Fix                                     |
+| --------------------- | ------------------------------------- | --------------------------------------- |
+| "No design found"     | Missing .claude/designs/{domain}.json | Run /design:domain first                |
+| "Files already exist" | Structure partially exists            | Delete existing files or use new domain |
+| "MCP config invalid"  | Malformed mcp.json template           | Validate JSON syntax                    |
 
 ### `/registry:scan` Errors
 
-| Error | Cause | Fix |
-|-------|-------|-----|
-| "No components found" | .claude/ is empty | Scaffold a domain first |
-| "Invalid metadata" | Component metadata broken | Check files in .claude/ |
+| Error                 | Cause                     | Fix                     |
+| --------------------- | ------------------------- | ----------------------- |
+| "No components found" | .claude/ is empty         | Scaffold a domain first |
+| "Invalid metadata"    | Component metadata broken | Check files in .claude/ |
 
 ---
 
@@ -1027,17 +1045,20 @@ These 3 MCC commands enable all others:
 ## Success Criteria
 
 ✅ **`/design:domain` Works When:**
+
 - Asks all 5 questions clearly
 - Saves valid design spec to `.claude/designs/{domain}.json`
 - Next step guidance is accurate
 
 ✅ **`/scaffold:domain` Works When:**
+
 - Generates all expected files
 - Templates are editable and runnable
 - Generated commands have proper $ARGUMENTS handling
 - Skills have clear trigger phrases
 
 ✅ **`/registry:scan` Works When:**
+
 - Discovers all components
 - Generates accurate registry.json
 - Shows dependencies correctly
@@ -1049,16 +1070,19 @@ These 3 MCC commands enable all others:
 ## Testing Strategy
 
 ### Unit Tests
+
 - Design spec validates against schema
 - Scaffold generates expected file structure
 - Registry correctly parses all file types
 
 ### Integration Tests
+
 - Can design → scaffold → scan workflow
 - Scanned registry matches actual files
 - Generated commands are functional
 
 ### User Tests
+
 - New user can follow design wizard without confusion
 - Generated code is customizable
 - Next-step suggestions are helpful
@@ -1068,21 +1092,25 @@ These 3 MCC commands enable all others:
 ## Deployment
 
 ### Phase 1: Create Commands
+
 - Create `.claude/commands/scaffold-domain.md` (master command)
 - Contains all 3 operations as subcommands
 - Or: Create 3 separate files
 
 ### Phase 2: Test
+
 - Test each command independently
 - Test workflow: design → scaffold → scan
 - Test error cases
 
 ### Phase 3: Document
+
 - Create this spec
 - Add usage examples
 - Add troubleshooting guide
 
 ### Phase 4: Use It
+
 - Design your own domains
 - Scaffold systems you need
 - Use /registry:scan to understand what exists
@@ -1093,12 +1121,14 @@ These 3 MCC commands enable all others:
 ## Implementation Notes
 
 The MCC is intentionally minimal:
+
 - Only 3 commands needed
 - No external dependencies (bash + Node.js)
 - Can be built in <4 hours
 - Self-extending (can scaffold more of itself)
 
 Key decisions:
+
 - Interactive Q&A over configuration files (better UX)
 - JSON for design specs (machine readable, human editable)
 - Standard templates (copy-paste customization)

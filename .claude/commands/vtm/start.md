@@ -31,13 +31,24 @@ Mark a task as in-progress to track active work.
 
 # Parse arguments
 TASK_ID="${ARGUMENTS[0]}"
+FORCE_FLAG=""
+
+# Check for --force flag
+if [[ "${ARGUMENTS[1]}" == "--force" ]] || [[ "${ARGUMENTS[0]}" == "--force" ]]; then
+    FORCE_FLAG="--force"
+    # If --force is first arg, task ID is second
+    if [[ "${ARGUMENTS[0]}" == "--force" ]]; then
+        TASK_ID="${ARGUMENTS[1]}"
+    fi
+fi
 
 if [[ -z "$TASK_ID" ]]; then
     echo "❌ Error: Task ID is required"
     echo ""
-    echo "Usage: /vtm:start TASK-XXX"
+    echo "Usage: /vtm:start TASK-XXX [--force]"
     echo ""
     echo "Example: /vtm:start TASK-003"
+    echo "         /vtm:start TASK-003 --force"
     exit 1
 fi
 
@@ -53,6 +64,45 @@ fi
 if [[ ! -f "vtm.json" ]]; then
     echo "❌ Error: No vtm.json found"
     exit 1
+fi
+
+# Smart hints (unless --force flag is set)
+if [[ -z "$FORCE_FLAG" ]]; then
+    # Check if .vtm-session exists (indicates user has viewed context)
+    if [[ ! -f ".vtm-session" ]]; then
+        echo "💡 Smart Hint: You haven't viewed task context yet"
+        echo ""
+        echo "Consider using /vtm:work instead:"
+        echo "   /vtm:work $TASK_ID"
+        echo ""
+        echo "This will show context AND start the task in one step."
+        echo ""
+        echo "To bypass this hint: /vtm:start $TASK_ID --force"
+        echo ""
+        read -p "Continue anyway? (y/N): " -n 1 -r
+        echo ""
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            echo "Cancelled. Use /vtm:work $TASK_ID for context + start."
+            exit 0
+        fi
+    else
+        # Check if this task is already the current task
+        CURRENT_TASK=$(cat .vtm-session 2>/dev/null | grep -o '"currentTask":"[^"]*"' | cut -d'"' -f4)
+        if [[ "$CURRENT_TASK" == "$TASK_ID" ]]; then
+            echo "⚠️  Warning: $TASK_ID is already your current task"
+            echo ""
+            echo "You may have already started this task."
+            echo ""
+            echo "To bypass this hint: /vtm:start $TASK_ID --force"
+            echo ""
+            read -p "Start again anyway? (y/N): " -n 1 -r
+            echo ""
+            if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+                echo "Cancelled. Current task: $CURRENT_TASK"
+                exit 0
+            fi
+        fi
+    fi
 fi
 
 echo "▶️  Starting Task: $TASK_ID"
@@ -82,6 +132,7 @@ fi
 ## Status Tracking
 
 Starting a task:
+
 - Changes status from `pending` → `in-progress`
 - Updates stats automatically
 - Validates dependencies are met

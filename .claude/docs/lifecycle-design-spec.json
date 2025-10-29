@@ -1,38 +1,9 @@
 {
-  "name": "lifecycle",
-  "description": "Testing and evolution commands for Claude Code domain development and maintenance",
-  "version": "1.0.0",
   "created_at": "2025-10-29T15:45:00Z",
+  "description": "Testing and evolution commands for Claude Code domain development and maintenance",
   "design": {
-    "operations": [
-      {
-        "name": "test",
-        "description": "Test newly scaffolded domains for correctness, completeness, and functionality",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/lifecycle:test"
-      },
-      {
-        "name": "evolve",
-        "description": "Evolve and refactor existing domains to improve quality, performance, and maintainability",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/lifecycle:evolve"
-      },
-      {
-        "name": "verify",
-        "description": "Quality check domain components for completeness, consistency, and configuration correctness",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/lifecycle:verify"
-      },
-      {
-        "name": "monitor",
-        "description": "Monitor domain system health, component status, usage statistics, and health metrics",
-        "triggers_auto_discovery": true,
-        "manual_invocation": "/lifecycle:monitor"
-      }
-    ],
     "auto_discovery": {
       "enabled": true,
-      "type": "skill",
       "suggested_triggers": [
         "test the domain",
         "test newly created commands",
@@ -46,26 +17,71 @@
         "domain health check",
         "monitor the system",
         "check domain status"
-      ]
-    },
-    "external_integration": {
-      "needed": false,
-      "type": "none",
-      "systems": []
+      ],
+      "type": "skill"
     },
     "automation": {
       "enabled": true,
       "hooks": [
         {
-          "event": "post-scaffold",
           "action": "run_domain_tests",
-          "description": "Automatically test domains immediately after scaffolding"
+          "description": "Automatically test domains immediately after scaffolding",
+          "event": "post-scaffold"
         },
         {
-          "event": "on-domain-create",
           "action": "verify_structure",
-          "description": "Automatically verify domain structure when created"
+          "description": "Automatically verify domain structure when created",
+          "event": "on-domain-create"
         }
+      ]
+    },
+    "external_integration": {
+      "needed": false,
+      "systems": [],
+      "type": "none"
+    },
+    "operations": [
+      {
+        "description": "Test newly scaffolded domains for correctness, completeness, and functionality",
+        "manual_invocation": "/lifecycle:test",
+        "name": "test",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Evolve and refactor existing domains to improve quality, performance, and maintainability",
+        "manual_invocation": "/lifecycle:evolve",
+        "name": "evolve",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Quality check domain components for completeness, consistency, and configuration correctness",
+        "manual_invocation": "/lifecycle:verify",
+        "name": "verify",
+        "triggers_auto_discovery": true
+      },
+      {
+        "description": "Monitor domain system health, component status, usage statistics, and health metrics",
+        "manual_invocation": "/lifecycle:monitor",
+        "name": "monitor",
+        "triggers_auto_discovery": true
+      }
+    ],
+    "recommendations": {
+      "next_steps": [
+        "Run: /scaffold:domain lifecycle",
+        "Review generated files in .claude/commands/lifecycle/",
+        "Customize command implementations with real testing logic",
+        "Test commands locally: /lifecycle:test pm (on existing domains)",
+        "Add quality gates and automated tests when ready",
+        "Review with team members and gather feedback",
+        "Deploy to team registry when approved"
+      ],
+      "start_with": [
+        "Create commands for: test, evolve, verify, monitor",
+        "Add skill with trigger phrases for auto-discovery and Claude auto-suggestion",
+        "Create hook scripts for post-scaffold validation and quality assurance",
+        "Create comprehensive README.md for team documentation and onboarding",
+        "Test with /lifecycle:test before sharing with team"
       ]
     },
     "sharing": {
@@ -75,46 +91,30 @@
         "bob@company.com",
         "charlie@company.com"
       ]
-    },
-    "recommendations": {
-      "start_with": [
-        "Create commands for: test, evolve, verify, monitor",
-        "Add skill with trigger phrases for auto-discovery and Claude auto-suggestion",
-        "Create hook scripts for post-scaffold validation and quality assurance",
-        "Create comprehensive README.md for team documentation and onboarding",
-        "Test with /lifecycle:test before sharing with team"
-      ],
-      "next_steps": [
-        "Run: /scaffold:domain lifecycle",
-        "Review generated files in .claude/commands/lifecycle/",
-        "Customize command implementations with real testing logic",
-        "Test commands locally: /lifecycle:test pm (on existing domains)",
-        "Add quality gates and automated tests when ready",
-        "Review with team members and gather feedback",
-        "Deploy to team registry when approved"
-      ]
     }
   },
   "metadata": {
-    "purpose": "System domain for testing and maintaining other domains",
-    "use_cases": [
-      "Test newly scaffolded domains immediately after creation",
-      "Evolve and refactor domains to improve quality",
-      "Verify domain components are correctly configured",
-      "Monitor system health and component status"
-    ],
-    "dependencies": [],
     "compatible_with": [
       "pm (project management)",
       "devops (infrastructure)",
       "all user domains"
     ],
+    "dependencies": [],
     "maturity": "production-ready",
+    "purpose": "System domain for testing and maintaining other domains",
     "target_users": [
       "domain developers",
       "system architects",
       "team leads",
       "devops engineers"
+    ],
+    "use_cases": [
+      "Test newly scaffolded domains immediately after creation",
+      "Evolve and refactor domains to improve quality",
+      "Verify domain components are correctly configured",
+      "Monitor system health and component status"
     ]
-  }
+  },
+  "name": "lifecycle",
+  "version": "1.0.0"
 }

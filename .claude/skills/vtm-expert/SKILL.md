@@ -69,6 +69,7 @@ The typical VTM workflow:
 ## Token Efficiency
 
 VTM achieves 99% token reduction by:
+
 - Surgical access to specific tasks (not loading entire manifest)
 - Dependency resolution built-in
 - Two context modes: minimal (~2000 tokens) and compact (~500 tokens)
@@ -85,6 +86,7 @@ VTM achieves 99% token reduction by:
 ## Integration
 
 Works seamlessly with other Claude Code domains:
+
 - Can be invoked manually: `/vtm:operation`
 - Auto-triggered by Claude based on conversation
 - Integrates with git hooks for validation
@@ -95,6 +97,7 @@ Works seamlessly with other Claude Code domains:
 Edit trigger phrases in the frontmatter above to match your vocabulary.
 
 **Examples:**
+
 - Add project-specific terms: "backlog item", "sprint task"
 - Add abbreviations: "ctx" for context, "nxt" for next
 - Add workflow terms: "pick up task", "finish task"
@@ -102,12 +105,14 @@ Edit trigger phrases in the frontmatter above to match your vocabulary.
 ## Technical Details
 
 **Architecture:**
+
 - Commands wrap the vtm CLI (npm package)
 - Requires vtm.json in project root
 - Atomic writes with automatic stats recalculation
 - Dependency validation built-in
 
 **Data Flow:**
+
 ```
 User phrase → Skill triggers → Command suggested →
 User approves → vtm CLI executes → Stats auto-update

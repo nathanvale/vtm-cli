@@ -5,17 +5,20 @@ Companion to the Claude Code Extensibility Expert Prompt
 ## How to Use This System
 
 ### For Individual Developers
+
 1. Start with local `.claude/commands/` for personal workflows
 2. Move to `.claude/skills/` when you want auto-discovery
 3. Package as plugin when team requests it
 
 ### For Teams
+
 1. Establish command conventions in `.claude/commands/`
 2. Create shared skills in `.claude/skills/`
 3. Bundle as plugin in `.claude/plugins/` for distribution
 4. Publish to `claude-code-plugins-plus` or internal registry
 
 ### For Open Source
+
 1. Build plugin in separate repo
 2. Use plugin.yaml for versioning
 3. Publish marketplace entry
@@ -28,6 +31,7 @@ Companion to the Claude Code Extensibility Expert Prompt
 ### Phase 1: Just a Command
 
 **File:** `.claude/commands/mytask.md`
+
 ```markdown
 # My Task
 
@@ -49,6 +53,7 @@ echo "Argument 2: $ARGUMENTS[1]"
 ### Phase 2: Add Skill for Auto-Discovery
 
 **Add File:** `.claude/skills/my-task-skill/SKILL.md`
+
 ```markdown
 ---
 name: my-task-workflow
@@ -70,13 +75,16 @@ trigger_phrases:
 This skill teaches Claude when and how to run your task automatically.
 
 ## When Claude Uses This
+
 - User asks to automate something related
 - Recognizes opportunity to save time
 
 ## How It Works
+
 Available command: \`/project:mytask {arg1} {arg2}\`
 
 ## Best Practices
+
 - Always validate inputs first
 - Confirm destructive operations
 - Log results for audit trail
@@ -91,6 +99,7 @@ Available command: \`/project:mytask {arg1} {arg2}\`
 **Create Directory:** `.claude/plugins/mytask-plugin/`
 
 **File:** `.claude/plugins/mytask-plugin/plugin.yaml`
+
 ```yaml
 name: mytask-automation
 version: 1.0.0
@@ -152,19 +161,20 @@ Result: Plugin with commands + skills + hooks
 ### Step 3: Define the Skill (Auto-Discovery)
 
 **File:** `.claude/plugins/git-worktree-manager/SKILL.md`
+
 ```markdown
 ---
 name: git-worktree-orchestration
 description: |
   Expert in managing git worktrees for parallel development.
-  
+
   Understands:
   - Creating isolated worktrees per feature branch
   - Port allocation for multiple dev servers
   - Switching between active worktree contexts
   - Cleaning up completed worktrees
   - Tracking metadata (branch → port mapping)
-  
+
   Use when:
   - Developer needs to work on multiple features simultaneously
   - Creating new feature branch with isolated environment
@@ -185,22 +195,26 @@ trigger_phrases:
 # Git Worktree Manager Skill
 
 ## Purpose
+
 Enables productive parallel development by managing isolated worktrees with
 coordinated port allocation and context switching.
 
 ## When Claude Should Use This
+
 - User asks to work on multiple branches simultaneously
 - Creating new feature branch development environment
 - Need to manage multiple dev servers on different ports
 - Switching between active development contexts
 
 ## Available Commands
+
 - \`/project:worktree:create {branch} {port}\` - Create new worktree
 - \`/project:worktree:list\` - View all active worktrees with ports
 - \`/project:worktree:switch {branch}\` - Change to worktree
 - \`/project:worktree:delete {branch}\` - Clean up finished worktree
 
 ## Smart Behaviors
+
 1. **Port Validation:** Check port isn't already allocated
 2. **Branch Validation:** Verify branch exists before creating
 3. **Metadata Tracking:** Maintain worktrees.json with branch→port mapping
@@ -210,7 +224,7 @@ coordinated port allocation and context switching.
 ## Example Conversation
 
 User: "I want to work on feature-auth and feature-api at the same time"
-Claude: "I can set up parallel worktrees for you. Let me create isolated 
+Claude: "I can set up parallel worktrees for you. Let me create isolated
 environments on different ports."
 → /project:worktree:create feature-auth 3001
 → /project:worktree:create feature-api 3002
@@ -220,6 +234,7 @@ Claude: "Switching to feature-auth worktree (port 3001)"
 → /project:worktree:switch feature-auth
 
 ## Best Practices
+
 - Always confirm port numbers before creating
 - Keep worktree.json in git for team coordination
 - Clean up worktrees when features complete
@@ -229,6 +244,7 @@ Claude: "Switching to feature-auth worktree (port 3001)"
 ### Step 4: Create Commands (Each with Arguments)
 
 **File:** `.claude/plugins/git-worktree-manager/commands/create.md`
+
 ```markdown
 ---
 name: create
@@ -253,29 +269,34 @@ TREES_DIR="./trees"
 WORKTREE_PATH="$TREES_DIR/$BRANCH"
 
 # Validate
+
 if [ -z "$BRANCH" ] || [ -z "$PORT" ]; then
-  echo "Error: Missing branch or port"
-  echo "Usage: /project:worktree:create <branch> <port>"
-  exit 1
+echo "Error: Missing branch or port"
+echo "Usage: /project:worktree:create <branch> <port>"
+exit 1
 fi
 
 # Check port not in use
+
 if grep -q ":$PORT" "$TREES_DIR/.worktrees" 2>/dev/null; then
-  echo "Error: Port $PORT already allocated"
-  exit 1
+echo "Error: Port $PORT already allocated"
+exit 1
 fi
 
 # Create trees directory
+
 mkdir -p "$TREES_DIR"
 
 # Create worktree
+
 git worktree add "$WORKTREE_PATH" "$BRANCH" || {
-  echo "Creating branch first..."
-  git checkout -b "$BRANCH"
+echo "Creating branch first..."
+git checkout -b "$BRANCH"
   git worktree add "$WORKTREE_PATH" "$BRANCH"
 }
 
 # Save metadata
+
 echo "$BRANCH:$PORT:$(date +%s)" >> "$TREES_DIR/.worktrees"
 echo "PORT=$PORT" > "$WORKTREE_PATH/.env.worktree"
 
@@ -287,6 +308,7 @@ echo "🚀 Next: cd $WORKTREE_PATH && claude code ."
 ```
 
 **File:** `.claude/plugins/git-worktree-manager/commands/list.md`
+
 ```markdown
 ---
 name: list
@@ -307,21 +329,21 @@ echo "🌳 Active Worktrees:"
 echo ""
 
 if [ ! -f "$TREES_DIR/.worktrees" ]; then
-  echo "  No worktrees yet"
-  exit 0
+echo " No worktrees yet"
+exit 0
 fi
 
 while IFS=: read -r branch port timestamp; do
-  if [ -d "$TREES_DIR/$branch" ]; then
-    # Calculate age
-    age=$(($(date +%s) - timestamp))
-    age_hours=$((age / 3600))
-    
+if [ -d "$TREES_DIR/$branch" ]; then # Calculate age
+age=$(($(date +%s) - timestamp))
+age_hours=$((age / 3600))
+
     echo "  • $branch"
     echo "    Port: $port | Age: ${age_hours}h"
     echo "    Path: $TREES_DIR/$branch"
     echo ""
-  fi
+
+fi
 done < "$TREES_DIR/.worktrees"
 \`\`\`
 ```
@@ -329,6 +351,7 @@ done < "$TREES_DIR/.worktrees"
 ### Step 5: Add Hooks (Automation)
 
 **File:** `.claude/plugins/git-worktree-manager/hooks/pre-commit/validate-branch.sh`
+
 ```bash
 #!/bin/bash
 # Auto-run before commits in any worktree
@@ -349,6 +372,7 @@ exit 0
 ### Step 6: Plugin Manifest
 
 **File:** `.claude/plugins/git-worktree-manager/plugin.yaml`
+
 ```yaml
 name: git-worktree-manager
 version: 1.2.0
@@ -358,10 +382,10 @@ components:
   commands:
     - path: commands/
       namespace: worktree
-  
+
   skills:
     - path: SKILL.md
-  
+
   hooks:
     - event: pre-commit
       script: hooks/pre-commit/validate-branch.sh
@@ -370,16 +394,16 @@ metadata:
   author: Your Team
   repository: github.com/yourorg/claude-code-plugins
   marketplace: claude-code-plugins-plus
-  
+
   tags:
     - git
     - parallelization
     - development
     - worktrees
-  
+
   dependencies:
     - git 2.34+
-  
+
   tested_with:
     - Node.js 18+
     - Python 3.10+
@@ -396,6 +420,7 @@ metadata:
 **Goal:** Every developer gets same code review process, test standards, commit conventions
 
 **File:** `.claude/plugins/team-standards/SKILL.md`
+
 ```markdown
 ---
 name: team-development-standards
@@ -407,7 +432,7 @@ description: |
   - Commit message conventions
   - Performance benchmarks
   - Documentation standards
-  
+
 trigger_phrases:
   - "code review"
   - "test this"
@@ -422,6 +447,7 @@ trigger_phrases:
 ```
 
 **Distribution:**
+
 ```bash
 # Team publishes plugin
 git checkout -b plugin/team-standards
@@ -438,6 +464,7 @@ echo "team-standards:" >> .claude/plugins/manifest.yml
 ```
 
 **Result:** All team members instantly get:
+
 - Same slash commands (code-review, test-all, commit-check)
 - Same skills (auto-detects when standards apply)
 - Same hooks (lint runs pre-commit)
@@ -484,12 +511,14 @@ END: You have your architecture!
 ## Real-World Reference: What People Are Building
 
 **From Jeremy Longshore's 234+ plugins:**
+
 - Excel Analyst Pro (with auto-invoked Skills)
 - DevOps Automation Pack (MCP + Hooks + Subagents)
 - Domain Memory Agent (semantic search with TF-IDF)
 - Testing Framework (pre-flight validations)
 
 **From Community (Kenny, Leon, etc.):**
+
 - YouTube Research Agents
 - Code Review Automation
 - Database Query Skills (SQL, Dataverse)

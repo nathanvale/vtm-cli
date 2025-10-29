@@ -5,7 +5,7 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import * as fs from 'fs'
-import { VTMReader, VTMWriter, ContextBuilder, VTMSummarizer } from './lib'
+import { VTMReader, VTMWriter, ContextBuilder, VTMSummarizer, DecisionEngine } from './lib'
 
 const program = new Command()
 
@@ -398,6 +398,32 @@ program
       console.info(chalk.cyan(`\nRun: vtm next`))
     } catch (error) {
       console.error(chalk.red(`Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm analyze - Analyze domain architecture
+program
+  .command('analyze <domain>')
+  .description('Analyze domain architecture and suggest improvements')
+  .option('--suggest-refactoring', 'Show refactoring suggestions for the domain')
+  .action(async (domain: string, options: { suggestRefactoring?: boolean }) => {
+    try {
+      const engine = new DecisionEngine()
+
+      if (options.suggestRefactoring) {
+        // Suggest refactoring for the domain
+        const refactoring = engine.suggestRefactoring(domain)
+        console.info(refactoring.formatted)
+      } else {
+        // Analyze the domain
+        const analysis = engine.analyzeDomain(domain)
+        console.info(analysis.formatted)
+      }
+    } catch (error) {
+      const errorMessage = (error as Error).message
+      console.error(chalk.red(`❌ Error analyzing domain '${domain}': ${errorMessage}`))
+      console.error(chalk.yellow('\nTip: Ensure the domain exists in .claude/commands/'))
       process.exit(1)
     }
   })

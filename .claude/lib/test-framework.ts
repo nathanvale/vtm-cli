@@ -5,6 +5,9 @@
  * across five test dimensions: smoke, functional, integration, performance, quality
  */
 
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-require-imports */
+
 import * as fs from 'fs/promises'
 import * as path from 'path'
 import { spawn } from 'child_process'
@@ -16,7 +19,7 @@ const execAsync = promisify(require('child_process').exec)
  * Test result types and interfaces
  */
 
-export interface TestOptions {
+export type TestOptions = {
   mode: 'quick' | 'comprehensive'
   args?: string
   expected?: string
@@ -25,7 +28,7 @@ export interface TestOptions {
   report?: boolean
 }
 
-export interface TestResult {
+export type TestResult = {
   name: string
   type: 'command' | 'skill' | 'mcp' | 'hook' | 'agent' | 'unknown'
   timestamp: string
@@ -47,7 +50,7 @@ export interface TestResult {
   errors: string[]
 }
 
-export interface SmokeTestResult {
+export type SmokeTestResult = {
   status: 'passed' | 'failed'
   checks: {
     exists: boolean
@@ -59,7 +62,7 @@ export interface SmokeTestResult {
   details: string
 }
 
-export interface FunctionalTestResult {
+export type FunctionalTestResult = {
   status: 'passed' | 'failed' | 'partial'
   execution_time_ms: number
   output: string
@@ -69,7 +72,7 @@ export interface FunctionalTestResult {
   error_messages: string[]
 }
 
-export interface IntegrationTestResult {
+export type IntegrationTestResult = {
   status: 'passed' | 'failed' | 'partial'
   dependencies: {
     total: number
@@ -81,7 +84,7 @@ export interface IntegrationTestResult {
   details: string
 }
 
-export interface PerformanceTestResult {
+export type PerformanceTestResult = {
   status: 'passed' | 'failed'
   execution_time_ms: number
   timeout_ms: number
@@ -91,7 +94,7 @@ export interface PerformanceTestResult {
   acceptable: boolean
 }
 
-export interface QualityTestResult {
+export type QualityTestResult = {
   status: 'passed' | 'failed' | 'warning'
   documentation_exists: boolean
   metadata_complete: boolean
@@ -102,7 +105,7 @@ export interface QualityTestResult {
   details: string
 }
 
-export interface ComponentMetadata {
+export type ComponentMetadata = {
   id: string
   type: 'command' | 'skill' | 'mcp' | 'hook' | 'agent'
   version: string
@@ -213,7 +216,7 @@ export class TestFramework {
     try {
       // Check 1: Component exists
       const componentPath = await this.findComponentFile()
-      result.checks.exists = !!componentPath
+      result.checks.exists = Boolean(componentPath)
 
       if (!result.checks.exists) {
         result.details = `Component file not found for: ${this.componentName}`
@@ -396,7 +399,9 @@ export class TestFramework {
 
       // Performance thresholds
       const isAcceptable =
-        result.within_threshold && result.estimated_tokens < 10000 && result.execution_time_ms < 60000
+        result.within_threshold &&
+        result.estimated_tokens < 10000 &&
+        result.execution_time_ms < 60000
 
       result.acceptable = isAcceptable
       result.status = isAcceptable ? 'passed' : 'failed'
@@ -539,8 +544,13 @@ export class TestFramework {
           const value = valueParts.join(':').trim()
           const cleanKey = key.trim() as keyof ComponentMetadata
 
-          if (cleanKey === 'id' || cleanKey === 'type' || cleanKey === 'name' || cleanKey === 'description') {
-            (metadata[cleanKey] as string) = value.replace(/^["']|["']$/g, '')
+          if (
+            cleanKey === 'id' ||
+            cleanKey === 'type' ||
+            cleanKey === 'name' ||
+            cleanKey === 'description'
+          ) {
+            ;(metadata[cleanKey] as string) = value.replace(/^["']|["']$/g, '')
           }
         }
       }
@@ -626,14 +636,18 @@ export class TestFramework {
 
       try {
         const { exec } = require('child_process')
-        exec(command, { maxBuffer: 10 * 1024 * 1024 }, (error: unknown, stdout: string, stderr: string) => {
-          clearTimeout(timer)
-          if (error && !stderr) {
-            reject(error)
-          } else {
-            resolve({ stdout, stderr })
-          }
-        })
+        exec(
+          command,
+          { maxBuffer: 10 * 1024 * 1024 },
+          (error: unknown, stdout: string, stderr: string) => {
+            clearTimeout(timer)
+            if (error && !stderr) {
+              reject(error)
+            } else {
+              resolve({ stdout, stderr })
+            }
+          },
+        )
       } catch (e) {
         clearTimeout(timer)
         reject(e)
@@ -653,9 +667,7 @@ export class TestFramework {
 
       // Simple check: see if any dependency depends on this component
       for (const dep of metadata.dependencies) {
-        const depMetadata = await this.extractMetadata(
-          (await this.findComponentFile(dep)) || '',
-        )
+        const depMetadata = await this.extractMetadata((await this.findComponentFile(dep)) || '')
         if (
           depMetadata?.dependencies &&
           (depMetadata.dependencies as string[]).includes(metadata.id || this.componentName)
@@ -675,7 +687,9 @@ export class TestFramework {
   private determineOverallStatus(result: TestResult): 'passed' | 'failed' | 'partial' | 'error' {
     const tests = Object.values(result.tests).filter((t) => t && t.status)
     const failedCount = tests.filter((t) => t.status === 'failed').length
-    const warningCount = tests.filter((t) => t.status === 'warning' || t.status === 'partial').length
+    const warningCount = tests.filter(
+      (t) => t.status === 'warning' || t.status === 'partial',
+    ).length
 
     if (failedCount > 0) return 'failed'
     if (warningCount > 0) return 'partial'
@@ -740,12 +754,18 @@ export class TestFramework {
 
       // Save JSON result
       const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
-      const resultPath = path.join(this.testResultsDir, `result-${this.componentName}-${timestamp}.json`)
+      const resultPath = path.join(
+        this.testResultsDir,
+        `result-${this.componentName}-${timestamp}.json`,
+      )
 
       await fs.writeFile(resultPath, JSON.stringify(result, null, 2), 'utf-8')
 
       // Generate HTML report
-      const htmlPath = path.join(this.testResultsDir, `report-${this.componentName}-${timestamp}.html`)
+      const htmlPath = path.join(
+        this.testResultsDir,
+        `report-${this.componentName}-${timestamp}.html`,
+      )
       const html = this.generateHTMLReport(result)
       await fs.writeFile(htmlPath, html, 'utf-8')
     } catch (error) {
@@ -781,9 +801,7 @@ export class TestFramework {
       )
       .join('')
 
-    const recommendationsList = result.recommendations
-      .map((rec) => `<li>${rec}</li>`)
-      .join('')
+    const recommendationsList = result.recommendations.map((rec) => `<li>${rec}</li>`).join('')
 
     return `
     <!DOCTYPE html>
@@ -862,23 +880,31 @@ export class TestFramework {
           </tbody>
         </table>
 
-        ${result.recommendations.length > 0 ? `
+        ${
+          result.recommendations.length > 0
+            ? `
         <div class="recommendations">
           <h3>Recommendations</h3>
           <ul>
             ${recommendationsList}
           </ul>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
 
-        ${result.errors.length > 0 ? `
+        ${
+          result.errors.length > 0
+            ? `
         <div class="recommendations" style="background: #fef2f2; border-left-color: #ef4444;">
           <h3 style="color: #ef4444;">Errors</h3>
           <ul>
             ${result.errors.map((err) => `<li class="error">${err}</li>`).join('')}
           </ul>
         </div>
-        ` : ''}
+        `
+            : ''
+        }
 
         <div class="footer">
           Test Framework v1.0 | Claude Code Lifecycle Layer

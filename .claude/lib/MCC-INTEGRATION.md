@@ -204,22 +204,26 @@ echo "Using filter: $FILTER, limit: $LIMIT"
 All commands source the utilities library for common functions:
 
 ### Validation
+
 - `validate_domain_name()` - Check valid domain name
 - `validate_json()` - Validate JSON file syntax
 - `validate_design_spec()` - Check design spec against schema
 
 ### File Operations
+
 - `ensure_directory()` - Create directory if needed
 - `file_exists()` - Check if file exists
 - `safe_write()` - Write with backup
 - `list_files()` - List files in directory
 
 ### JSON Operations
+
 - `json_get()` - Extract field from JSON
 - `json_set()` - Update field in JSON
 - `json_pretty()` - Pretty print JSON
 
 ### User Feedback
+
 - `section()` - Print major section
 - `subsection()` - Print subsection
 - `success()` - Print success message
@@ -230,21 +234,25 @@ All commands source the utilities library for common functions:
 - `prompt()` - Get user input
 
 ### Discovery
+
 - `find_commands()` - Find all commands
 - `find_skills()` - Find all skills
 - `find_mcps()` - Find all MCP servers
 - `find_hooks()` - Find all hooks
 
 ### Path Operations
+
 - `abs_path()` - Get absolute path
 - `validate_claude_path()` - Check path is in .claude/
 
 ### Metadata
+
 - `timestamp()` - ISO8601 timestamp
 - `get_version()` - Get version from git
 - `get_author()` - Get author name
 
 ### Error Handling
+
 - `command_exists()` - Check if command is available
 - `require_command()` - Ensure command exists or exit
 - `exit_error()` - Exit with error message
@@ -254,6 +262,7 @@ All commands source the utilities library for common functions:
 Centralized configuration for all MCC commands:
 
 ### Paths
+
 ```bash
 CLAUDE_DIR=".claude"
 DESIGNS_DIR=".claude/designs"
@@ -263,18 +272,21 @@ REGISTRY_FILE=".claude/registry.json"
 ```
 
 ### Conventions
+
 ```bash
 DOMAIN_PATTERN="^[a-z][a-z0-9-]*$"
 COMMAND_ID_PATTERN="^[a-z][a-z0-9-]*:[a-z][a-z0-9-]*$"
 ```
 
 ### Supported Values
+
 ```bash
 SUPPORTED_HOOKS=(pre-commit post-checkout pre-push)
 SUPPORTED_SYSTEMS=(notion airtable jira github slack)
 ```
 
 ### Feature Flags
+
 ```bash
 FEATURE_AUTO_DISCOVERY=true
 FEATURE_EXTERNAL_INTEGRATION=true
@@ -282,6 +294,7 @@ FEATURE_AUTOMATION=true
 ```
 
 ### Validation Rules
+
 ```bash
 DESIGN_REQUIRED_FIELDS=(name description version created_at design)
 ```
@@ -292,11 +305,13 @@ DESIGN_REQUIRED_FIELDS=(name description version created_at design)
 
 ```json
 {
-  "name": "string (domain name)",
-  "description": "string",
-  "version": "semver",
   "created_at": "ISO8601 timestamp",
-  "design": { /* see below */ }
+  "description": "string",
+  "design": {
+    /* see below */
+  },
+  "name": "string (domain name)",
+  "version": "semver"
 }
 ```
 
@@ -304,51 +319,50 @@ DESIGN_REQUIRED_FIELDS=(name description version created_at design)
 
 ```json
 {
-  "operations": [
-    {
-      "name": "string",
-      "description": "string",
-      "triggers_auto_discovery": "boolean",
-      "manual_invocation": "string (e.g., /pm:next)"
-    }
-  ],
-
   "auto_discovery": {
     "enabled": "boolean",
-    "type": "skill|none",
-    "suggested_triggers": ["string"]
-  },
-
-  "external_integration": {
-    "needed": "boolean",
-    "type": "mcp|none",
-    "systems": [
-      {
-        "name": "string",
-        "type": "string"
-      }
-    ]
+    "suggested_triggers": ["string"],
+    "type": "skill|none"
   },
 
   "automation": {
     "enabled": "boolean",
     "hooks": [
       {
-        "event": "string (pre-commit, etc)",
-        "action": "string"
+        "action": "string",
+        "event": "string (pre-commit, etc)"
       }
     ]
   },
 
-  "sharing": {
-    "scope": "personal|team|community",
-    "team_members": ["string"],
-    "published": "boolean"
+  "external_integration": {
+    "needed": "boolean",
+    "systems": [
+      {
+        "name": "string",
+        "type": "string"
+      }
+    ],
+    "type": "mcp|none"
   },
 
+  "operations": [
+    {
+      "description": "string",
+      "manual_invocation": "string (e.g., /pm:next)",
+      "name": "string",
+      "triggers_auto_discovery": "boolean"
+    }
+  ],
+
   "recommendations": {
-    "start_with": ["string"],
-    "next_steps": ["string"]
+    "next_steps": ["string"],
+    "start_with": ["string"]
+  },
+  "sharing": {
+    "published": "boolean",
+    "scope": "personal|team|community",
+    "team_members": ["string"]
   }
 }
 ```
@@ -359,24 +373,28 @@ DESIGN_REQUIRED_FIELDS=(name description version created_at design)
 
 ```json
 {
-  "timestamp": "ISO8601",
-  "total_components": "number",
   "by_type": {
-    "commands": "number",
-    "skills": "number",
-    "mcp_servers": "number",
-    "hooks": "number",
     "agents": "number",
-    "plugins": "number"
+    "commands": "number",
+    "hooks": "number",
+    "mcp_servers": "number",
+    "plugins": "number",
+    "skills": "number"
   },
-  "components": [ /* array of components */ ],
-  "relationships": { /* dependency map */ },
+  "components": [
+    /* array of components */
+  ],
   "health": {
-    "missing_implementations": "number",
-    "unused_components": "number",
     "circular_dependencies": "number",
-    "quality_issues": ["string"]
-  }
+    "missing_implementations": "number",
+    "quality_issues": ["string"],
+    "unused_components": "number"
+  },
+  "relationships": {
+    /* dependency map */
+  },
+  "timestamp": "ISO8601",
+  "total_components": "number"
 }
 ```
 
@@ -384,21 +402,21 @@ DESIGN_REQUIRED_FIELDS=(name description version created_at design)
 
 ```json
 {
-  "id": "string (namespace:name or name)",
-  "type": "command|skill|mcp|hook|agent|plugin",
-  "name": "string",
-  "description": "string",
-  "version": "semver",
-  "location": "string (relative path)",
-  "namespace": "string (for commands)",
-  "tags": ["string"],
   "dependencies": ["string"],
-  "used_by": ["string"],
+  "description": "string",
+  "id": "string (namespace:name or name)",
+  "location": "string (relative path)",
+  "name": "string",
+  "namespace": "string (for commands)",
   "quality": {
-    "tested": "boolean",
     "documented": "boolean",
-    "security_reviewed": "boolean"
-  }
+    "security_reviewed": "boolean",
+    "tested": "boolean"
+  },
+  "tags": ["string"],
+  "type": "command|skill|mcp|hook|agent|plugin",
+  "used_by": ["string"],
+  "version": "semver"
 }
 ```
 
@@ -631,6 +649,7 @@ validate_custom_field() {
 **Problem:** `/design:domain` command not found
 
 **Solution:** Ensure files are in correct location:
+
 ```bash
 ls -la .claude/commands/design-domain.md
 ls -la .claude/commands/scaffold-domain.md
@@ -642,6 +661,7 @@ ls -la .claude/commands/registry-scan.md
 **Problem:** "Utilities not found" error
 
 **Solution:** Check utilities file exists and is readable:
+
 ```bash
 ls -la .claude/lib/mcc-utils.sh
 cat .claude/lib/mcc-utils.sh | head -20
@@ -652,6 +672,7 @@ cat .claude/lib/mcc-utils.sh | head -20
 **Problem:** Generated JSON is malformed
 
 **Solution:** Test JSON validity:
+
 ```bash
 jq . .claude/designs/test.json
 
@@ -664,6 +685,7 @@ python3 -m json.tool .claude/designs/test.json
 **Problem:** Design spec validation error
 
 **Solution:** Check required fields:
+
 ```bash
 cat .claude/designs/pm.json | jq '.name, .description, .version'
 ```

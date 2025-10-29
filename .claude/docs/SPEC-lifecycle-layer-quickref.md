@@ -5,21 +5,25 @@
 ### Testing Commands (Validate)
 
 #### `/test:command {name}`
+
 ```bash
 /test:command pm:next                    # Test command works
 /test:command pm:next --verbose          # With details
 /test:command pm:next --coverage         # Code coverage
 ```
+
 **Tests:** Syntax | Execution | Dependencies | Error Handling
 **Output:** Test report + coverage metrics
 **Pass Requirement:** 4/4 tests + 80% coverage
 
 #### `/test:integration {a} {b}`
+
 ```bash
 /test:integration pm:next pm-expert      # Test interaction
 /test:integration testing:unit testing:integration --stress
 /test:integration devops:deploy devops:notify --verbose
 ```
+
 **Scenarios:** Basic | Data | Error | Performance | Concurrent
 **Output:** Integration report + performance metrics
 **Pass Requirement:** 5/5 scenarios pass
@@ -29,48 +33,58 @@
 ### Evolution Commands (Improve)
 
 #### `/evolve:add-skill {command}`
+
 ```bash
 /evolve:add-skill pm:next                # Generate skill
 /evolve:add-skill testing:unit --triggers "run tests,test it"
 /evolve:add-skill pm:next --description "PM expert"
 ```
+
 **Before:** Manual `/pm:next` only
 **After:** Claude suggests `/pm:next` when relevant
 **Reversible:** Yes (`/evolve:remove-skill`)
 
 #### `/evolve:split {component}`
+
 ```bash
 /evolve:split pm:next                    # Suggest splits
 /evolve:split pm:next --parts "fetch,filter,sort"
 ```
+
 **Result:** Break monolithic → focused commands
 **Pattern:** Command becomes orchestrator
 **Reversible:** Yes
 
 #### `/evolve:remove-skill {command}`
+
 ```bash
 /evolve:remove-skill pm:next             # Remove auto-discovery
 ```
+
 **Before:** Skilled command (auto-suggests)
 **After:** Manual command (no auto-suggest)
 **Reversible:** Yes (`/evolve:add-skill`)
 
 #### `/evolve:to-plugin {domain}`
+
 ```bash
 /evolve:to-plugin pm                     # Package domain
 /evolve:to-plugin pm --version 2.0.0     # Set version
 /evolve:to-plugin pm --publish           # Publish to registry
 ```
+
 **Output:** pm-automation-X.Y.Z.zip
 **Contents:** Commands, Skills, MCP, Hooks, Docs
 **Quality Gates:** All tested, documented, dependencies met
 
 #### `/evolve:rollback {component} {version}`
+
 ```bash
 /evolve:rollback pm:next v1.0.0          # Revert to version
 /evolve:rollback pm:next before-split    # Undo split
 /evolve:rollback pm:next previous        # Last version
 ```
+
 **Safety:** Impact analysis, backup creation
 **Result:** Full undo of evolution operations
 **Reversible:** Yes (redo operation)
@@ -103,6 +117,7 @@
 ```
 
 Each step is:
+
 - **Tested** before moving on
 - **Reversible** (can undo)
 - **Observable** (registry tracks)
@@ -112,19 +127,21 @@ Each step is:
 
 ## Quality Checkpoints
 
-| Stage | Status | Check | Command |
-|-------|--------|-------|---------|
-| Command | Untested | 4 tests pass? | `/test:command` |
-| Skilled | Untested | 5 scenarios pass? | `/test:integration` |
+| Stage    | Status   | Check                  | Command             |
+| -------- | -------- | ---------------------- | ------------------- |
+| Command  | Untested | 4 tests pass?          | `/test:command`     |
+| Skilled  | Untested | 5 scenarios pass?      | `/test:integration` |
 | Packaged | Untested | All components tested? | `/evolve:to-plugin` |
-| Ready | ✅ | Can distribute? | Registry scan |
+| Ready    | ✅       | Can distribute?        | Registry scan       |
 
 ---
 
 ## Data Files Created
 
 ### Test Results
+
 **Location:** `.claude/test-results/{command-id}.json`
+
 ```json
 {
   "status": "passed",
@@ -135,7 +152,9 @@ Each step is:
 ```
 
 ### Skill Files
+
 **Location:** `.claude/skills/{domain}-{command}/SKILL.md`
+
 ```markdown
 ---
 trigger_phrases:
@@ -145,7 +164,9 @@ trigger_phrases:
 ```
 
 ### Plugin Manifest
+
 **Location:** `.claude/plugins/{domain}-automation/plugin.yaml`
+
 ```yaml
 name: pm-automation
 version: 1.0.0
@@ -157,15 +178,17 @@ components:
 ```
 
 ### Evolution History
+
 **In Registry:** `.claude/registry.json`
+
 ```json
 {
-  "id": "pm:next",
   "evolution_history": [
-    { "version": "1.0.0", "type": "scaffold" },
-    { "version": "1.1.0", "type": "evolve:add-skill" },
-    { "version": "2.0.0", "type": "evolve:split" }
-  ]
+    { "type": "scaffold", "version": "1.0.0" },
+    { "type": "evolve:add-skill", "version": "1.1.0" },
+    { "type": "evolve:split", "version": "2.0.0" }
+  ],
+  "id": "pm:next"
 }
 ```
 
@@ -174,6 +197,7 @@ components:
 ## Common Workflows
 
 ### Test a Command
+
 ```bash
 /test:command pm:next              # Run tests
 → Pass? Continue
@@ -181,6 +205,7 @@ components:
 ```
 
 ### Create Skilled Command
+
 ```bash
 /test:command pm:next              # Verify works
 /evolve:add-skill pm:next          # Add auto-discovery
@@ -188,6 +213,7 @@ components:
 ```
 
 ### Package for Team
+
 ```bash
 /registry:scan pm                  # What exists?
 /test:command pm:*                 # All tested?
@@ -196,6 +222,7 @@ components:
 ```
 
 ### Fix and Revert
+
 ```bash
 /evolve:split pm:next              # Made it complex
 → Doesn't work as expected
@@ -203,6 +230,7 @@ components:
 ```
 
 ### Undo Skill
+
 ```bash
 /evolve:add-skill pm:next          # Added skill
 → Causing false triggers
@@ -214,21 +242,25 @@ components:
 ## Success Criteria
 
 ✅ **Test Passes When:**
+
 - 4 test types succeed (syntax, execution, deps, errors)
 - Coverage >= 80%
 - Report generated
 
 ✅ **Integration Passes When:**
+
 - 5 scenarios succeed (basic, data, error, perf, concurrent)
 - Performance within limits
 - Report generated
 
 ✅ **Command Ready When:**
+
 - Tested AND dependencies satisfied
 - Can be added skill: `/evolve:add-skill`
 - Can be packaged: `/evolve:to-plugin`
 
 ✅ **Domain Ready When:**
+
 - All commands tested
 - All integrations verified
 - Documentation complete
@@ -238,38 +270,38 @@ components:
 
 ## Error Quick Fixes
 
-| Problem | Solution |
-|---------|----------|
-| "Command must be tested first" | Run `/test:command pm:next` |
-| "Dependency not configured" | Set env vars, configure MCP |
-| "Integration failed" | Run with `--verbose` to see why |
-| "Skill already exists" | Use `/evolve:remove-skill` first |
-| "Rollback has conflicts" | Delete dependents first |
-| "Version not found" | Check `/registry:scan` for available versions |
+| Problem                        | Solution                                      |
+| ------------------------------ | --------------------------------------------- |
+| "Command must be tested first" | Run `/test:command pm:next`                   |
+| "Dependency not configured"    | Set env vars, configure MCP                   |
+| "Integration failed"           | Run with `--verbose` to see why               |
+| "Skill already exists"         | Use `/evolve:remove-skill` first              |
+| "Rollback has conflicts"       | Delete dependents first                       |
+| "Version not found"            | Check `/registry:scan` for available versions |
 
 ---
 
 ## Integration with Layer 1
 
-| Layer 1 | Layer 2 | Purpose |
-|---------|---------|---------|
-| `/design:domain` | Test results → quality gate | Design needs testability |
+| Layer 1            | Layer 2                       | Purpose                            |
+| ------------------ | ----------------------------- | ---------------------------------- |
+| `/design:domain`   | Test results → quality gate   | Design needs testability           |
 | `/scaffold:domain` | Test results stored → tracked | Scaffolded components need testing |
-| `/registry:scan` | Updates with test status | Registry reflects quality |
+| `/registry:scan`   | Updates with test status      | Registry reflects quality          |
 
 ---
 
 ## Quick Command Summary
 
-| Command | What | Result |
-|---------|------|--------|
-| `/test:command` | Test 1 component | Pass/fail + coverage |
-| `/test:integration` | Test 2+ components together | Pass/fail + scenarios |
-| `/evolve:add-skill` | Enable auto-discovery | Triggers added |
-| `/evolve:to-plugin` | Package domain | .zip created |
-| `/evolve:split` | Break into parts | Smaller focused commands |
-| `/evolve:remove-skill` | Disable auto-discovery | Back to manual |
-| `/evolve:rollback` | Undo evolution | Previous state restored |
+| Command                | What                        | Result                   |
+| ---------------------- | --------------------------- | ------------------------ |
+| `/test:command`        | Test 1 component            | Pass/fail + coverage     |
+| `/test:integration`    | Test 2+ components together | Pass/fail + scenarios    |
+| `/evolve:add-skill`    | Enable auto-discovery       | Triggers added           |
+| `/evolve:to-plugin`    | Package domain              | .zip created             |
+| `/evolve:split`        | Break into parts            | Smaller focused commands |
+| `/evolve:remove-skill` | Disable auto-discovery      | Back to manual           |
+| `/evolve:rollback`     | Undo evolution              | Previous state restored  |
 
 ---
 
@@ -291,6 +323,7 @@ For detailed information, see: `SPEC-lifecycle-layer.md`
 ## Implementation Status
 
 **Ready for Phase 2:**
+
 - All 7 commands fully specified
 - Integration patterns defined
 - Quality criteria clear
@@ -302,6 +335,7 @@ For detailed information, see: `SPEC-lifecycle-layer.md`
 ---
 
 **Quick Links:**
+
 - Full Specification: `.claude/SPEC-lifecycle-layer.md`
 - Layer 1 (MCC): `.claude/SPEC-minimum-composable-core.md`
 - Full Architecture: `.claude/SPEC-composable-system.md`

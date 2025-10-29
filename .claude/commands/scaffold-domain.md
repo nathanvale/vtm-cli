@@ -1,7 +1,7 @@
 ---
 allowed-tools: Write, Read, Bash(mkdir:*, test:*, cat:*, find:*, chmod:*)
 description: Auto-generate complete .claude/ structure from a design specification
-argument-hint: {domain-name}
+argument-hint: { domain-name }
 ---
 
 # Scaffold Domain - Code Generator
@@ -11,6 +11,7 @@ Auto-generates complete `.claude/` directory structure and files based on a desi
 ## About This Command
 
 Takes your design from `/design:domain` and generates:
+
 - Slash commands (editable templates)
 - Skills (with auto-discovery triggers)
 - MCP stubs (for external integrations)
@@ -167,11 +168,11 @@ while IFS= read -r OP_NAME; do
     if [[ -z "$OP_NAME" ]]; then
         continue
     fi
-    
+
     OPERATION_COUNT=$((OPERATION_COUNT + 1))
-    
+
     COMMAND_FILE="$COMMANDS_DIR/$OP_NAME.md"
-    
+
     COMMAND_TEMPLATE=$(cat <<'EOFCMD'
 ---
 allowed-tools: Bash(cat:*, echo:*)
@@ -262,21 +263,21 @@ echo "   • After: Suggest /{DOMAIN}:review after"
 - Document any external dependencies
 EOFCMD
 )
-    
+
     # Replace placeholders
     OP_DISPLAY=$(echo "$OP_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
     DOMAIN_DISPLAY=$(echo "$DOMAIN_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
     OP_DESC="$OP_NAME operation for $DOMAIN_NAME"
-    
+
     COMMAND_TEMPLATE="${COMMAND_TEMPLATE//\{OPERATION\}/$OP_NAME}"
     COMMAND_TEMPLATE="${COMMAND_TEMPLATE//\{DOMAIN\}/$DOMAIN_NAME}"
     COMMAND_TEMPLATE="${COMMAND_TEMPLATE//\{OPERATION_DISPLAY\}/$OP_DISPLAY}"
     COMMAND_TEMPLATE="${COMMAND_TEMPLATE//\{DOMAIN_DISPLAY\}/$DOMAIN_DISPLAY}"
     COMMAND_TEMPLATE="${COMMAND_TEMPLATE//\{DESCRIPTION\}/$OP_DESC}"
-    
+
     echo "$COMMAND_TEMPLATE" > "$COMMAND_FILE"
     success "Created: $COMMAND_FILE"
-    
+
 done <<< "$OPERATION_NAMES"
 
 info "$OPERATION_COUNT command files generated"
@@ -288,21 +289,21 @@ info "$OPERATION_COUNT command files generated"
 if [[ "$AUTO_DISCOVERY_ENABLED" == "true" ]]; then
     section "Generating Skill Template"
     echo ""
-    
+
     SKILL_FILE="$SKILLS_DIR/SKILL.md"
-    
+
     # Get trigger phrases
     TRIGGER_PHRASES=$(jq -r '.design.auto_discovery.suggested_triggers[]' "$DESIGN_FILE" 2>/dev/null | sed 's/^/      - "/' | sed 's/$/"/')
-    
+
     SKILL_TEMPLATE=$(cat <<'EOFSKILL'
 ---
 name: {DOMAIN}-expert
 description: |
   {DOMAIN_DISPLAY} domain expert.
-  
+
   Knows about:
   - {OPERATIONS_LIST}
-  
+
   Use when:
   - User asks about {DOMAIN} operations
   - Context needed before starting work
@@ -348,41 +349,41 @@ Works seamlessly with other Claude Code domains:
 - Works with other skills and commands
 EOFSKILL
 )
-    
+
     # Build operations list and command list
     OPS_LIST=""
     CMD_LIST=""
     TRIGGER_EXAMP=""
-    
+
     OPERATION_NUM=0
     while IFS= read -r OP_NAME; do
         if [[ -z "$OP_NAME" ]]; then
             continue
         fi
-        
+
         OPERATION_NUM=$((OPERATION_NUM + 1))
         OP_DISPLAY=$(echo "$OP_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
-        
+
         if [[ -z "$OPS_LIST" ]]; then
             OPS_LIST="- $OP_DISPLAY"
         else
             OPS_LIST="$OPS_LIST, $OP_DISPLAY"
         fi
-        
+
         CMD_LIST="$CMD_LIST\n- \`/$DOMAIN_NAME:$OP_NAME\` - $OP_DISPLAY"
-        
+
         if [[ $OPERATION_NUM -le 3 ]]; then
             TRIGGER_EXAMP="$TRIGGER_EXAMP\n- \"I need $OP_NAME\" → Suggests \`/$DOMAIN_NAME:$OP_NAME\`"
         fi
     done <<< "$OPERATION_NAMES"
-    
+
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{DOMAIN\}/$DOMAIN_NAME}"
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{DOMAIN_DISPLAY\}/$DOMAIN_DISPLAY}"
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{OPERATIONS_LIST\}/$OPS_LIST}"
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{COMMAND_LIST\}/$CMD_LIST}"
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{TRIGGER_PHRASES\}/$TRIGGER_PHRASES}"
     SKILL_TEMPLATE="${SKILL_TEMPLATE//\{TRIGGER_EXAMPLES\}/$TRIGGER_EXAMP}"
-    
+
     echo -e "$SKILL_TEMPLATE" > "$SKILL_FILE"
     success "Created: $SKILL_FILE"
 fi
@@ -394,27 +395,27 @@ fi
 if [[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]]; then
     section "Generating MCP Configuration Stub"
     echo ""
-    
+
     MCP_FILE="$MCP_DIR/mcp.json"
-    
+
     MCP_TEMPLATE=$(cat <<'EOFMCP'
 {
   "name": "{DOMAIN}-{SYSTEM}",
   "type": "mcp",
   "description": "{SYSTEM} integration for {DOMAIN} domain",
   "version": "1.0.0",
-  
+
   "connection": {
     "type": "api",
     "service": "{SYSTEM}",
     "auth_type": "bearer_token"
   },
-  
+
   "configuration": {
     "api_key": "\${API_KEY}",
     "endpoint": "https://api.{SYSTEM}.com/v1"
   },
-  
+
   "operations": {
     "read": {
       "queries": [
@@ -431,7 +432,7 @@ if [[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]]; then
       ]
     }
   },
-  
+
   "setup": {
     "required_env_vars": [
       "API_KEY"
@@ -441,14 +442,14 @@ if [[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]]; then
 }
 EOFMCP
 )
-    
+
     MCP_TEMPLATE="${MCP_TEMPLATE//\{DOMAIN\}/$DOMAIN_NAME}"
     MCP_TEMPLATE="${MCP_TEMPLATE//\{SYSTEM\}/$EXTERNAL_SYSTEM}"
-    
+
     echo "$MCP_TEMPLATE" | jq . > "$MCP_FILE" 2>/dev/null || {
         echo "$MCP_TEMPLATE" > "$MCP_FILE"
     }
-    
+
     success "Created: $MCP_FILE"
     info "Configure environment variables and test connection"
 fi
@@ -460,16 +461,16 @@ fi
 if [[ "$AUTOMATION_ENABLED" == "true" ]]; then
     section "Generating Hook Scripts"
     echo ""
-    
+
     HOOKS=$(jq -r '.design.automation.hooks[].event' "$DESIGN_FILE" 2>/dev/null)
-    
+
     while IFS= read -r HOOK_EVENT; do
         if [[ -z "$HOOK_EVENT" ]]; then
             continue
         fi
-        
+
         HOOK_FILE="$HOOKS_DIR/${DOMAIN_NAME}-${HOOK_EVENT}.sh"
-        
+
         HOOK_TEMPLATE=$(cat <<'EOFHOOK'
 #!/bin/bash
 # {DOMAIN} - {HOOK_EVENT} hook
@@ -482,7 +483,7 @@ set -e
 exit 0
 EOFHOOK
 )
-        
+
         # Customize based on hook type
         case "$HOOK_EVENT" in
             pre-commit)
@@ -507,16 +508,16 @@ echo \"ℹ️  {DOMAIN} checkout hook running...\"
 # TODO: Implement your {HOOK_EVENT} logic here"
                 ;;
         esac
-        
+
         DOMAIN_UPPER=$(echo "$DOMAIN_NAME" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
         HOOK_ACTION="validate_$DOMAIN_NAME"
-        
+
         HOOK_TEMPLATE="${HOOK_TEMPLATE//\{DOMAIN\}/$DOMAIN_NAME}"
         HOOK_TEMPLATE="${HOOK_TEMPLATE//\{DOMAIN_UPPER\}/$DOMAIN_UPPER}"
         HOOK_TEMPLATE="${HOOK_TEMPLATE//\{HOOK_EVENT\}/$HOOK_EVENT}"
         HOOK_TEMPLATE="${HOOK_TEMPLATE//\{ACTION\}/$HOOK_ACTION}"
         HOOK_TEMPLATE="${HOOK_TEMPLATE//\{HOOK_BODY\}/$HOOK_BODY}"
-        
+
         echo "$HOOK_TEMPLATE" > "$HOOK_FILE"
         chmod +x "$HOOK_FILE"
         success "Created: $HOOK_FILE"
@@ -558,16 +559,16 @@ metadata:
   domain_name: {DOMAIN}
   sharing_scope: {SHARING_SCOPE}
   team_members: []
-  
+
   tags:
     - {DOMAIN}
     - automation
     - workflow
-  
+
   quality:
     test_status: untested
     documentation_complete: false
-  
+
   dependencies: []
 
 marketplace:
@@ -631,23 +632,25 @@ Commands are now available:
 ## Setup
 
 1. **Review the commands**
-   ```
-   Open: .claude/commands/{DOMAIN}/
-   Each command has a template you can customize
-   ```
+```
+
+Open: .claude/commands/{DOMAIN}/
+Each command has a template you can customize
+
+````
 
 2. **Implement the commands**
-   - Replace TODO sections with actual logic
-   - Connect to your data sources
-   - Test each command
+- Replace TODO sections with actual logic
+- Connect to your data sources
+- Test each command
 
 3. **Enable features (optional)**
-   {SETUP_STEPS}
+{SETUP_STEPS}
 
 4. **Verify everything works**
-   ```bash
-   /registry:scan {DOMAIN}
-   ```
+```bash
+/registry:scan {DOMAIN}
+````
 
 ## What's Included
 
@@ -671,6 +674,7 @@ Edit these files to customize:
 ## Next Steps
 
 1. **Test the commands**
+
    ```bash
    /{DOMAIN}:next
    ```
@@ -697,38 +701,42 @@ Edit these files to customize:
 
 - Registry: `/registry:scan`
 - Design: `.claude/designs/{DOMAIN}.json`
-EOFREADME
-)
+  EOFREADME
+  )
 
 # Build command usage
+
 CMD_USAGE=""
 while IFS= read -r OP_NAME; do
-    if [[ -z "$OP_NAME" ]]; then
-        continue
-    fi
-    OP_DISPLAY=$(echo "$OP_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
-    CMD_USAGE="$CMD_USAGE\n\`/$DOMAIN_NAME:$OP_NAME\` - $OP_DISPLAY"
+if [[-z "$OP_NAME"]]; then
+continue
+fi
+OP_DISPLAY=$(echo "$OP_NAME" | sed 's/-/ /g' | sed 's/\b\(.\)/\u\1/g')
+CMD_USAGE="$CMD_USAGE\n\`/$DOMAIN_NAME:$OP_NAME\` - $OP_DISPLAY"
 done <<< "$OPERATION_NAMES"
 
 # Build setup steps
+
 SETUP_STEPS=""
-[[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]] && \
-    SETUP_STEPS="$SETUP_STEPS\n   - MCP: Configure .claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/"
+[["$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM"]] && \
+ SETUP_STEPS="$SETUP_STEPS\n   - MCP: Configure .claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/"
 [[ "$AUTOMATION_ENABLED" == "true" ]] && \
-    SETUP_STEPS="$SETUP_STEPS\n   - Hooks: Review .claude/hooks/$DOMAIN_NAME/"
+ SETUP_STEPS="$SETUP_STEPS\n   - Hooks: Review .claude/hooks/$DOMAIN_NAME/"
 
 # Build features
+
 FEATURES="- \`/$DOMAIN_NAME:\` commands ($OPERATION_COUNT total)"
-[[ "$AUTO_DISCOVERY_ENABLED" == "true" ]] && FEATURES="$FEATURES\n- Auto-discovery skill with trigger phrases"
+[["$AUTO_DISCOVERY_ENABLED" == "true"]] && FEATURES="$FEATURES\n- Auto-discovery skill with trigger phrases"
 [[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]] && FEATURES="$FEATURES\n- $EXTERNAL_SYSTEM integration stub (MCP)"
 [[ "$AUTOMATION_ENABLED" == "true" ]] && FEATURES="$FEATURES\n- Hook scripts for automation"
 
 # Build optional customization
+
 OPT_CUSTOM=""
-[[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]] && \
-    OPT_CUSTOM="$OPT_CUSTOM\n- **MCP:** \`.claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/mcp.json\`\n  - Add your API credentials\n  - Configure endpoints"
+[["$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM"]] && \
+ OPT_CUSTOM="$OPT_CUSTOM\n- **MCP:** \`.claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/mcp.json\`\n  - Add your API credentials\n  - Configure endpoints"
 [[ "$AUTOMATION_ENABLED" == "true" ]] && \
-    OPT_CUSTOM="$OPT_CUSTOM\n- **Hooks:** \`.claude/hooks/$DOMAIN_NAME/*.sh\`\n  - Implement hook logic\n  - Test hook execution"
+ OPT_CUSTOM="$OPT_CUSTOM\n- **Hooks:** \`.claude/hooks/$DOMAIN_NAME/\*.sh\`\n - Implement hook logic\n - Test hook execution"
 
 README_TEMPLATE="${README_TEMPLATE//\{DOMAIN\}/$DOMAIN_NAME}"
 README_TEMPLATE="${README_TEMPLATE//\{DOMAIN_DISPLAY\}/$DOMAIN_DISPLAY}"
@@ -743,7 +751,9 @@ echo -e "$README_TEMPLATE" > "$README_FILE"
 success "Created: $README_FILE"
 
 # ============================================================================
+
 # SUMMARY
+
 # ============================================================================
 
 section "Scaffold Complete ✅"
@@ -764,12 +774,14 @@ subsection "Summary"
 echo ""
 item "$OPERATION_COUNT slash commands"
 [[ "$AUTO_DISCOVERY_ENABLED" == "true" ]] && item "1 skill for auto-discovery"
-[[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]] && item "MCP stub for $EXTERNAL_SYSTEM"
+[["$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM"]] && item "MCP stub for $EXTERNAL_SYSTEM"
 [[ "$AUTOMATION_ENABLED" == "true" ]] && item "Automation hooks"
 item "Plugin ready for team sharing"
 
 # ============================================================================
+
 # NEXT STEPS
+
 # ============================================================================
 
 echo ""
@@ -781,20 +793,20 @@ code_block "cd .claude/commands/$DOMAIN_NAME && ls"
 echo ""
 
 echo "2. **Test a command**"
-code_block "/$DOMAIN_NAME:${OPERATION_NAMES%% *}"
+code_block "/$DOMAIN_NAME:${OPERATION_NAMES%% \*}"
 echo ""
 
 echo "3. **Verify with registry**"
 code_block "/registry:scan $DOMAIN_NAME"
 echo ""
 
-if [[ "$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM" ]]; then
-    echo "4. **Set up external integration**"
-    echo "   Configure .claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/"
-    echo ""
-    echo "5. **Then test again**"
-    code_block "/registry:scan $DOMAIN_NAME"
-    echo ""
+if [["$EXTERNAL_NEEDED" == "true" && -n "$EXTERNAL_SYSTEM"]]; then
+echo "4. **Set up external integration**"
+echo " Configure .claude/mcp-servers/$DOMAIN_NAME-$EXTERNAL_SYSTEM/"
+echo ""
+echo "5. **Then test again**"
+code_block "/registry:scan $DOMAIN_NAME"
+echo ""
 fi
 
 echo "💡 All files are editable templates - customize to your needs!"
@@ -808,21 +820,23 @@ info "Ready to build with your new domain!"
 Creates complete plugin directory with:
 
 ```
+
 .claude/
 ├── commands/{domain}/
-│   ├── operation1.md
-│   ├── operation2.md
-│   └── ...
+│ ├── operation1.md
+│ ├── operation2.md
+│ └── ...
 ├── skills/{domain}-expert/
-│   └── SKILL.md (if auto-discovery enabled)
+│ └── SKILL.md (if auto-discovery enabled)
 ├── mcp-servers/{domain}-{system}/
-│   └── mcp.json (if external integration needed)
+│ └── mcp.json (if external integration needed)
 ├── hooks/{domain}/
-│   └── event-name.sh (if automation enabled)
+│ └── event-name.sh (if automation enabled)
 └── plugins/{domain}-automation/
-    ├── plugin.yaml
-    └── README.md
-```
+├── plugin.yaml
+└── README.md
+
+````
 
 ## Requirements
 
@@ -837,4 +851,4 @@ After scaffolding, verify everything:
 
 ```bash
 /registry:scan {domain}
-```
+````

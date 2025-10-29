@@ -61,6 +61,7 @@ echo "   • Start work: /vtm:start TASK-XXX"
 ## Statistics Shown
 
 The stats command displays:
+
 - **Total Tasks**: Total number of tasks in VTM
 - **Completed**: Tasks with status='completed'
 - **In Progress**: Tasks currently being worked on
@@ -71,6 +72,7 @@ The stats command displays:
 ## Auto-Recalculation
 
 Stats are automatically recalculated when you:
+
 - Start a task (`/vtm:start`)
 - Complete a task (`/vtm:complete`)
 - Update any task status
@@ -80,6 +82,7 @@ The VTMWriter class handles this via `recalculateStats()` - you never need to ma
 ## Tracking Progress
 
 Use stats to:
+
 - Monitor overall project progress
 - Identify bottlenecks (high blocked count)
 - Plan work (check pending/in-progress ratio)

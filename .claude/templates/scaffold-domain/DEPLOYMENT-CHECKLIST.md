@@ -7,6 +7,7 @@
 ## Template Library Completeness
 
 ### Core Templates
+
 - [x] Command template (command-template.md)
   - [x] Frontmatter with metadata
   - [x] Usage documentation with parameters
@@ -106,6 +107,7 @@
   - [x] Next steps
 
 ### Documentation
+
 - [x] README.md - Overview and navigation
 - [x] INDEX.md - Complete template reference with:
   - [x] Description of each template type
@@ -157,6 +159,7 @@
 ## Feature Completeness
 
 ### Command Template Features
+
 - [x] Copy-paste ready
 - [x] Clear placeholder syntax
 - [x] Customization guidance
@@ -167,6 +170,7 @@
 - [x] Links to related resources
 
 ### Skill Template Features
+
 - [x] Copy-paste ready
 - [x] Trigger phrase customization
 - [x] Command linkage
@@ -177,6 +181,7 @@
 - [x] Clear descriptions
 
 ### MCP Template Features
+
 - [x] Copy-paste ready
 - [x] Multiple auth methods
 - [x] Complete operation definitions
@@ -187,6 +192,7 @@
 - [x] Troubleshooting guide
 
 ### Hook Template Features
+
 - [x] Copy-paste ready
 - [x] Proper bash practices
 - [x] Color-coded output
@@ -197,6 +203,7 @@
 - [x] Clear success feedback
 
 ### Plugin Template Features
+
 - [x] Copy-paste ready
 - [x] Complete component links
 - [x] Quality tracking
@@ -207,6 +214,7 @@
 - [x] Roadmap tracking
 
 ### Plugin README Features
+
 - [x] Complete user documentation
 - [x] Setup instructions
 - [x] Usage examples
@@ -219,6 +227,7 @@
 ## Placeholder Verification
 
 ### Placeholders Documented
+
 - [x] {domain} - lowercase namespace
 - [x] {DOMAIN} - uppercase namespace
 - [x] {action} - command action name
@@ -232,12 +241,13 @@
 - [x] {AUTHOR_EMAIL} - author email
 - [x] {CREATION_TIMESTAMP} - ISO timestamp
 - [x] {TEAM_NAME} - team name
-- [x] {DOMAIN_SERVICE_*} - environment variables
-- [x] {trigger_phrase_*} - trigger phrases
+- [x] {DOMAIN*SERVICE*\*} - environment variables
+- [x] {trigger*phrase*\*} - trigger phrases
 - [x] {connection_type} - API type
 - [x] {AUTH_TYPE} - auth method
 
 ### Placeholder Usage Verified
+
 - [x] All templates use consistent {PLACEHOLDER} syntax
 - [x] Placeholders clearly documented in INDEX.md
 - [x] Examples show before/after substitution
@@ -247,6 +257,7 @@
 ## Implementation Requirements
 
 ### Scaffold Command Must
+
 - [x] Read design spec (.claude/designs/{domain}.json)
 - [x] Validate design spec format
 - [x] Create directory structure
@@ -257,6 +268,7 @@
 - [x] Provide next steps guidance
 
 ### Error Handling Must Cover
+
 - [x] Design spec not found
 - [x] Invalid design spec format
 - [x] Operation names with invalid characters
@@ -267,6 +279,7 @@
 - [x] Permission setting failures
 
 ### Integration Must Support
+
 - [x] Reading from /design:domain output
 - [x] Creating structure for /registry:scan
 - [x] Linking to /test:command
@@ -277,6 +290,7 @@
 ## Quality Assurance
 
 ### All Templates Are
+
 - [x] Syntactically valid (YAML, JSON, bash, markdown)
 - [x] Complete and functional (not partial)
 - [x] Well-commented with customization guidance
@@ -285,6 +299,7 @@
 - [x] Production-ready
 
 ### All Documentation Is
+
 - [x] Clear and comprehensive
 - [x] Using consistent terminology
 - [x] Including examples
@@ -293,6 +308,7 @@
 - [x] Cross-referenced properly
 
 ### All Examples Are
+
 - [x] Realistic and practical
 - [x] Showing expected output
 - [x] Including before/after
@@ -303,6 +319,7 @@
 ## Production Readiness
 
 ### Code Quality
+
 - [x] No hardcoded secrets
 - [x] Proper error handling
 - [x] Clear variable names
@@ -313,6 +330,7 @@
 - [x] YAML is properly formatted
 
 ### Security
+
 - [x] Credentials use environment variables
 - [x] No API keys in templates
 - [x] No database passwords
@@ -322,6 +340,7 @@
 - [x] Audit guidance provided
 
 ### Performance
+
 - [x] Templates are compact
 - [x] No unnecessary complexity
 - [x] Fast substitution possible
@@ -330,6 +349,7 @@
 - [x] Hook scripts are lightweight
 
 ### Compatibility
+
 - [x] Works with Node.js
 - [x] Works with bash
 - [x] Works with git hooks
@@ -340,6 +360,7 @@
 ## Deployment Steps
 
 ### Before Deployment
+
 - [x] Verify all 11 files exist
 - [x] Verify all files are complete
 - [x] Verify all documentation is clear
@@ -351,6 +372,7 @@
 - [x] Verify YAML validity
 
 ### Deployment
+
 1. [x] Copy all files to `.claude/templates/scaffold-domain/`
 2. [x] Set proper file permissions
 3. [x] Verify file checksums
@@ -359,6 +381,7 @@
 6. [x] Create deployment notes
 
 ### Post-Deployment Validation
+
 1. [x] All files accessible at expected locations
 2. [x] Placeholder documentation accurate
 3. [x] Examples still work
@@ -370,6 +393,7 @@
 ## Testing Scenarios
 
 ### Basic Scaffold Test
+
 - [x] Design: Simple PM domain (3 operations)
 - [x] Scaffold: Generate all files
 - [x] Verify: All commands exist and have correct names
@@ -378,6 +402,7 @@
 - [x] Verify: README is complete
 
 ### Complex Scaffold Test
+
 - [x] Design: Multi-operation devops domain (5+ ops)
 - [x] Scaffold: Generate with multiple MCPs
 - [x] Verify: All files generated correctly
@@ -385,6 +410,7 @@
 - [x] Verify: Plugin references all components
 
 ### Minimal Scaffold Test
+
 - [x] Design: Minimal domain (no auto-discovery, no MCP)
 - [x] Scaffold: Generate subset of files
 - [x] Verify: Correct files created, none extra
@@ -394,6 +420,7 @@
 ## Success Criteria
 
 ### For Users
+
 - [x] Can understand what each template generates
 - [x] Can customize generated files easily
 - [x] Example shows real before/after
@@ -402,6 +429,7 @@
 - [x] Commands are testable immediately
 
 ### For Developers
+
 - [x] Can implement scaffold command with clear guidance
 - [x] Code examples provided for all major steps
 - [x] Error handling strategies documented
@@ -410,6 +438,7 @@
 - [x] Performance considerations noted
 
 ### For Operations
+
 - [x] Templates are production-ready
 - [x] All security best practices followed
 - [x] No hardcoded secrets anywhere
@@ -420,6 +449,7 @@
 ## Known Limitations
 
 ### Current Implementation
+
 - Templates are bash-focused (suitable for CLI)
 - Plugin YAML follows provided schema
 - No dynamic template generation yet
@@ -427,6 +457,7 @@
 - No validation of generated code syntax
 
 ### Future Enhancements
+
 - [ ] Add TypeScript/Python examples
 - [ ] Add more MCP system templates
 - [ ] Add testing framework templates
@@ -436,18 +467,21 @@
 ## Support and Maintenance
 
 ### Template Updates
+
 - [x] Version tracking in place
 - [x] Changelog documentation
 - [x] Backward compatibility maintained
 - [x] Clear upgrade path for users
 
 ### Issue Resolution
+
 - [x] Troubleshooting guides provided
 - [x] Common scenarios documented
 - [x] Examples for all edge cases
 - [x] Support contacts identified
 
 ### Community
+
 - [x] Documentation encourages contribution
 - [x] Customization is well-documented
 - [x] Sharing guidance provided
@@ -456,6 +490,7 @@
 ## Final Verification
 
 ### All 11 Files Present
+
 - [x] command-template.md (4.2 KB)
 - [x] skill-template.md (7.5 KB)
 - [x] mcp-template.json (14 KB)
@@ -470,6 +505,7 @@
 - [x] DEPLOYMENT-CHECKLIST.md - This file
 
 ### Total Content
+
 - [x] 4,742 lines of templates
 - [x] 100+ KB of complete documentation
 - [x] 11 comprehensive files
@@ -479,6 +515,7 @@
 ## Sign-Off
 
 ### Quality Review
+
 - Status: **PASS** ✓
 - Date: 2025-10-29
 - Completeness: 100%
@@ -487,6 +524,7 @@
 - Testing: Comprehensive
 
 ### Deployment Authorization
+
 - Ready for Production: **YES** ✓
 - Ready for Use: **YES** ✓
 - Ready for Team Distribution: **YES** ✓
@@ -496,6 +534,7 @@
 This template library is complete, comprehensive, and production-ready. It provides everything needed to implement the `/scaffold:domain` command and generate complete domain structures.
 
 All 6 template types are included with:
+
 - Clear customization guidance
 - Comprehensive error handling
 - Multiple implementation examples

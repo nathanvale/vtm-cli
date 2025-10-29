@@ -19,12 +19,15 @@ related_specs: [spec-task-filtering-by-risk.md]
 **Decision Date**: 2025-10-29
 
 **Supersedes**:
+
 - None
 
 **Superseded By**:
+
 - None
 
 **Related Decisions**:
+
 - None
 
 ---
@@ -34,6 +37,7 @@ related_specs: [spec-task-filtering-by-risk.md]
 VTM CLI currently provides task filtering by status (pending, in_progress, completed, blocked) through the `vtm list` command. However, users working with large task manifests need a way to prioritize their work based on the risk level associated with each task's test strategy.
 
 The project uses four test strategies that correlate with risk levels:
+
 - **TDD**: High-risk features requiring tests-first approach (Red-Green-Refactor)
 - **Unit**: Medium-risk features with tests written after implementation
 - **Integration**: Cross-component behavior requiring integration testing
@@ -88,11 +92,13 @@ We evaluated adding a dedicated `risk` field to the task schema but rejected it 
 **Description**: Add a new `risk: "high" | "medium" | "low"` field to the Task type, allowing explicit risk assignment independent of test_strategy.
 
 **Pros**:
+
 - Explicit risk modeling, no inference needed
 - Risk could differ from test strategy (e.g., low-risk TDD task)
 - Flexibility for future risk factors beyond testing
 
 **Cons**:
+
 - Requires schema migration for existing VTM files
 - Duplication between risk and test_strategy in most cases
 - Manual risk assignment adds cognitive overhead during task creation
@@ -108,11 +114,13 @@ We evaluated adding a dedicated `risk` field to the task schema but rejected it 
 **Description**: Instead of extending `list` and `next`, create a new `vtm risk <level>` command for risk-based queries.
 
 **Pros**:
+
 - Clear separation of concerns
 - Easier to discover via `vtm --help`
 - Could support risk-specific features (analytics, recommendations)
 
 **Cons**:
+
 - Fragments user experience across multiple commands
 - Doesn't compose with existing filters (--status, etc.)
 - Users must learn new command instead of flag
@@ -151,17 +159,22 @@ We evaluated adding a dedicated `risk` field to the task schema but rejected it 
 This decision is implemented via the technical specification:
 
 **Related Documentation**:
+
 - [spec-task-filtering-by-risk.md](../specs/spec-task-filtering-by-risk.md) - Full implementation spec
 - CLI usage examples in spec's Acceptance Criteria sections
 
 **Key Implementation Points**:
 
 1. Add risk mapping helper in `src/lib/types.ts`:
+
    ```typescript
-   export function getRiskLevel(testStrategy: TestStrategy): 'high' | 'medium' | 'low'
+   export function getRiskLevel(
+     testStrategy: TestStrategy,
+   ): "high" | "medium" | "low"
    ```
 
 2. Extend VTMReader with risk filtering methods:
+
    ```typescript
    getTasksByRisk(riskLevel: string): Task[]
    ```
@@ -174,11 +187,11 @@ This decision is implemented via the technical specification:
 
 ## Validation Criteria
 
-- [X] `vtm list --risk high` filters to TDD and Integration tasks only
-- [X] `vtm next --risk high` suggests next ready high-risk task
-- [X] `vtm list --by-risk` groups output by high/medium/low sections
-- [X] Risk filters compose with status filters: `--status pending --risk high`
-- [X] Help text documents risk level mapping (test_strategy → risk)
+- [x] `vtm list --risk high` filters to TDD and Integration tasks only
+- [x] `vtm next --risk high` suggests next ready high-risk task
+- [x] `vtm list --by-risk` groups output by high/medium/low sections
+- [x] Risk filters compose with status filters: `--status pending --risk high`
+- [x] Help text documents risk level mapping (test_strategy → risk)
 - [ ] Developer survey shows >80% find risk filtering useful (post-launch)
 
 ---
@@ -188,6 +201,7 @@ This decision is implemented via the technical specification:
 **Next Review Date**: 2026-04-29 (6 months post-approval)
 
 **Review Triggers**:
+
 - Team requests additional risk levels beyond 3-tier system
 - Correlation between test_strategy and actual risk falls below 80%
 - Usage analytics show <10% adoption of risk filtering features
@@ -197,11 +211,13 @@ This decision is implemented via the technical specification:
 ## Notes
 
 **Decision Context**:
+
 - This decision came from observing teams manually grep for `"test_strategy": "TDD"` in vtm.json files
 - Initial prototype showed 60% reduction in time-to-identify high-risk tasks for a 50-task manifest
 - Risk-based filtering aligns with broader industry practice of risk-driven development
 
 **Decision Log**:
+
 - 2025-10-29: ADR created (status: DRAFT)
 - 2025-10-29: Reviewed by CLI team
 - 2025-10-29: APPROVED by VTM CLI maintainers

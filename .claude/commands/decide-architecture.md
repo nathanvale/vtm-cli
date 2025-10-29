@@ -9,6 +9,7 @@
 ## What This Command Does
 
 Acts as an architecture thinking partner that:
+
 - Analyzes your description and recommends component structure
 - Identifies architectural patterns that match your needs
 - Suggests command names, integrations, and hooks
@@ -66,15 +67,16 @@ Acts as an architecture thinking partner that:
 
 ```javascript
 // Parse arguments
-const description = ARGUMENTS[0] || '';
-const isAnalyze = ARGUMENTS.includes('--analyze');
-const isRefactor = ARGUMENTS.includes('--refactor');
-const suggestMerge = ARGUMENTS.includes('--suggest-merge');
-const suggestSplit = ARGUMENTS.includes('--suggest-split');
-const suggestRefactoring = ARGUMENTS.includes('--suggest-refactoring');
-const comparePatterns = ARGUMENTS.includes('--compare-patterns');
-const pattern = ARGUMENTS.includes('--pattern') ?
-  ARGUMENTS[ARGUMENTS.indexOf('--pattern') + 1] : null;
+const description = ARGUMENTS[0] || ""
+const isAnalyze = ARGUMENTS.includes("--analyze")
+const isRefactor = ARGUMENTS.includes("--refactor")
+const suggestMerge = ARGUMENTS.includes("--suggest-merge")
+const suggestSplit = ARGUMENTS.includes("--suggest-split")
+const suggestRefactoring = ARGUMENTS.includes("--suggest-refactoring")
+const comparePatterns = ARGUMENTS.includes("--compare-patterns")
+const pattern = ARGUMENTS.includes("--pattern")
+  ? ARGUMENTS[ARGUMENTS.indexOf("--pattern") + 1]
+  : null
 ```
 
 ---
@@ -86,6 +88,7 @@ const pattern = ARGUMENTS.includes('--pattern') ?
 ```
 
 Output:
+
 ```
 🤖 Architecture Decision: "task tracking for remote teams with Slack"
 
@@ -198,6 +201,7 @@ Need more detail?
 ```
 
 Output:
+
 ```
 🔍 Architecture Analysis: vtm domain
 
@@ -347,6 +351,7 @@ Want detailed analysis of specific command?
 ```
 
 Output:
+
 ```
 🔧 Refactoring Analysis: vtm:context
 
@@ -501,29 +506,35 @@ Ready to implement?
 The command uses these built-in patterns:
 
 ### Task Management Pattern
+
 - Commands: create, list, view, update, delete
 - Integration: Task database or file
 - Hooks: Validation, auto-update
 
 ### Team Collaboration Pattern
+
 - Commands: assign, share, notify
 - Integration: Communication platform (Slack, Teams)
 - Hooks: Notification triggers
 
 ### Analytics Pattern
+
 - Commands: stats, report, dashboard
 - Integration: Data store
 - Hooks: Data collection
 
 ### CRUD Pattern
+
 - Commands: create, read, update, delete
 - Standard operations for entities
 
 ### Workflow Pattern
+
 - Commands: start, pause, resume, complete
 - State machine for processes
 
 ### Notification Pattern
+
 - Integration: Communication channels
 - Hooks: Event-based alerts
 
@@ -534,12 +545,14 @@ The command uses these built-in patterns:
 The command analyzes based on:
 
 ### Keywords Detection
+
 - Actions: create, manage, track, analyze, monitor
 - Domains: task, project, team, data, code
 - Integration: slack, github, notion, database
 - Timing: daily, scheduled, real-time, async
 
 ### Heuristics
+
 - 3-5 commands: Simple domain
 - 6-10 commands: Medium complexity
 - 10+ commands: Consider splitting
@@ -548,6 +561,7 @@ The command analyzes based on:
 - Team coordination → Collaboration features
 
 ### Best Practices
+
 - Single responsibility per domain
 - Clear command naming (verb-noun)
 - Minimal dependencies
@@ -558,76 +572,81 @@ The command analyzes based on:
 
 ## Implementation
 
-Execute the decision engine:
+Execute via the VTM CLI:
 
-```javascript
-const { DecisionEngine } = require('./.claude/lib/decision-engine');
+```bash
+#!/bin/bash
 
-// Parse arguments
-const description = ARGUMENTS[0] || '';
-const options = {
-  analyze: ARGUMENTS.includes('--analyze'),
-  refactor: ARGUMENTS.includes('--refactor'),
-  suggestMerge: ARGUMENTS.includes('--suggest-merge'),
-  suggestSplit: ARGUMENTS.includes('--suggest-split'),
-  suggestRefactoring: ARGUMENTS.includes('--suggest-refactoring'),
-  comparePatterns: ARGUMENTS.includes('--compare-patterns'),
-  pattern: null
-};
+# Parse arguments
+DESCRIPTION="${ARGUMENTS[0]}"
+IS_ANALYZE=false
+DOMAIN_NAME=""
+SUGGEST_REFACTORING=false
 
-if (ARGUMENTS.includes('--pattern')) {
-  options.pattern = ARGUMENTS[ARGUMENTS.indexOf('--pattern') + 1];
-}
+# Check for --analyze flag
+if [[ " ${ARGUMENTS[@]} " =~ " --analyze " ]]; then
+  IS_ANALYZE=true
+  # Get domain name (argument after --analyze)
+  for i in "${!ARGUMENTS[@]}"; do
+    if [[ "${ARGUMENTS[$i]}" == "--analyze" ]]; then
+      DOMAIN_NAME="${ARGUMENTS[$i+1]}"
+      break
+    fi
+  done
+fi
 
-// Initialize decision engine
-const engine = new DecisionEngine({
-  basePath: process.cwd(),
-  patternsPath: '.claude/lib/architecture-patterns.json'
-});
+# Check for --suggest-refactoring flag
+if [[ " ${ARGUMENTS[@]} " =~ " --suggest-refactoring " ]]; then
+  SUGGEST_REFACTORING=true
+fi
 
-try {
-  let result;
+# Check if vtm CLI is available
+if ! command -v vtm &> /dev/null; then
+    echo "❌ Error: vtm CLI not found"
+    echo ""
+    echo "Please ensure vtm-cli is installed and built:"
+    echo "  cd /path/to/vtm-cli"
+    echo "  npm install"
+    echo "  npm run build"
+    echo "  npm link"
+    exit 1
+fi
 
-  if (options.analyze) {
-    // Analyze existing domain
-    const domainName = ARGUMENTS[ARGUMENTS.indexOf('--analyze') + 1];
-    result = engine.analyzeDomain(domainName, options);
-  } else if (options.refactor) {
-    // Refactor specific component
-    const component = ARGUMENTS[ARGUMENTS.indexOf('--refactor') + 1];
-    result = engine.suggestRefactoring(component, options);
-  } else {
-    // Recommend architecture from description
-    result = engine.recommendArchitecture(description, options);
-  }
+# Execute the appropriate command
+if [[ "$IS_ANALYZE" == true ]]; then
+  if [[ -z "$DOMAIN_NAME" ]]; then
+    echo "❌ Error: Domain name required for --analyze"
+    echo ""
+    echo "Usage: /decide:architecture --analyze {domain-name}"
+    echo "Example: /decide:architecture --analyze vtm"
+    exit 1
+  fi
 
-  // Display formatted results
-  console.log(result.formatted);
+  # Analyze existing domain
+  if [[ "$SUGGEST_REFACTORING" == true ]]; then
+    vtm analyze "$DOMAIN_NAME" --suggest-refactoring
+  else
+    vtm analyze "$DOMAIN_NAME"
+  fi
+else
+  # Recommendation from description
+  if [[ -z "$DESCRIPTION" ]]; then
+    echo "❌ Error: Description required"
+    echo ""
+    echo "Usage: /decide:architecture {description}"
+    echo "Example: /decide:architecture \"task tracking for teams\""
+    exit 1
+  fi
 
-  // Save recommendation if requested
-  if (result.recommendation) {
-    const fs = require('fs');
-    const path = require('path');
-    const decisionsDir = path.join(process.cwd(), '.claude', 'decisions');
-
-    if (!fs.existsSync(decisionsDir)) {
-      fs.mkdirSync(decisionsDir, { recursive: true });
-    }
-
-    const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const filename = `decision-${timestamp}.json`;
-    fs.writeFileSync(
-      path.join(decisionsDir, filename),
-      JSON.stringify(result.recommendation, null, 2)
-    );
-
-    console.log(`\n💾 Decision saved: .claude/decisions/${filename}`);
-  }
-
-} catch (error) {
-  console.error('❌ Decision analysis failed:', error.message);
-  process.exit(1);
-}
+  echo "🤖 Architecture Recommendation"
+  echo ""
+  echo "Note: Full recommendation from description is not yet implemented."
+  echo "Currently supports domain analysis via: /decide:architecture --analyze {domain}"
+  echo ""
+  echo "To analyze an existing domain:"
+  echo "  /decide:architecture --analyze vtm"
+  echo "  /decide:architecture --analyze vtm --suggest-refactoring"
+fi
 ```
 
 ---

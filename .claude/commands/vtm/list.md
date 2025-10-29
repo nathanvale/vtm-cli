@@ -75,6 +75,7 @@ echo "   • View stats: /vtm:stats"
 ## Task List Format
 
 Shows for each task:
+
 - **ID**: Task identifier (TASK-001, TASK-002, etc.)
 - **Status**: pending, in-progress, completed, blocked
 - **Title**: Task description
@@ -84,6 +85,7 @@ Shows for each task:
 ## Filtering
 
 Filter tasks to focus on specific work:
+
 - `pending` - Tasks ready to start (dependencies met)
 - `in-progress` - Currently active tasks
 - `completed` - Finished tasks
@@ -93,6 +95,7 @@ Filter tasks to focus on specific work:
 ## Workflow
 
 Use list to:
+
 1. Get overview of all work
 2. Find tasks by status
 3. Identify what's blocking progress

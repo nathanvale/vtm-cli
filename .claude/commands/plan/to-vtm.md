@@ -62,11 +62,12 @@ You are an orchestration agent transforming planning documents into VTM tasks. F
    - If not found, show warning but allow user to continue
 
 Example validation:
+
 ```typescript
 const adrFile = args[0]
 const specFile = args[1]
-const hasCommitFlag = args.includes('--commit')
-const hasPreviewOnlyFlag = args.includes('--preview-only')
+const hasCommitFlag = args.includes("--commit")
+const hasPreviewOnlyFlag = args.includes("--preview-only")
 
 // Try to read files
 try {
@@ -98,8 +99,9 @@ vtm summary --incomplete --json --output /tmp/vtm-summary.json
 ```
 
 Then read the summary:
+
 ```typescript
-const vtmSummaryJson = await Read('/tmp/vtm-summary.json')
+const vtmSummaryJson = await Read("/tmp/vtm-summary.json")
 const vtmSummary = JSON.parse(vtmSummaryJson)
 ```
 
@@ -130,6 +132,7 @@ You are a task extraction agent specialized in analyzing ADRs and technical spec
 ## Current VTM State
 
 You have access to the current VTM state showing:
+
 - **Incomplete tasks**: {vtm_summary.incomplete_tasks.length} tasks (pending, in-progress, blocked)
 - **Completed capabilities**: {vtm_summary.completed_capabilities.length} completed tasks
 
@@ -156,6 +159,7 @@ Follow these steps to extract tasks:
 ### 1. Read the ADR
 
 Extract from the ADR:
+
 - **Decision**: What was decided?
 - **Rationale**: Why this decision?
 - **Constraints**: What limitations or requirements?
@@ -164,6 +168,7 @@ Extract from the ADR:
 ### 2. Read the Spec
 
 Extract from the Spec:
+
 - **Individual tasks**: Break down implementation into discrete tasks
 - **Acceptance Criteria**: What makes each task "done"?
 - **Test Requirements**: What tests are needed?
@@ -199,6 +204,7 @@ Extract from the Spec:
 ### 4. Determine Test Strategy
 
 Choose based on risk and component type:
+
 - **TDD**: High-risk core logic, security features, complex algorithms
 - **Unit**: Medium-risk pure functions, utilities, helpers
 - **Integration**: Cross-component, API endpoints, database operations
@@ -207,6 +213,7 @@ Choose based on risk and component type:
 ### 5. Extract Rich Context
 
 For each task, capture:
+
 - **ADR context**: Link to specific sections, lines, decisions, constraints
 - **Spec context**: Link to acceptance criteria, test requirements, code examples
 - **Line references**: Precise line numbers for traceability
@@ -221,66 +228,24 @@ Output a JSON object with this exact schema:
   "spec_source": "relative/path/to/spec-file.md",
   "tasks": [
     {
-      "title": "Clear, actionable task title",
-      "description": "Detailed description (2-3 sentences explaining what and why)",
       "acceptance_criteria": [
         "Testable criterion 1",
         "Testable criterion 2",
         "Testable criterion 3"
       ],
-      "dependencies": [0, "TASK-002"],
       "blocks": [],
-      "test_strategy": "TDD",
-      "test_strategy_rationale": "Explanation of why this test strategy was chosen",
-      "risk": "high",
-      "estimated_hours": 8,
-      "files": {
-        "create": ["path/to/new/file.ts", "path/to/test.ts"],
-        "modify": ["path/to/existing.ts"],
-        "delete": []
-      },
       "context": {
         "adr": {
-          "file": "adr-file.md",
-          "decision": "Core decision from ADR",
-          "rationale": "Why this decision matters for this task",
           "constraints": ["Constraint 1", "Constraint 2"],
+          "decision": "Core decision from ADR",
+          "file": "adr-file.md",
+          "rationale": "Why this decision matters for this task",
           "relevant_sections": [
             {
-              "section": "## Implementation Requirements",
+              "content": "Brief excerpt or summary",
               "lines": "42-58",
-              "content": "Brief excerpt or summary",
-              "relevance": 1.0
-            }
-          ]
-        },
-        "spec": {
-          "file": "spec-file.md",
-          "acceptance_criteria": ["Full AC text from spec"],
-          "test_requirements": [
-            {
-              "type": "unit",
-              "description": "Test description from spec",
-              "acceptance_criterion": "Which AC this test validates",
-              "lines": "65"
-            }
-          ],
-          "code_examples": [
-            {
-              "language": "typescript",
-              "code": "const example = 'from spec'",
-              "description": "What this example shows",
-              "file": "spec-file.md",
-              "lines": "120-125"
-            }
-          ],
-          "constraints": ["Constraint from spec"],
-          "relevant_sections": [
-            {
-              "section": "## CLI Commands",
-              "lines": "71-90",
-              "content": "Brief excerpt or summary",
-              "relevance": 0.9
+              "relevance": 1.0,
+              "section": "## Implementation Requirements"
             }
           ]
         },
@@ -292,22 +257,64 @@ Output a JSON object with this exact schema:
               "text": "AC1: Full acceptance criterion text"
             }
           ],
-          "tests": [
-            {
-              "file": "spec-file.md",
-              "lines": "65",
-              "text": "Test requirement text"
-            }
-          ],
           "examples": [
             {
               "file": "spec-file.md",
               "lines": "85-87",
               "text": "Code example description"
             }
+          ],
+          "tests": [
+            {
+              "file": "spec-file.md",
+              "lines": "65",
+              "text": "Test requirement text"
+            }
+          ]
+        },
+        "spec": {
+          "acceptance_criteria": ["Full AC text from spec"],
+          "code_examples": [
+            {
+              "code": "const example = 'from spec'",
+              "description": "What this example shows",
+              "file": "spec-file.md",
+              "language": "typescript",
+              "lines": "120-125"
+            }
+          ],
+          "constraints": ["Constraint from spec"],
+          "file": "spec-file.md",
+          "relevant_sections": [
+            {
+              "content": "Brief excerpt or summary",
+              "lines": "71-90",
+              "relevance": 0.9,
+              "section": "## CLI Commands"
+            }
+          ],
+          "test_requirements": [
+            {
+              "acceptance_criterion": "Which AC this test validates",
+              "description": "Test description from spec",
+              "lines": "65",
+              "type": "unit"
+            }
           ]
         }
-      }
+      },
+      "dependencies": [0, "TASK-002"],
+      "description": "Detailed description (2-3 sentences explaining what and why)",
+      "estimated_hours": 8,
+      "files": {
+        "create": ["path/to/new/file.ts", "path/to/test.ts"],
+        "delete": [],
+        "modify": ["path/to/existing.ts"]
+      },
+      "risk": "high",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Explanation of why this test strategy was chosen",
+      "title": "Clear, actionable task title"
     }
   ]
 }
@@ -316,6 +323,7 @@ Output a JSON object with this exact schema:
 ## Quality Checklist
 
 Before outputting, verify:
+
 - [ ] All tasks have clear, actionable titles
 - [ ] Descriptions explain WHAT and WHY (not just restating title)
 - [ ] Acceptance criteria are specific and testable
@@ -343,12 +351,13 @@ After the agent completes, save its output to a temporary file:
 
 ```typescript
 // Agent output is in 'taskExtractionResult' variable
-await Write('/tmp/agent-output.json', taskExtractionResult)
+await Write("/tmp/agent-output.json", taskExtractionResult)
 ```
 
 ### Step 6: Transform Agent Output to VTM Ingest Format
 
 The agent returns a JSON object with this structure:
+
 ```json
 {
   "adr_source": "relative/path/to/adr.md",
@@ -379,6 +388,7 @@ console.log("✅ Transformed " + tasks.length + " tasks for VTM ingestion");
 ```
 
 This transformation:
+
 - Extracts tasks array from wrapper object
 - Adds `adr_source` to each task
 - Adds `spec_source` to each task
@@ -403,6 +413,7 @@ vtm ingest /tmp/tasks-extracted.json --preview
 ```
 
 This will show:
+
 - Task summaries
 - Dependency chains
 - Dependency status (completed ✓, pending ⏸, new ◎)
@@ -414,24 +425,27 @@ Unless `--commit` flag is set, prompt for confirmation:
 
 ```typescript
 if (!hasCommitFlag && !hasPreviewOnlyFlag) {
-  const taskCount = JSON.parse(await Read('/tmp/tasks-extracted.json')).tasks.length
+  const taskCount = JSON.parse(await Read("/tmp/tasks-extracted.json")).tasks
+    .length
 
   const answer = await AskUserQuestion({
-    questions: [{
-      question: `Commit ${taskCount} tasks to VTM?`,
-      header: "Confirm Ingest",
-      multiSelect: false,
-      options: [
-        {
-          label: "Yes, commit tasks",
-          description: "Add tasks to vtm.json with dependency tracking"
-        },
-        {
-          label: "No, cancel",
-          description: "Discard extracted tasks"
-        }
-      ]
-    }]
+    questions: [
+      {
+        question: `Commit ${taskCount} tasks to VTM?`,
+        header: "Confirm Ingest",
+        multiSelect: false,
+        options: [
+          {
+            label: "Yes, commit tasks",
+            description: "Add tasks to vtm.json with dependency tracking",
+          },
+          {
+            label: "No, cancel",
+            description: "Discard extracted tasks",
+          },
+        ],
+      },
+    ],
   })
 
   if (!answer.answers || !answer.answers["Confirm Ingest"]?.includes("Yes")) {
@@ -477,6 +491,7 @@ Handle these error cases:
 ## Output
 
 The command will:
+
 1. ✅ Validate ADR+Spec pairing
 2. 🤖 Extract tasks with rich context using agent
 3. 🧠 Analyze dependencies intelligently (semantic understanding)

@@ -5,19 +5,25 @@ This document serves as the index for all `/design:domain` implementation files.
 ## Quick Navigation
 
 ### For Users
+
 Start here if you want to **use** the design command:
+
 1. **README-DESIGN-DOMAIN.md** - Begin here! User-friendly guide
 2. **DESIGN-DOMAIN-QUICK-REFERENCE.md** - Cheat sheet for quick lookup
 3. **design-domain.md** - Full specification with examples
 
 ### For Developers
+
 Start here if you want to **understand** how it works:
+
 1. **DESIGN-DOMAIN-IMPLEMENTATION.md** - Complete technical guide
 2. **scaffold/design.js** - Source code implementation
 3. **designs/pm-example.json** - Example output
 
 ### For Reviewers/Managers
+
 Start here for an **overview** of what was delivered:
+
 1. **../DESIGN-DOMAIN-DELIVERABLES.md** - Executive summary
 2. **This file (INDEX-DESIGN-DOMAIN.md)** - Navigation guide
 
@@ -28,6 +34,7 @@ Start here for an **overview** of what was delivered:
 ### 1. Core Implementation Files
 
 #### **scaffold/design.js** (12 KB, 373 lines)
+
 - **What it is:** The main implementation script
 - **Language:** Node.js (JavaScript)
 - **Purpose:** Interactive questionnaire that collects 5 questions
@@ -43,6 +50,7 @@ Start here for an **overview** of what was delivered:
 - **Testing:** Valid JavaScript syntax (validated with `node -c`)
 
 #### **designs/pm-example.json** (2.2 KB, 80 lines)
+
 - **What it is:** Example design specification output
 - **Format:** JSON (valid, schema-compliant)
 - **Purpose:** Shows what the questionnaire generates
@@ -55,6 +63,7 @@ Start here for an **overview** of what was delivered:
 ### 2. Documentation Files
 
 #### **design-domain.md** (14 KB, 507 lines)
+
 - **Audience:** Everyone
 - **Purpose:** Complete command specification
 - **Contents:**
@@ -73,6 +82,7 @@ Start here for an **overview** of what was delivered:
   - See also references
 
 #### **README-DESIGN-DOMAIN.md** (16 KB, 538 lines)
+
 - **Audience:** End users
 - **Purpose:** User-friendly, how-to guide
 - **Contents:**
@@ -97,6 +107,7 @@ Start here for an **overview** of what was delivered:
   - Common Domain Patterns
 
 #### **DESIGN-DOMAIN-IMPLEMENTATION.md** (20 KB, 677 lines)
+
 - **Audience:** Developers and architects
 - **Purpose:** Technical implementation guide
 - **Contents:**
@@ -124,6 +135,7 @@ Start here for an **overview** of what was delivered:
   - Next Steps & Future Work
 
 #### **DESIGN-DOMAIN-QUICK-REFERENCE.md** (3.6 KB, 197 lines)
+
 - **Audience:** Users who know the basics
 - **Purpose:** Quick lookup reference
 - **Contents:**
@@ -150,6 +162,7 @@ Start here for an **overview** of what was delivered:
 ### 3. Testing Files
 
 #### **scaffold/test-design.sh** (1 KB, 40 lines)
+
 - **What it is:** Automated test script
 - **Purpose:** Validate the implementation works
 - **Approach:** Pipes test input to design.js
@@ -163,6 +176,7 @@ Start here for an **overview** of what was delivered:
 ### 4. Summary Documents
 
 #### **DESIGN-DOMAIN-DELIVERABLES.md** (18 KB, 450+ lines)
+
 - **Location:** Root of project (`/Users/nathanvale/code/vtm-cli/`)
 - **Audience:** Managers, reviewers, project leads
 - **Purpose:** Comprehensive deliverables report
@@ -187,6 +201,7 @@ Start here for an **overview** of what was delivered:
   - 100% of requirements met
 
 #### **INDEX-DESIGN-DOMAIN.md** (This file)
+
 - **Purpose:** Navigation guide for all deliverables
 - **Contents:** File listings, descriptions, quick navigation
 
@@ -196,38 +211,41 @@ Start here for an **overview** of what was delivered:
 
 ### By Type
 
-| Type | Files | Lines | Size | Purpose |
-|------|-------|-------|------|---------|
-| Implementation | 1 | 373 | 12 KB | Questionnaire logic |
-| Documentation | 4 | 1,919 | 54 KB | Guides and specs |
-| Examples | 1 | 80 | 2.2 KB | Reference output |
-| Testing | 1 | 40 | 1 KB | Validation |
-| Summary | 2 | 450+ | 36 KB | Reporting |
-| **Total** | **9** | **~2,900** | **~105 KB** | Complete system |
+| Type           | Files | Lines      | Size        | Purpose             |
+| -------------- | ----- | ---------- | ----------- | ------------------- |
+| Implementation | 1     | 373        | 12 KB       | Questionnaire logic |
+| Documentation  | 4     | 1,919      | 54 KB       | Guides and specs    |
+| Examples       | 1     | 80         | 2.2 KB      | Reference output    |
+| Testing        | 1     | 40         | 1 KB        | Validation          |
+| Summary        | 2     | 450+       | 36 KB       | Reporting           |
+| **Total**      | **9** | **~2,900** | **~105 KB** | Complete system     |
 
 ### By Audience
 
-| Audience | Files | Purpose |
-|----------|-------|---------|
-| End Users | README, Quick Ref, Example | How to use |
+| Audience   | Files                            | Purpose      |
+| ---------- | -------------------------------- | ------------ |
+| End Users  | README, Quick Ref, Example       | How to use   |
 | Developers | Implementation, Design Doc, Code | How it works |
-| Managers | Deliverables, This Index | Overview |
+| Managers   | Deliverables, This Index         | Overview     |
 
 ---
 
 ## Quick Links
 
 ### Get Started (5 minutes)
+
 1. Read: `README-DESIGN-DOMAIN.md` (first 3 sections)
 2. Run: `node .claude/commands/scaffold/design.js my-domain`
 3. Review: `cat .claude/designs/my-domain.json`
 
 ### Understand the Code (30 minutes)
+
 1. Read: `DESIGN-DOMAIN-IMPLEMENTATION.md`
 2. Review: `scaffold/design.js` (annotated in docs)
 3. Study: `designs/pm-example.json` (example output)
 
 ### Get Help
+
 - **Quick lookup:** `DESIGN-DOMAIN-QUICK-REFERENCE.md`
 - **Detailed guide:** `README-DESIGN-DOMAIN.md`
 - **Technical details:** `DESIGN-DOMAIN-IMPLEMENTATION.md`
@@ -237,13 +255,13 @@ Start here for an **overview** of what was delivered:
 
 ## The 5 Questions At a Glance
 
-| # | Question | Input Type | Purpose |
-|---|----------|-----------|---------|
-| 1 | Core operations | Comma-separated list | Define slash commands |
-| 2 | Auto-discovery | yes/no | Enable Claude suggestions |
-| 3 | External systems | yes/no/maybe + names | MCP integration needs |
-| 4 | Automation | yes/no + hooks | Event handlers and hooks |
-| 5 | Sharing scope | personal/team/community | Access and distribution |
+| #   | Question         | Input Type              | Purpose                   |
+| --- | ---------------- | ----------------------- | ------------------------- |
+| 1   | Core operations  | Comma-separated list    | Define slash commands     |
+| 2   | Auto-discovery   | yes/no                  | Enable Claude suggestions |
+| 3   | External systems | yes/no/maybe + names    | MCP integration needs     |
+| 4   | Automation       | yes/no + hooks          | Event handlers and hooks  |
+| 5   | Sharing scope    | personal/team/community | Access and distribution   |
 
 ---
 
@@ -272,56 +290,65 @@ Full schema in: `design-domain.md`
 ## Integration Points
 
 ### Input
+
 User command: `/design:domain pm "Project Management"`
 
 ### Processing
+
 Node.js script in: `scaffold/design.js`
 
 ### Output
+
 Design spec in: `.claude/designs/pm.json`
 
 ### Next Command
+
 `/scaffold:domain pm` (generates files from spec)
 
 ---
 
 ## Quality Metrics
 
-| Metric | Status | Evidence |
-|--------|--------|----------|
-| Code syntax valid | ✅ | `node -c scaffold/design.js` passes |
-| JSON schema valid | ✅ | `jq . designs/pm-example.json` passes |
-| All requirements | ✅ | All 5 questions implemented |
-| Documentation | ✅ | 1,900+ lines across 4 files |
-| Examples | ✅ | pm-example.json included |
-| Error handling | ✅ | 8+ error cases covered |
-| Testing | ✅ | Automated checks included |
+| Metric            | Status | Evidence                              |
+| ----------------- | ------ | ------------------------------------- |
+| Code syntax valid | ✅     | `node -c scaffold/design.js` passes   |
+| JSON schema valid | ✅     | `jq . designs/pm-example.json` passes |
+| All requirements  | ✅     | All 5 questions implemented           |
+| Documentation     | ✅     | 1,900+ lines across 4 files           |
+| Examples          | ✅     | pm-example.json included              |
+| Error handling    | ✅     | 8+ error cases covered                |
+| Testing           | ✅     | Automated checks included             |
 
 ---
 
 ## Common Tasks
 
 ### Run the Questionnaire
+
 ```bash
 node .claude/commands/scaffold/design.js pm "My PM Domain"
 ```
 
 ### View a Design
+
 ```bash
 cat .claude/designs/pm.json
 ```
 
 ### See an Example
+
 ```bash
 cat .claude/designs/pm-example.json
 ```
 
 ### Check Syntax
+
 ```bash
 node -c .claude/commands/scaffold/design.js
 ```
 
 ### Validate JSON
+
 ```bash
 jq . .claude/designs/pm.json
 ```
@@ -331,6 +358,7 @@ jq . .claude/designs/pm.json
 ## Next Steps
 
 ### After Design
+
 1. Review your design spec
 2. Run `/scaffold:domain {domain}` to generate files
 3. Customize the generated command templates
@@ -338,6 +366,7 @@ jq . .claude/designs/pm.json
 5. Run `/registry:scan {domain}` to verify
 
 ### Related Commands
+
 - **Specification:** `SPEC-minimum-composable-core.md`
 - **Scaffolding:** `/scaffold:domain` (coming next)
 - **Registry:** `/registry:scan` (coming next)
@@ -397,33 +426,36 @@ jq . .claude/designs/pm.json
 
 ## Document Versions
 
-| Document | Lines | Size | Version | Purpose |
-|----------|-------|------|---------|---------|
-| design-domain.md | 507 | 14 KB | 1.0.0 | Specification |
-| README-DESIGN-DOMAIN.md | 538 | 16 KB | 1.0.0 | User Guide |
-| DESIGN-DOMAIN-IMPLEMENTATION.md | 677 | 20 KB | 1.0.0 | Dev Guide |
-| DESIGN-DOMAIN-QUICK-REFERENCE.md | 197 | 3.6 KB | 1.0.0 | Quick Ref |
-| design.js | 373 | 12 KB | 1.0.0 | Implementation |
-| DESIGN-DOMAIN-DELIVERABLES.md | 450+ | 18 KB | 1.0.0 | Summary |
-| INDEX-DESIGN-DOMAIN.md | 220 | 7 KB | 1.0.0 | Navigation |
+| Document                         | Lines | Size   | Version | Purpose        |
+| -------------------------------- | ----- | ------ | ------- | -------------- |
+| design-domain.md                 | 507   | 14 KB  | 1.0.0   | Specification  |
+| README-DESIGN-DOMAIN.md          | 538   | 16 KB  | 1.0.0   | User Guide     |
+| DESIGN-DOMAIN-IMPLEMENTATION.md  | 677   | 20 KB  | 1.0.0   | Dev Guide      |
+| DESIGN-DOMAIN-QUICK-REFERENCE.md | 197   | 3.6 KB | 1.0.0   | Quick Ref      |
+| design.js                        | 373   | 12 KB  | 1.0.0   | Implementation |
+| DESIGN-DOMAIN-DELIVERABLES.md    | 450+  | 18 KB  | 1.0.0   | Summary        |
+| INDEX-DESIGN-DOMAIN.md           | 220   | 7 KB   | 1.0.0   | Navigation     |
 
 ---
 
 ## How to Read This Documentation
 
 ### Path 1: Quick Start (15 minutes)
+
 1. This file (orientation)
 2. `DESIGN-DOMAIN-QUICK-REFERENCE.md` (syntax)
 3. Run: `node .claude/commands/scaffold/design.js my-domain`
 4. `designs/pm-example.json` (see output)
 
 ### Path 2: User Learning (30 minutes)
+
 1. `README-DESIGN-DOMAIN.md` (comprehensive guide)
 2. Run: `node .claude/commands/scaffold/design.js my-domain`
 3. Review: Your generated `.claude/designs/my-domain.json`
 4. `DESIGN-DOMAIN-QUICK-REFERENCE.md` (for future reference)
 
 ### Path 3: Technical Deep Dive (2 hours)
+
 1. `DESIGN-DOMAIN-IMPLEMENTATION.md` (architecture)
 2. `scaffold/design.js` (source code)
 3. `design-domain.md` (JSON schema)
@@ -431,6 +463,7 @@ jq . .claude/designs/pm.json
 5. `DESIGN-DOMAIN-DELIVERABLES.md` (metrics & stats)
 
 ### Path 4: Management Overview (15 minutes)
+
 1. `DESIGN-DOMAIN-DELIVERABLES.md` (executive summary)
 2. This file (orientation)
 3. `DESIGN-DOMAIN-QUICK-REFERENCE.md` (key concepts)

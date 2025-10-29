@@ -1,4 +1,14 @@
 {
+  "enableAllProjectMcpServers": true,
+  "enabledMcpjsonServers": [
+    "wallaby",
+    "mcp-server-firecrawl",
+    "sequential-thinking",
+    "filesystem",
+    "context7",
+    "tavily-mcp",
+    "puppeteer"
+  ],
   "permissions": {
     "allow": [
       "Read(//Users/nathanvale/code/**)",
@@ -51,15 +61,5 @@
       "Bash(pnpm format:*)",
       "mcp__sequential-thinking__sequentialthinking"
     ]
-  },
-  "enableAllProjectMcpServers": true,
-  "enabledMcpjsonServers": [
-    "wallaby",
-    "mcp-server-firecrawl",
-    "sequential-thinking",
-    "filesystem",
-    "context7",
-    "tavily-mcp",
-    "puppeteer"
-  ]
+  }
 }

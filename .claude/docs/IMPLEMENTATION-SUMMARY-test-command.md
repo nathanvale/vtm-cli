@@ -5,9 +5,11 @@ Comprehensive testing system for validating Claude Code components across five t
 ## Deliverables
 
 ### 1. Command Specification: `test-command.md`
+
 **Location:** `.claude/commands/test-command.md`
 
 Complete specification for the `/test:command` slash command including:
+
 - Command syntax and usage
 - Parameter documentation with examples
 - All five test types with detailed descriptions
@@ -19,6 +21,7 @@ Complete specification for the `/test:command` slash command including:
 - Integration with workflow
 
 **Key Features:**
+
 - 400+ lines of comprehensive documentation
 - Real-world usage examples
 - Test result formatting with color codes
@@ -26,16 +29,19 @@ Complete specification for the `/test:command` slash command including:
 - Error scenario coverage
 
 ### 2. Test Framework Implementation: `test-framework.ts`
+
 **Location:** `.claude/lib/test-framework.ts`
 
 Production-ready TypeScript implementation of the testing engine:
 
 **Core Classes:**
+
 - `TestFramework` - Main testing orchestrator
 - Test result interfaces for all five test types
 - Component metadata interface
 
 **Test Methods:**
+
 - `runSmokeTest()` - Validates existence and parsability
 - `runFunctionalTest()` - Tests output correctness
 - `runIntegrationTest()` - Tests dependency resolution
@@ -43,6 +49,7 @@ Production-ready TypeScript implementation of the testing engine:
 - `runQualityTest()` - Checks standards compliance
 
 **Helper Methods:**
+
 - `findComponentFile()` - Locates component files
 - `extractMetadata()` - Parses component metadata
 - `executeWithTimeout()` - Runs commands with timeout
@@ -50,6 +57,7 @@ Production-ready TypeScript implementation of the testing engine:
 - `generateHTMLReport()` - Creates detailed test reports
 
 **Features:**
+
 - 600+ lines of production code
 - Error handling with helpful messages
 - Performance tracking and metrics
@@ -59,11 +67,13 @@ Production-ready TypeScript implementation of the testing engine:
 - Atomic test execution
 
 ### 3. Test Templates Library: `test-templates.json`
+
 **Location:** `.claude/lib/test-templates.json`
 
 Pre-built test cases for common components:
 
 **Included Test Templates:**
+
 - `pm:next` - Show next available tasks (4 test cases)
 - `pm:context` - Generate task context (5 test cases)
 - `pm:start` - Mark task in-progress (3 test cases)
@@ -73,6 +83,7 @@ Pre-built test cases for common components:
 - `deploy-hook` - Deployment automation (2 test cases)
 
 **Included Test Suites:**
+
 - `pm-domain-basic` - Quick smoke tests
 - `pm-domain-comprehensive` - Full PM test coverage
 - `integration-tests` - Cross-component workflows
@@ -80,18 +91,21 @@ Pre-built test cases for common components:
 - `smoke-tests-all` - All components validation
 
 **Configuration Profiles:**
+
 - `default` - Quick mode, minimal reporting
 - `ci_pipeline` - Full mode, comprehensive reporting
 - `development` - Verbose, watch mode
 - `pre_release` - Full validation with benchmarks
 
 **Additional Data:**
+
 - Expected outputs for each component
 - Performance thresholds
 - Error scenarios with recovery steps
 - Quality metrics and minimums
 
 **Features:**
+
 - 400+ lines of structured test data
 - 20+ pre-built test cases
 - 5 test configuration profiles
@@ -99,11 +113,13 @@ Pre-built test cases for common components:
 - Clear documentation for each test
 
 ### 4. Testing Guide: `TEST-GUIDE.md`
+
 **Location:** `.claude/TEST-GUIDE.md`
 
 Comprehensive guide for writing and maintaining tests:
 
 **Sections:**
+
 1. **Quick Start** - 5-minute setup guide
 2. **Test Types Overview** - Detailed explanation of each test type
 3. **Creating Test Cases** - Test case structure and templates
@@ -123,6 +139,7 @@ Comprehensive guide for writing and maintaining tests:
 7. **Troubleshooting** - Common issues and solutions
 
 **Key Content:**
+
 - 1000+ lines of comprehensive guidance
 - Real-world examples for each component type
 - Testing checklists for each type
@@ -157,9 +174,9 @@ TestFramework.runTests(options)
     │
     └─→ [5] Quality Test (if comprehensive)
         └─ Checks: docs, metadata, error handling
-    
+
     ↓
-    
+
 Generate Results & Recommendations
 
     ├─→ Save JSON result
@@ -167,7 +184,7 @@ Generate Results & Recommendations
     └─→ Display console output
 
     ↓
-    
+
 Return TestResult object with:
   - Overall status (passed/failed/partial/error)
   - Individual test results
@@ -188,17 +205,17 @@ Return TestResult object with:
       "id": "unique-id",
       "name": "Human-readable name",
       "description": "What is being tested",
-      
+
       // Configuration
       "mode": "quick|comprehensive",
       "type": "smoke|functional|integration|performance|quality",
       "timeout": 30,
-      
+
       // Test data
       "command": "pm:next",
       "args": ["--number", "10"],
       "expected": "Ready Tasks",
-      
+
       // Validation
       "should_pass": true,
       "side_effects": { ... },
@@ -213,25 +230,25 @@ Return TestResult object with:
 ```typescript
 interface TestResult {
   name: string
-  type: 'command' | 'skill' | 'mcp' | 'hook' | 'agent' | 'unknown'
+  type: "command" | "skill" | "mcp" | "hook" | "agent" | "unknown"
   timestamp: string
-  mode: 'quick' | 'comprehensive'
-  overall_status: 'passed' | 'failed' | 'partial' | 'error'
-  
+  mode: "quick" | "comprehensive"
+  overall_status: "passed" | "failed" | "partial" | "error"
+
   tests: {
-    smoke: SmokeTestResult        // Always present
-    functional?: FunctionalTestResult   // If comprehensive
+    smoke: SmokeTestResult // Always present
+    functional?: FunctionalTestResult // If comprehensive
     integration?: IntegrationTestResult
     performance?: PerformanceTestResult
     quality?: QualityTestResult
   }
-  
+
   metrics: {
     total_duration_ms: number
     estimated_tokens: number
     memory_used_mb?: number
   }
-  
+
   recommendations: string[]
   errors: string[]
 }
@@ -248,6 +265,7 @@ interface TestResult {
 **Execution Time:** 100-500ms
 
 **Checks:**
+
 1. Component file exists
 2. File can be parsed (valid syntax)
 3. Has required metadata
@@ -257,6 +275,7 @@ interface TestResult {
 **Pass Criteria:** All checks pass
 
 **Typical Output:**
+
 ```
 ✅ SMOKE TEST (passed)
   Component exists: yes ✓
@@ -272,6 +291,7 @@ interface TestResult {
 **Execution Time:** 1-5 seconds
 
 **Checks:**
+
 1. Component executes without errors
 2. Produces output
 3. Output matches expected string
@@ -281,11 +301,12 @@ interface TestResult {
 **Pass Criteria:** Execution successful + expected output present
 
 **Configuration:**
+
 ```json
 {
+  "env": { "KEY": "value" },
   "expected": "Ready Tasks",
-  "timeout": 10,
-  "env": { "KEY": "value" }
+  "timeout": 10
 }
 ```
 
@@ -296,6 +317,7 @@ interface TestResult {
 **Execution Time:** 2-10 seconds
 
 **Checks:**
+
 1. All declared dependencies exist
 2. Dependencies can be resolved
 3. Data flows correctly between components
@@ -305,10 +327,11 @@ interface TestResult {
 **Pass Criteria:** All dependencies resolved and functional
 
 **Configuration:**
+
 ```json
 {
-  "dependencies": ["pm:next", "vtm-reader"],
-  "check_child_components": true
+  "check_child_components": true,
+  "dependencies": ["pm:next", "vtm-reader"]
 }
 ```
 
@@ -319,6 +342,7 @@ interface TestResult {
 **Execution Time:** Varies by component
 
 **Checks:**
+
 1. Execution time under timeout
 2. Estimated token usage reasonable
 3. Memory usage acceptable
@@ -326,6 +350,7 @@ interface TestResult {
 5. Suitable for production use
 
 **Performance Thresholds:**
+
 ```json
 {
   "pm:next": {
@@ -343,6 +368,7 @@ interface TestResult {
 **Execution Time:** 500ms-2s
 
 **Checks:**
+
 1. Documentation exists
 2. Metadata is complete
 3. Error handling implemented
@@ -350,6 +376,7 @@ interface TestResult {
 5. No deprecated dependencies
 
 **Standards:**
+
 - Minimum test coverage: 80%
 - Documentation: comprehensive
 - Error handling: required
@@ -360,6 +387,7 @@ interface TestResult {
 ## Usage Examples
 
 ### Quick Test
+
 ```bash
 /test:command pm:next --mode quick
 
@@ -368,6 +396,7 @@ Status: ✅ Component exists and is valid
 ```
 
 ### Full Test with Expected Output
+
 ```bash
 /test:command pm:next --mode comprehensive --expected "Ready Tasks"
 
@@ -377,6 +406,7 @@ Metrics: 1.2s execution, ~450 tokens
 ```
 
 ### Performance Benchmark
+
 ```bash
 /test:command pm:context --args "TASK-001" --mode comprehensive --timeout 30
 
@@ -386,6 +416,7 @@ Tokens: 450 (target: 5000) ✓
 ```
 
 ### Generate Report
+
 ```bash
 /test:command pm:next --mode comprehensive --report
 
@@ -394,6 +425,7 @@ Report includes: All metrics, test results, recommendations
 ```
 
 ### Test with Environment
+
 ```bash
 /test:command deploy --env "ENV=staging" --env "TOKEN=xyz" --mode comprehensive
 
@@ -406,18 +438,21 @@ Tests execute with custom environment
 ## Integration Points
 
 ### Registry Integration
+
 - Discovers components via `/registry:scan`
 - Resolves dependencies automatically
 - Validates against component metadata
 - Updates registry with test results
 
 ### Quality Layer Integration
+
 - Works with `/quality:check` for comprehensive validation
 - Provides metrics for quality gates
 - Identifies standards violations
 - Suggests improvements
 
 ### Lifecycle Layer Integration
+
 - Part of Layer 2: Lifecycle
 - Follows design → scaffold → test workflow
 - Enables `/evolve:*` commands
@@ -446,32 +481,32 @@ Tests execute with custom environment
 
 ### Test Execution Times
 
-| Test Type | Quick Mode | Comprehensive |
-|-----------|-----------|-----------------|
-| Smoke | 100-500ms | 100-500ms |
-| Functional | - | 1-5s |
-| Integration | - | 2-10s |
-| Performance | - | Varies |
-| Quality | - | 500ms-2s |
-| **Total** | **100-500ms** | **5-30s** |
+| Test Type   | Quick Mode    | Comprehensive |
+| ----------- | ------------- | ------------- |
+| Smoke       | 100-500ms     | 100-500ms     |
+| Functional  | -             | 1-5s          |
+| Integration | -             | 2-10s         |
+| Performance | -             | Varies        |
+| Quality     | -             | 500ms-2s      |
+| **Total**   | **100-500ms** | **5-30s**     |
 
 ### Token Usage Estimates
 
-| Component | Smoke | Full Test |
-|-----------|-------|-----------|
-| Simple command | ~100 | ~500 |
-| Complex command | ~200 | ~1000 |
-| MCP server | ~300 | ~2000 |
-| Skill | ~150 | ~800 |
-| Hook | ~200 | ~1500 |
+| Component       | Smoke | Full Test |
+| --------------- | ----- | --------- |
+| Simple command  | ~100  | ~500      |
+| Complex command | ~200  | ~1000     |
+| MCP server      | ~300  | ~2000     |
+| Skill           | ~150  | ~800      |
+| Hook            | ~200  | ~1500     |
 
 ### Report Generation
 
-| Format | Size | Generation Time |
-|--------|------|-----------------|
-| JSON result | 5-20KB | <100ms |
-| HTML report | 50-100KB | <500ms |
-| Both | 55-120KB | <600ms |
+| Format      | Size     | Generation Time |
+| ----------- | -------- | --------------- |
+| JSON result | 5-20KB   | <100ms          |
+| HTML report | 50-100KB | <500ms          |
+| Both        | 55-120KB | <600ms          |
 
 ---
 
@@ -515,10 +550,10 @@ Add test cases to `test-templates.json`:
   "my-component": {
     "test_cases": [
       {
+        "expected": "output",
         "id": "my-test-1",
-        "name": "Test Name",
         "mode": "comprehensive",
-        "expected": "output"
+        "name": "Test Name"
       }
     ]
   }
@@ -619,6 +654,7 @@ The testing system successfully:
 The `/test:command` system provides a comprehensive, production-ready framework for validating Claude Code components. With five test types, pre-built test cases, detailed guidance, and flexible configuration, teams can ensure component quality and reliability with minimal effort.
 
 The system is designed to be:
+
 - **Simple** for basic use cases
 - **Powerful** for advanced testing
 - **Extensible** for custom needs

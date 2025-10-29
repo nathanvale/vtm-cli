@@ -1,6 +1,7 @@
 # VTM Automation Plugin
 
-Virtual Task Manager - Token-efficient task management for AI-assisted development
+Virtual Task Manager - Token-efficient task management for AI-assisted
+development
 
 **Version:** 1.0.0 | **Scope:** personal
 
@@ -19,11 +20,13 @@ Commands are now available:
 ## Setup
 
 1. **Verify vtm CLI is installed**
+
    ```bash
    vtm --version
    ```
 
    If not installed:
+
    ```bash
    npm link                    # From vtm-cli repo
    # or
@@ -31,11 +34,13 @@ Commands are now available:
    ```
 
 2. **Verify commands work**
+
    ```bash
    /vtm:next
    ```
 
 3. **Enable git hooks (optional)**
+
    ```bash
    # Install hooks in your project's .git/hooks/
    cp .claude/hooks/vtm/vtm-pre-commit.sh .git/hooks/pre-commit
@@ -66,7 +71,8 @@ The Virtual Task Manager uses a token-efficient workflow:
 
 ### 1. Generate VTM from Specs
 
-Use **PROMPT 1** (`prompts/1-generate-vtm.md`) to convert ADRs and specs into `vtm.json`:
+Use **PROMPT 1** (`prompts/1-generate-vtm.md`) to convert ADRs and specs into
+`vtm.json`:
 
 ```
 Input: ADR documents, specification files
@@ -102,6 +108,7 @@ VTM achieves **99% token reduction** compared to loading full specs:
 - **VTM approach**: Surgical task access (~500-2000 tokens)
 
 **How it works:**
+
 1. Decompose specs into discrete tasks once (PROMPT 1)
 2. Access individual tasks surgically (PROMPT 2)
 3. Dependencies are pre-resolved
@@ -114,6 +121,7 @@ VTM achieves **99% token reduction** compared to loading full specs:
 ### Commands
 
 Edit `.claude/commands/vtm/*.md` to customize:
+
 - Output formatting
 - Error messages
 - Additional validation
@@ -122,6 +130,7 @@ Edit `.claude/commands/vtm/*.md` to customize:
 ### Skill
 
 Edit `.claude/skills/vtm-expert/SKILL.md` to customize:
+
 - Trigger phrases (match your vocabulary)
 - Workflow descriptions
 - Best practices for your team
@@ -129,6 +138,7 @@ Edit `.claude/skills/vtm-expert/SKILL.md` to customize:
 ### Hooks
 
 Edit `.claude/hooks/vtm/*.sh` to customize:
+
 - Validation rules
 - Conflict resolution strategies
 - Integration with CI/CD
@@ -147,9 +157,11 @@ The test strategy guides implementation approach in PROMPT 2.
 
 ## Dependencies
 
-Tasks can only depend on lower-numbered tasks (TASK-001 can be depended on by TASK-002+).
+Tasks can only depend on lower-numbered tasks (TASK-001 can be depended on by
+TASK-002+).
 
 **Validation:**
+
 - Circular dependencies are prevented
 - All dependencies must exist
 - Blocked tasks properly linked
@@ -158,6 +170,7 @@ Tasks can only depend on lower-numbered tasks (TASK-001 can be depended on by TA
 ## Stats Auto-Recalculation
 
 Stats are automatically recalculated when you:
+
 - Start a task (`/vtm:start`)
 - Complete a task (`/vtm:complete`)
 - Update any task status
@@ -167,6 +180,7 @@ The VTMWriter class handles this via `recalculateStats()`.
 ## Auto-Discovery
 
 The vtm-expert skill automatically triggers when you say:
+
 - "what should I work on?"
 - "next task"
 - "show my tasks"
@@ -182,6 +196,7 @@ Claude will suggest the appropriate `/vtm:` command for approval.
 ## Next Steps
 
 1. **Test the commands**
+
    ```bash
    /vtm:next
    ```
@@ -227,5 +242,6 @@ Claude will suggest the appropriate `/vtm:` command for approval.
 
 - Registry: `/registry-scan`
 - Design: `.claude/designs/vtm.json`
-- Prompts: `prompts/1-generate-vtm.md`, `prompts/2-execute-task.md`, `prompts/3-add-feature.md`
+- Prompts: `prompts/1-generate-vtm.md`, `prompts/2-execute-task.md`,
+  `prompts/3-add-feature.md`
 - Project docs: `CLAUDE.md`, `README.md`, `QUICKSTART.md`

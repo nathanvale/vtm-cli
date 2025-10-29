@@ -183,21 +183,68 @@ type ArchitecturePattern = {
   confidence?: number
 }
 
+// ========== Constants ==========
+
+/** Common words to filter out during keyword extraction */
+const COMMON_WORDS = [
+  'the',
+  'a',
+  'an',
+  'and',
+  'or',
+  'but',
+  'for',
+  'with',
+  'to',
+  'in',
+  'on',
+  'at',
+] as const
+
+/** Action verbs to filter when extracting domain nouns */
+const ACTION_VERBS = ['create', 'manage', 'track', 'analyze', 'monitor', 'build', 'test'] as const
+
+/** Minimum word length for keyword extraction */
+const MIN_KEYWORD_LENGTH = 2
+
+/** Pattern matching scoring thresholds and weights */
+const PATTERN_SCORE = {
+  EXACT_MATCH: 0.3, // Score for exact keyword match
+  PARTIAL_MATCH: 0.1, // Score for partial/substring match
+  MIN_THRESHOLD: 0.3, // Minimum score to consider pattern
+  MAX_SCORE: 1.0, // Maximum possible score
+} as const
+
+/** Domain analysis thresholds */
+const DOMAIN_LIMITS = {
+  MAX_COMMANDS_SINGLE_CONCERN: 7, // Max commands before suggesting split
+  HIGH_COMMAND_THRESHOLD: 10, // Commands count indicating multiple concerns
+  HIGH_COHESION_THRESHOLD: 7.0, // Cohesion score indicating good design
+} as const
+
 /**
  * Decision Engine - Core class for architecture recommendations
  */
 export class DecisionEngine {
   private basePath: string
   private patternsPath: string
-  private patterns: Record<string, ArchitecturePattern>
+  private patterns: Record<string, ArchitecturePattern> = {}
   private verbose: boolean
 
   constructor(options: DecisionEngineOptions = {}) {
     this.basePath = options.basePath || process.cwd()
     this.patternsPath =
-      options.patternsPath || path.join(this.basePath, '.claude/lib/architecture-patterns.json')
+      options.patternsPath || path.join(__dirname, 'data', 'architecture-patterns.json')
     this.verbose = options.verbose || false
     this.loadPatterns()
+  }
+
+  /**
+   * Get loaded architecture patterns
+   * @returns Record of pattern name to ArchitecturePattern
+   */
+  public getPatterns(): Record<string, ArchitecturePattern> {
+    return this.patterns
   }
 
   /**
@@ -279,7 +326,7 @@ export class DecisionEngine {
       formatted: '',
     }
 
-    analysis.formatted = this.formatAnalysis(analysis, options)
+    analysis.formatted = this.formatAnalysis(analysis, _options)
     return analysis
   }
 
@@ -314,33 +361,29 @@ export class DecisionEngine {
 
   // ========== Private Helper Methods ==========
 
+  /**
+   * Extract meaningful keywords from text by filtering common words and short words
+   * @param text - Input text to extract keywords from
+   * @returns Array of filtered keywords
+   */
   private extractKeywords(text: string): string[] {
-    const commonWords = [
-      'the',
-      'a',
-      'an',
-      'and',
-      'or',
-      'but',
-      'for',
-      'with',
-      'to',
-      'in',
-      'on',
-      'at',
-    ]
     return text
       .split(/\s+/)
-      .filter((word) => word.length > 2)
-      .filter((word) => !commonWords.includes(word))
+      .filter((word) => word.length > MIN_KEYWORD_LENGTH)
+      .filter((word) => !COMMON_WORDS.includes(word as (typeof COMMON_WORDS)[number]))
   }
 
+  /**
+   * Match architectural patterns against extracted keywords
+   * @param keywords - Keywords extracted from description
+   * @returns Sorted array of matching patterns with confidence scores
+   */
   private matchPatterns(keywords: string[]): ArchitecturePattern[] {
     const matches: ArchitecturePattern[] = []
 
     for (const pattern of Object.values(this.patterns)) {
       const score = this.scorePattern(pattern, keywords)
-      if (score > 0.3) {
+      if (score > PATTERN_SCORE.MIN_THRESHOLD) {
         matches.push({ ...pattern, confidence: score })
       }
     }
@@ -348,32 +391,45 @@ export class DecisionEngine {
     return matches.sort((a, b) => (b.confidence || 0) - (a.confidence || 0))
   }
 
+  /**
+   * Calculate confidence score for a pattern match
+   * Uses exact match (0.3) and partial match (0.1) scoring
+   * @param pattern - Architecture pattern to score
+   * @param keywords - Keywords to match against
+   * @returns Confidence score between 0 and 1
+   */
   private scorePattern(pattern: ArchitecturePattern, keywords: string[]): number {
     let score = 0
     const patternKeywords = pattern.keywords || []
 
     for (const keyword of keywords) {
+      // Exact keyword match
       if (patternKeywords.includes(keyword)) {
-        score += 0.3
+        score += PATTERN_SCORE.EXACT_MATCH
       }
+      // Partial/substring match
       for (const pk of patternKeywords) {
         if (keyword.includes(pk) || pk.includes(keyword)) {
-          score += 0.1
+          score += PATTERN_SCORE.PARTIAL_MATCH
         }
       }
     }
 
-    return Math.min(score, 1.0)
+    return Math.min(score, PATTERN_SCORE.MAX_SCORE)
   }
 
+  /**
+   * Suggest domain name from description by extracting non-verb nouns
+   * @param description - Original description (unused, kept for API compatibility)
+   * @param keywords - Extracted keywords
+   * @returns Suggested domain name in singular form
+   */
   private suggestDomainName(description: string, keywords: string[]): string {
-    // Extract noun from description
-    const nouns = keywords.filter(
-      (k) => !['create', 'manage', 'track', 'analyze', 'monitor', 'build', 'test'].includes(k),
-    )
+    // Extract nouns by filtering out common action verbs
+    const nouns = keywords.filter((k) => !ACTION_VERBS.includes(k as (typeof ACTION_VERBS)[number]))
 
-    if (nouns.length > 0) {
-      return nouns[0].replace(/s$/, '') // Remove plural
+    if (nouns.length > 0 && nouns[0]) {
+      return nouns[0].replace(/s$/, '') // Remove plural 's'
     }
 
     return 'custom-domain'
@@ -509,7 +565,7 @@ export class DecisionEngine {
     const rationale: string[] = []
 
     rationale.push(`${commands.length} commands cover core workflow`)
-    if (mcps.length > 0) {
+    if (mcps.length > 0 && mcps[0]) {
       rationale.push(`${mcps[0].system} integration essential for requirements`)
     }
     if (hooks.length > 0) {
@@ -594,39 +650,84 @@ export class DecisionEngine {
     return Math.round(avgConfidence * 100)
   }
 
+  /**
+   * Scan domain for components (commands, skills, MCPs, hooks)
+   * @param domainName - Name of domain to scan (unused for global resources)
+   * @returns Current state with component counts
+   */
   private scanDomain(domainName: string): CurrentState {
+    // Scan commands in the domain directory
     const commandsDir = path.join(this.basePath, '.claude/commands', domainName)
     const commands = fs.existsSync(commandsDir)
       ? fs.readdirSync(commandsDir).filter((f) => f.endsWith('.md')).length
       : 0
 
+    // Scan skills (global, not domain-specific)
+    const skillsDir = path.join(this.basePath, '.claude/skills')
+    const skills = fs.existsSync(skillsDir)
+      ? fs.readdirSync(skillsDir).filter((f) => {
+          const skillPath = path.join(skillsDir, f)
+          return fs.statSync(skillPath).isDirectory()
+        }).length
+      : 0
+
+    // Scan MCPs (global, not domain-specific)
+    const mcpsDir = path.join(this.basePath, '.claude/mcp')
+    const mcps = fs.existsSync(mcpsDir)
+      ? fs.readdirSync(mcpsDir).filter((f) => {
+          const mcpPath = path.join(mcpsDir, f)
+          return fs.statSync(mcpPath).isDirectory()
+        }).length
+      : 0
+
+    // Scan hooks (global, not domain-specific)
+    const hooksDir = path.join(this.basePath, '.claude/hooks')
+    const hooks = fs.existsSync(hooksDir)
+      ? fs.readdirSync(hooksDir).filter((f) => f.endsWith('.sh') || f.endsWith('.js')).length
+      : 0
+
     return {
       commands,
-      skills: 0, // Would scan skills directory
-      mcps: 0, // Would scan mcp directory
-      hooks: 0, // Would scan hooks directory
-      complexity: 5.0, // Would calculate
-      cohesion: 7.0, // Would calculate
+      skills,
+      mcps,
+      hooks,
+      complexity: 5.0, // Would calculate based on metrics
+      cohesion: 7.0, // Would calculate based on relationships
     }
   }
 
+  /**
+   * Identify architectural strengths in a domain
+   * @param domainName - Name of domain being analyzed (unused, kept for API compatibility)
+   * @param current - Current state metrics
+   * @returns Array of identified strengths
+   */
   private identifyStrengths(domainName: string, current: CurrentState): string[] {
     const strengths: string[] = []
 
-    if (current.commands > 0 && current.commands <= 7) {
+    // Good command count indicates clear single responsibility
+    if (current.commands > 0 && current.commands <= DOMAIN_LIMITS.MAX_COMMANDS_SINGLE_CONCERN) {
       strengths.push('Clear single responsibility')
     }
-    if (current.cohesion > 7.0) {
+    // High cohesion indicates good design
+    if (current.cohesion > DOMAIN_LIMITS.HIGH_COHESION_THRESHOLD) {
       strengths.push('High cohesion - components work well together')
     }
 
     return strengths
   }
 
+  /**
+   * Identify architectural issues in a domain
+   * @param domainName - Name of domain being analyzed (unused, kept for API compatibility)
+   * @param current - Current state metrics
+   * @returns Array of identified issues with recommendations
+   */
   private identifyIssues(domainName: string, current: CurrentState): Issue[] {
     const issues: Issue[] = []
 
-    if (current.commands > 10) {
+    // High command count suggests multiple concerns
+    if (current.commands > DOMAIN_LIMITS.HIGH_COMMAND_THRESHOLD) {
       issues.push({
         title: 'High Command Count',
         problem: `${current.commands} commands may indicate multiple concerns`,

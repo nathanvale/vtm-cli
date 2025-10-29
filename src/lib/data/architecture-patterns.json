@@ -1,0 +1,528 @@
+{
+  "analytics": {
+    "commands": ["stats", "report", "analyze", "visualize", "export"],
+    "description": "Metrics collection and reporting pattern",
+    "hooks": [],
+    "keywords": [
+      "analytics",
+      "metrics",
+      "stats",
+      "report",
+      "dashboard",
+      "visualize",
+      "insights",
+      "track",
+      "measure"
+    ],
+    "mcps": ["analytics-platform"],
+    "name": "analytics"
+  },
+  "api-integration": {
+    "commands": ["sync", "fetch", "push", "configure", "test-connection"],
+    "description": "External API integration pattern",
+    "hooks": ["pre-sync", "post-sync"],
+    "keywords": [
+      "api",
+      "integrate",
+      "external",
+      "service",
+      "webhook",
+      "rest",
+      "graphql",
+      "endpoint"
+    ],
+    "mcps": ["http-client", "api-service"],
+    "name": "api-integration"
+  },
+  "automation": {
+    "commands": ["schedule", "trigger", "run", "pause", "resume", "cancel"],
+    "description": "Automated task scheduling and execution",
+    "hooks": ["scheduled-task", "auto-trigger"],
+    "keywords": [
+      "automate",
+      "schedule",
+      "trigger",
+      "automatic",
+      "cron",
+      "batch",
+      "background",
+      "recurring"
+    ],
+    "mcps": [],
+    "name": "automation"
+  },
+  "backup-restore": {
+    "commands": ["backup", "restore", "snapshot", "list-backups", "verify"],
+    "description": "Data backup and restoration",
+    "hooks": ["scheduled-backup", "post-backup"],
+    "keywords": [
+      "backup",
+      "restore",
+      "snapshot",
+      "archive",
+      "recovery",
+      "export",
+      "import"
+    ],
+    "mcps": ["storage-provider"],
+    "name": "backup-restore"
+  },
+  "code-generation": {
+    "commands": [
+      "generate",
+      "scaffold",
+      "template",
+      "create-from-template",
+      "customize"
+    ],
+    "description": "Code and file generation from templates",
+    "hooks": ["post-generate"],
+    "keywords": [
+      "generate",
+      "scaffold",
+      "template",
+      "boilerplate",
+      "codegen",
+      "create",
+      "stub"
+    ],
+    "mcps": [],
+    "name": "code-generation"
+  },
+  "configuration": {
+    "commands": ["configure", "get-config", "set-config", "reset", "init"],
+    "description": "Configuration and settings management",
+    "hooks": [],
+    "keywords": [
+      "config",
+      "setting",
+      "preference",
+      "option",
+      "configure",
+      "setup",
+      "initialize"
+    ],
+    "mcps": [],
+    "name": "configuration"
+  },
+  "content-management": {
+    "commands": [
+      "create",
+      "edit",
+      "publish",
+      "draft",
+      "archive",
+      "search",
+      "preview"
+    ],
+    "description": "Content creation and publishing workflow",
+    "hooks": ["pre-publish", "post-publish"],
+    "keywords": [
+      "content",
+      "document",
+      "article",
+      "publish",
+      "draft",
+      "review",
+      "edit",
+      "cms"
+    ],
+    "mcps": ["filesystem", "cms-platform"],
+    "name": "content-management"
+  },
+  "crud": {
+    "commands": ["create", "read", "update", "delete", "list", "search"],
+    "description": "Basic CRUD operations pattern for data management",
+    "hooks": [],
+    "keywords": [
+      "create",
+      "read",
+      "update",
+      "delete",
+      "manage",
+      "data",
+      "record",
+      "entity",
+      "model"
+    ],
+    "mcps": ["database"],
+    "name": "crud"
+  },
+  "data-sync": {
+    "commands": ["sync", "pull", "push", "status", "resolve-conflicts"],
+    "description": "Data synchronization across systems",
+    "hooks": ["pre-sync", "post-sync", "conflict-detect"],
+    "keywords": [
+      "sync",
+      "synchronize",
+      "replicate",
+      "mirror",
+      "refresh",
+      "pull",
+      "push"
+    ],
+    "mcps": ["sync-service"],
+    "name": "data-sync"
+  },
+  "deployment": {
+    "commands": [
+      "deploy",
+      "rollback",
+      "status",
+      "promote",
+      "test-deploy",
+      "health-check"
+    ],
+    "description": "Application deployment and release management",
+    "hooks": ["pre-deploy", "post-deploy", "health-check"],
+    "keywords": [
+      "deploy",
+      "release",
+      "ship",
+      "environment",
+      "staging",
+      "production",
+      "rollback",
+      "ci-cd"
+    ],
+    "mcps": ["deployment-platform"],
+    "name": "deployment"
+  },
+  "documentation": {
+    "commands": ["generate-docs", "update-docs", "serve-docs", "validate-docs"],
+    "description": "Documentation generation and management",
+    "hooks": ["pre-publish-docs"],
+    "keywords": [
+      "document",
+      "docs",
+      "readme",
+      "guide",
+      "tutorial",
+      "reference",
+      "help"
+    ],
+    "mcps": [],
+    "name": "documentation"
+  },
+  "event-management": {
+    "commands": [
+      "create-event",
+      "invite",
+      "rsvp",
+      "schedule",
+      "cancel",
+      "reschedule"
+    ],
+    "description": "Event and meeting scheduling",
+    "hooks": ["event-reminder", "event-started"],
+    "keywords": [
+      "event",
+      "meeting",
+      "schedule",
+      "calendar",
+      "attend",
+      "rsvp",
+      "agenda"
+    ],
+    "mcps": ["calendar-service"],
+    "name": "event-management"
+  },
+  "feedback-collection": {
+    "commands": ["collect", "analyze", "report", "export", "respond"],
+    "description": "User feedback and survey collection",
+    "hooks": ["feedback-received"],
+    "keywords": [
+      "feedback",
+      "survey",
+      "rating",
+      "review",
+      "opinion",
+      "sentiment",
+      "vote"
+    ],
+    "mcps": ["survey-platform"],
+    "name": "feedback-collection"
+  },
+  "file-management": {
+    "commands": [
+      "upload",
+      "download",
+      "list",
+      "delete",
+      "move",
+      "copy",
+      "organize"
+    ],
+    "description": "File and directory management",
+    "hooks": ["file-uploaded", "file-deleted"],
+    "keywords": [
+      "file",
+      "folder",
+      "directory",
+      "upload",
+      "download",
+      "organize",
+      "storage"
+    ],
+    "mcps": ["filesystem", "cloud-storage"],
+    "name": "file-management"
+  },
+  "monitoring": {
+    "commands": ["status", "health-check", "metrics", "logs", "trace", "debug"],
+    "description": "System monitoring and observability",
+    "hooks": ["health-check", "error-capture"],
+    "keywords": [
+      "monitor",
+      "observe",
+      "health",
+      "status",
+      "uptime",
+      "performance",
+      "debug",
+      "trace"
+    ],
+    "mcps": ["monitoring-platform"],
+    "name": "monitoring"
+  },
+  "notification": {
+    "commands": ["notify", "broadcast", "remind", "alert", "configure-alerts"],
+    "description": "Notification and alerting system",
+    "hooks": ["event-notify", "error-alert"],
+    "keywords": [
+      "notify",
+      "alert",
+      "message",
+      "remind",
+      "broadcast",
+      "announce",
+      "notification"
+    ],
+    "mcps": ["slack", "email", "sms", "push-notification"],
+    "name": "notification"
+  },
+  "project-management": {
+    "commands": [
+      "create-project",
+      "add-milestone",
+      "track-progress",
+      "allocate",
+      "timeline"
+    ],
+    "description": "Project planning and tracking",
+    "hooks": ["milestone-reached", "deadline-approaching"],
+    "keywords": [
+      "project",
+      "milestone",
+      "deadline",
+      "budget",
+      "resource",
+      "plan",
+      "roadmap"
+    ],
+    "mcps": ["project-tracker"],
+    "name": "project-management"
+  },
+  "search": {
+    "commands": ["search", "filter", "index", "reindex", "advanced-search"],
+    "description": "Search and discovery functionality",
+    "hooks": [],
+    "keywords": [
+      "search",
+      "find",
+      "query",
+      "filter",
+      "discover",
+      "lookup",
+      "index",
+      "facet"
+    ],
+    "mcps": ["search-engine"],
+    "name": "search"
+  },
+  "security": {
+    "commands": [
+      "authenticate",
+      "authorize",
+      "grant",
+      "revoke",
+      "audit",
+      "encrypt"
+    ],
+    "description": "Security, authentication, and authorization",
+    "hooks": ["pre-auth", "access-log"],
+    "keywords": [
+      "security",
+      "auth",
+      "permission",
+      "access",
+      "role",
+      "encrypt",
+      "secure",
+      "credential"
+    ],
+    "mcps": ["auth-provider", "secrets-manager"],
+    "name": "security"
+  },
+  "task-management": {
+    "commands": [
+      "next",
+      "list",
+      "create",
+      "complete",
+      "start",
+      "update",
+      "stats"
+    ],
+    "description": "Task tracking and management pattern for organizing work items",
+    "hooks": ["pre-commit", "post-merge"],
+    "keywords": [
+      "task",
+      "todo",
+      "work",
+      "manage",
+      "track",
+      "item",
+      "backlog",
+      "sprint",
+      "kanban"
+    ],
+    "mcps": [],
+    "name": "task-management"
+  },
+  "team-collaboration": {
+    "commands": [
+      "assign",
+      "share",
+      "notify",
+      "standup",
+      "retrospective",
+      "sync",
+      "review"
+    ],
+    "description": "Team coordination and collaboration tools",
+    "hooks": ["daily-standup", "blocker-alert", "completion-notify"],
+    "keywords": [
+      "team",
+      "collaborate",
+      "share",
+      "remote",
+      "async",
+      "standup",
+      "retrospective",
+      "sync"
+    ],
+    "mcps": ["slack", "teams", "discord"],
+    "name": "team-collaboration"
+  },
+  "testing": {
+    "commands": [
+      "test",
+      "validate",
+      "coverage",
+      "benchmark",
+      "lint",
+      "quality-check"
+    ],
+    "description": "Testing and quality assurance",
+    "hooks": ["pre-test", "post-test", "pre-commit"],
+    "keywords": [
+      "test",
+      "validate",
+      "verify",
+      "quality",
+      "qa",
+      "unit",
+      "integration",
+      "e2e"
+    ],
+    "mcps": [],
+    "name": "testing"
+  },
+  "ticket-system": {
+    "commands": [
+      "create-ticket",
+      "assign",
+      "update-status",
+      "comment",
+      "close",
+      "escalate"
+    ],
+    "description": "Ticket and issue tracking system",
+    "hooks": ["ticket-created", "ticket-updated", "sla-breach"],
+    "keywords": [
+      "ticket",
+      "issue",
+      "bug",
+      "support",
+      "incident",
+      "resolve",
+      "triage"
+    ],
+    "mcps": ["issue-tracker"],
+    "name": "ticket-system"
+  },
+  "user-management": {
+    "commands": [
+      "register",
+      "login",
+      "update-profile",
+      "deactivate",
+      "reset-password"
+    ],
+    "description": "User account and profile management",
+    "hooks": ["user-created", "user-login"],
+    "keywords": [
+      "user",
+      "account",
+      "profile",
+      "register",
+      "login",
+      "permission",
+      "role"
+    ],
+    "mcps": ["auth-provider", "user-directory"],
+    "name": "user-management"
+  },
+  "version-control": {
+    "commands": [
+      "commit",
+      "history",
+      "diff",
+      "revert",
+      "branch",
+      "merge",
+      "changelog"
+    ],
+    "description": "Version control and history tracking",
+    "hooks": ["pre-commit", "post-commit", "pre-push"],
+    "keywords": [
+      "version",
+      "history",
+      "commit",
+      "branch",
+      "merge",
+      "revert",
+      "changelog",
+      "git"
+    ],
+    "mcps": ["git", "github"],
+    "name": "version-control"
+  },
+  "workflow": {
+    "commands": ["start", "next", "approve", "reject", "status", "history"],
+    "description": "Multi-step workflow management with state transitions",
+    "hooks": ["pre-transition", "post-transition"],
+    "keywords": [
+      "workflow",
+      "process",
+      "flow",
+      "pipeline",
+      "stage",
+      "step",
+      "sequence",
+      "orchestrate"
+    ],
+    "mcps": [],
+    "name": "workflow"
+  }
+}

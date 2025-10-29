@@ -103,12 +103,14 @@ You can also explicitly use these commands:
 ### Before Starting Work
 
 1. **Know what you're working on**
+
    ```
    You: "What should I work on next?"
    Claude suggests: /{domain}:next
    ```
 
 2. **Get full context**
+
    ```
    You: "I need the context"
    Claude suggests: /{domain}:context {item-id}
@@ -129,11 +131,13 @@ You can also explicitly use these commands:
 ### After Completing Work
 
 1. **Mark as done**
+
    ```
    /{domain}:update {item-id} status:completed
    ```
 
 2. **Review impact**
+
    ```
    /{domain}:status
    ```
@@ -151,16 +155,17 @@ Edit the `trigger_phrases` in the frontmatter to match YOUR vocabulary:
 
 ```yaml
 trigger_phrases:
-  - "what should I work on"        # Common question
-  - "show me tasks"                # How you ask for lists
-  - "{domain} status"              # Your status question
-  - "get next {domain}"            # Your next-item phrasing
-  - "review {domain}"              # Your review command
+  - "what should I work on" # Common question
+  - "show me tasks" # How you ask for lists
+  - "{domain} status" # Your status question
+  - "get next {domain}" # Your next-item phrasing
+  - "review {domain}" # Your review command
 ```
 
 **Examples for different domains:**
 
 For "pm" (project management):
+
 ```yaml
 trigger_phrases:
   - "next task"
@@ -174,6 +179,7 @@ trigger_phrases:
 ```
 
 For "devops" (infrastructure):
+
 ```yaml
 trigger_phrases:
   - "infrastructure status"
@@ -185,6 +191,7 @@ trigger_phrases:
 ```
 
 For "testing" (QA):
+
 ```yaml
 trigger_phrases:
   - "test status"
@@ -200,10 +207,10 @@ Make sure the `related_commands` point to YOUR actual commands:
 
 ```yaml
 related_commands:
-  - /{domain}:next              # First thing user asks for
-  - /{domain}:context           # Details on current item
-  - /{domain}:list              # See everything
-  - /{domain}:update            # Make changes
+  - /{domain}:next # First thing user asks for
+  - /{domain}:context # Details on current item
+  - /{domain}:list # See everything
+  - /{domain}:update # Make changes
 ```
 
 ### Step 3: Update Description
@@ -235,6 +242,7 @@ Claude: "Let me check. /pm:next"
 ```
 
 If Claude doesn't suggest commands:
+
 - Add more diverse trigger phrases
 - Try different phrasings when asking questions
 - Check that commands actually exist

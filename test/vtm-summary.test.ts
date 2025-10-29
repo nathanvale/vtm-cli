@@ -91,9 +91,7 @@ describe('VTMSummarizer', () => {
     })
 
     it('should include pending tasks in incomplete_tasks', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', title: 'Pending Task', status: 'pending' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', title: 'Pending Task', status: 'pending' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const summarizer = new VTMSummarizer(testVtmPath)
@@ -105,9 +103,7 @@ describe('VTMSummarizer', () => {
     })
 
     it('should include in-progress tasks in incomplete_tasks', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', title: 'In Progress Task', status: 'in-progress' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', title: 'In Progress Task', status: 'in-progress' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const summarizer = new VTMSummarizer(testVtmPath)
@@ -118,9 +114,7 @@ describe('VTMSummarizer', () => {
     })
 
     it('should include blocked tasks in incomplete_tasks', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', title: 'Blocked Task', status: 'blocked' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', title: 'Blocked Task', status: 'blocked' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const summarizer = new VTMSummarizer(testVtmPath)
@@ -190,11 +184,7 @@ describe('VTMSummarizer', () => {
 
       // 3 incomplete tasks
       expect(summary.incomplete_tasks).toHaveLength(3)
-      expect(summary.incomplete_tasks.map((t) => t.id)).toEqual([
-        'TASK-002',
-        'TASK-003',
-        'TASK-004',
-      ])
+      expect(summary.incomplete_tasks.map((t) => t.id)).toEqual(['TASK-002', 'TASK-003', 'TASK-004'])
 
       // 2 completed capabilities
       expect(summary.completed_capabilities).toHaveLength(2)
@@ -205,9 +195,7 @@ describe('VTMSummarizer', () => {
 
   describe('toJSON()', () => {
     it('should return valid JSON string', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', title: 'Test Task', status: 'pending' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', title: 'Test Task', status: 'pending' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const summarizer = new VTMSummarizer(testVtmPath)
@@ -221,9 +209,7 @@ describe('VTMSummarizer', () => {
     })
 
     it('should include proper formatting in JSON', async () => {
-      const vtm = createTestVtm([
-        { id: 'TASK-001', title: 'Test Task', status: 'pending' },
-      ])
+      const vtm = createTestVtm([{ id: 'TASK-001', title: 'Test Task', status: 'pending' }])
       fs.writeFileSync(testVtmPath, JSON.stringify(vtm, null, 2))
 
       const summarizer = new VTMSummarizer(testVtmPath)

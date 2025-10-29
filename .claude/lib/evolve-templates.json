@@ -1,18 +1,311 @@
 {
-  "version": "1.0.0",
+  "command_deprecation_template": {
+    "file_path": ".claude/commands/{domain}/DEPRECATED.md",
+    "filename": "DEPRECATED.md",
+    "template": "# DEPRECATED: {domain} Domain\n\n**Status**: Deprecated (v{version})\n**Sunset Date**: {date}\n\nThis domain has been split into smaller, more focused domains.\n\n## Migration Guide\n\n### Old Commands\n\n| Old Command | New Command | Notes |\n|-------------|-------------|-------|\n| `/{old-domain}:operation1` | `/{new-domain}:operation1` | Moved to {new-domain} |\n| `/{old-domain}:operation2` | `/{new-domain}:operation2` | Moved to {new-domain} |\n\n## Timeline\n\n- **Now**: Old commands still work\n  - `/{old-domain}:operation1` redirects to `/{new-domain}:operation1`\n  - No action needed\n\n- **After {migration_period}**: Deprecated commands removed\n  - Update to new commands if not yet done\n  - Migration guide available at time of removal\n\n## Why This Change?\n\n- Smaller, focused domains are easier to maintain\n- Each domain can evolve independently\n- Better code reuse\n- Clearer responsibilities\n\n## Getting Help\n\nFor migration questions:\n1. See migration guide above\n2. Check new domain documentation\n3. Ask: \"How do I use {new-domain} instead?\"\n"
+  },
+
   "description": "Templates for skill generation and plugin creation during evolution",
 
+  "evolution_history_template": {
+    "file_path": ".claude/history/{component}.evolution.json",
+    "filename": "{component}.evolution.json",
+    "template": {
+      "after": {
+        "status": "{ready|untested|needs-config}",
+        "type": "{command|domain|skill|plugin}",
+        "version": "{version}"
+      },
+
+      "applied_by": "{user}",
+
+      "before": {
+        "status": "{ready|untested|needs-config}",
+        "type": "{command|domain|skill|plugin}",
+        "version": "{version}"
+      },
+
+      "can_rollback": true,
+      "changes": [
+        {
+          "action": "{created|modified|deleted}",
+          "checksum_after": "{sha256:new}",
+          "checksum_before": "{sha256:old}",
+          "description": "{what changed}",
+          "file": "{filepath}"
+        }
+      ],
+
+      "component": "{component}",
+      "evolution_type": "{add-skill|to-plugin|split|remove-skill|rollback}",
+      "metadata": {
+        "dependents": [],
+        "domain": "{domain}",
+        "operation": "{operation}",
+        "quality_change": "+0.5"
+      },
+      "rollback_command": "/evolve:rollback {component}",
+
+      "timestamp": "{timestamp}"
+    }
+  },
+
+  "hook_template": {
+    "file_path": ".claude/hooks/{event}/{domain}-{event}.sh",
+    "filename": "{domain}-{event}.sh",
+    "template": "#!/bin/bash\n# Hook: {domain} {event}\n# Purpose: {description}\n# Triggers: {when_triggered}\n\n# TODO: Implement hook logic\n# This is a stub. Customize with:\n# - Validation logic\n# - Required checks\n# - Error handling\n# - Success criteria\n\necho \"Running {domain} {event} hook...\"\n\n# Example: Pre-commit validation\n# COMMIT_MSG=$(cat \"$1\")\n# if ! echo \"$COMMIT_MSG\" | grep -qE 'TASK-[0-9]+'; then\n#     echo \"❌ Commit must reference a task\"\n#     exit 1\n# fi\n\necho \"✅ Hook validation passed\"\nexit 0\n"
+  },
+
+  "mcp_stub_template": {
+    "file_path": ".claude/mcp-servers/{domain}-{service}/mcp.json",
+    "filename": "mcp.json",
+    "template": {
+      "configuration": {
+        "api_key": "${{SERVICE_API_KEY}}",
+        "endpoint": "https://api.example.com/v1"
+      },
+
+      "connection": {
+        "auth_type": "{bearer_token|oauth|api_key|none}",
+        "service": "{service-name}",
+        "type": "{api|database|webhook}"
+      },
+
+      "description": "{Service} integration for {domain}",
+      "error_handling": {
+        "auth_failure": "Check API key in .env",
+        "rate_limit": "Retry after waiting",
+        "timeout": "Increase timeout in configuration"
+      },
+      "name": "{domain}-{service}",
+      "operations": {
+        "read": {
+          "queries": ["get_items", "list_items", "filter_items"]
+        },
+        "write": {
+          "mutations": ["create_item", "update_item", "delete_item"]
+        }
+      },
+
+      "setup": {
+        "instructions": "Get credentials from: https://developer.example.com/",
+        "required_env_vars": ["SERVICE_API_KEY"]
+      },
+
+      "type": "mcp",
+      "version": "1.0.0"
+    }
+  },
+
+  "plugin_manifest_template": {
+    "file_path": ".claude/plugins/{plugin-name}/plugin.yaml",
+    "filename": "plugin.yaml",
+    "template": {
+      "components": {
+        "commands": [
+          {
+            "commands": [
+              {
+                "description": "{description}",
+                "name": "{operation}",
+                "parameters": [],
+                "path": "./commands/{domain}/{operation}.md"
+              }
+            ],
+            "namespace": "{domain}"
+          }
+        ],
+        "hooks": [
+          {
+            "description": "{domain} validation",
+            "event": "pre-commit",
+            "required_env": [],
+            "script": "./hooks/pre-commit/{domain}-validate.sh",
+            "triggers_when": "Commit about to be created"
+          }
+        ],
+        "mcp_servers": [
+          {
+            "description": "{integration} integration for {domain}",
+            "name": "{domain}-integration",
+            "operations": {
+              "read": [],
+              "write": []
+            },
+            "path": "./mcp-servers/{domain}-{integration_type}/",
+            "required_config": [],
+            "type": "{integration_type}"
+          }
+        ],
+        "skills": [
+          {
+            "description": "{domain} domain expert",
+            "linked_commands": [],
+            "name": "{domain}-expert",
+            "path": "./skills/{domain}-expert/SKILL.md",
+            "trigger_phrases": []
+          }
+        ]
+      },
+
+      "dependencies": [
+        {
+          "name": "system-dependency",
+          "required": true,
+          "type": "system",
+          "version": ">=5.0"
+        }
+      ],
+
+      "description": "{description}",
+
+      "evolution": [
+        {
+          "operation": "to-plugin",
+          "source": "{domain} domain",
+          "timestamp": "{timestamp}",
+          "type": "created"
+        }
+      ],
+      "marketplace": {
+        "discoverable": false,
+        "download_url": "",
+        "published": false,
+        "registry": "internal",
+        "visibility": "private"
+      },
+
+      "metadata": {
+        "author": "{author}",
+        "created_at": "{timestamp}",
+        "keywords": ["{keywords}"],
+        "last_modified": "{timestamp}",
+        "license": "MIT",
+        "maintainer": "{maintainer}",
+        "tags": ["{domain}", "automation"]
+      },
+
+      "name": "{plugin-name}",
+      "quality": {
+        "documentation_complete": false,
+        "issues": [],
+        "performance_tested": false,
+        "quality_score": 5,
+        "recommended_next_steps": [
+          "Run tests: /test:command {domain}:*",
+          "Security review: /security:review {plugin-name}",
+          "Performance benchmarks: /perf:measure {domain}:*"
+        ],
+        "security_review": "pending",
+        "test_status": "untested"
+      },
+
+      "team_sharing": {
+        "distribution": {
+          "format": "zip",
+          "includes_env": false,
+          "size_estimate": "~25kb"
+        },
+        "enabled": true,
+        "installable": true,
+        "installation_instructions": [
+          "Unzip plugin to .claude/plugins/",
+          "Update .env with credentials",
+          "Run /registry:scan to verify",
+          "Test: /{domain}:main"
+        ],
+        "sharing_scope": "team",
+        "team_members": []
+      },
+
+      "version": "{version}"
+    }
+  },
+
+  "plugin_readme_template": {
+    "file_path": ".claude/plugins/{plugin-name}/README.md",
+    "filename": "README.md",
+    "template": "# {Plugin Title}\n\n{Description}\n\n## Quick Start\n\n```bash\n# Use the commands\n{command_examples}\n```\n\n## Setup\n\n1. **Install** (if not already)\n   Already in `.claude/plugins/{plugin-name}/`\n\n2. **Configure** (if needed)\n   ```bash\n   export {ENV_VAR_1}=\"your-value\"\n   export {ENV_VAR_2}=\"your-value\"\n   ```\n\n3. **Test**\n   ```bash\n   /{domain}:{main_command}\n   ```\n\n## Features\n\n✅ {feature_1}\n✅ {feature_2}\n✅ {feature_3}\n\n## Commands\n\n{command_descriptions}\n\n## Integration\n\nWorks seamlessly with other domains:\n- Reference other domains here\n- Show how to use together\n\n## Customization\n\nEdit command files in `commands/{domain}/` to customize:\n- Change behavior\n- Add filters\n- Modify output format\n- Add new operations\n\n## Troubleshooting\n\nHaving issues?\n\n1. Check credentials are set correctly\n2. Verify configuration file\n3. Run tests: `/test:command {domain}:*`\n4. Check logs: `/debug:logs {domain}`\n\n## Support\n\nSee TROUBLESHOOTING.md for common issues.\n"
+  },
+
+  "plugin_team_setup_template": {
+    "file_path": ".claude/plugins/{plugin-name}/TEAM-SETUP.md",
+    "filename": "TEAM-SETUP.md",
+    "template": "# {Plugin Title} - Team Setup Guide\n\nFollow these steps to install and configure for your team.\n\n## Installation\n\n### Step 1: Unzip Plugin\n\n```bash\ncd your-project/.claude/plugins/\nunzip pm-automation.zip\n# Creates: pm-automation/\n```\n\n### Step 2: Set Up Environment\n\n```bash\ncd pm-automation\ncp .env.example .env\n```\n\nEdit `.env` and set your credentials:\n```bash\n# .env\nNOTION_API_KEY=\"your-api-key\"\nNOTION_DATABASE_ID=\"your-db-id\"\n```\n\n### Step 3: Verify Installation\n\n```bash\n/registry:scan pm-automation\n# Should show all components ready\n```\n\n### Step 4: Test Commands\n\n```bash\n/{domain}:{main_command}\n# Should work if credentials are correct\n```\n\n## Team Communication\n\nAfter installation, tell your team:\n\n> **New Plugin Available**: {Plugin Title}\n>\n> Use the following commands:\n> - `/{domain}:command1` - Description\n> - `/{domain}:command2` - Description\n>\n> **Auto-Discovery**: When you mention certain phrases, Claude will suggest these commands.\n>\n> **Example**: \"What should I work on?\" → Claude suggests `/{domain}:{main_command}`\n>\n> Questions? See {Plugin Title} docs in `.claude/plugins/{plugin-name}/`\n\n## Configuration Options\n\nSee CONFIGURATION.md for detailed configuration.\n\n## Updating Credentials\n\nWhen credentials change:\n\n1. Update `.env` file\n2. Restart your Claude Code session\n3. Test: `/{domain}:{main_command}`\n\n## Uninstalling\n\nTo remove the plugin:\n\n```bash\nrm -rf .claude/plugins/{plugin-name}/\n/registry:scan  # Verify removed\n```\n\nCommands will no longer be available.\n\n## Support\n\nSee TROUBLESHOOTING.md for common issues.\n"
+  },
+
+  "quality_checks": {
+    "command": [
+      "command documented",
+      "has examples",
+      "parameters documented",
+      "error handling described",
+      "related commands linked"
+    ],
+    "plugin": [
+      "plugin.yaml is valid",
+      "all referenced files exist",
+      "commands documented",
+      "dependencies listed",
+      "env.example provided"
+    ],
+    "skill": [
+      "skill has description",
+      "skill has trigger_phrases",
+      "trigger_phrases are unique",
+      "linked_command exists",
+      "no circular triggers"
+    ]
+  },
   "skill_templates": {
+    "deploy_skill": {
+      "description": "Deployment domain skill template",
+      "namespace": "deploy",
+      "trigger_templates": {
+        "rollback": [
+          "rollback",
+          "undo deployment",
+          "revert deployment",
+          "go back"
+        ],
+        "start": [
+          "deploy",
+          "start deployment",
+          "deploy now",
+          "push to production",
+          "release"
+        ],
+        "status": [
+          "deployment status",
+          "is deployment done",
+          "check deployment",
+          "status"
+        ]
+      }
+    },
+
     "generic_skill": {
-      "filename_pattern": "{namespace}-{operation}-discovery",
       "file_path": ".claude/skills/{namespace}-{operation}-discovery/SKILL.md",
+      "filename_pattern": "{namespace}-{operation}-discovery",
       "template": "---\nname: {namespace}-{operation}-discovery\ndescription: |\n  Auto-discovery skill for /{namespace}:{operation} command.\n\n  Suggests /{namespace}:{operation} when user mentions:\n  - {trigger_0}\n  - {trigger_1}\n  - {trigger_2}\n\ntrigger_phrases:\n{trigger_list}\n\nlinked_command: {namespace}:{operation}\ncreated_by: /evolve:add-skill\ncreated_at: \"{timestamp}\"\n---\n\n# {Title} Discovery Skill\n\n## What This Does\n\nAutomatically suggests the `/{namespace}:{operation}` command when you're asking about {operation_description}.\n\n## When Claude Uses This\n\nWhen you mention:\n{trigger_examples}\n\n## The Underlying Command\n\nThis skill wraps the `/{namespace}:{operation}` command.\n\n## Best Practices\n\n1. **Use naturally**: Just mention needing {operation}\n2. **Be specific**: More context = better suggestions\n3. **Accept suggestions**: When offered, run the command\n4. **Provide feedback**: Tell Claude if suggestion was helpful\n\n## Manual Invocation\n\nYou can always run the command directly:\n```\n/{namespace}:{operation}\n```\n\n## Customization\n\nTo change trigger phrases, edit the `trigger_phrases` section above."
     },
 
     "pm_skill": {
-      "namespace": "pm",
       "description": "PM domain skill template",
+      "namespace": "pm",
       "trigger_templates": {
+        "context": [
+          "task context",
+          "show context",
+          "get details",
+          "context for task"
+        ],
+        "list": [
+          "show my tasks",
+          "list tasks",
+          "what tasks do I have",
+          "all tasks"
+        ],
         "next": [
           "next task",
           "what should I work on",
@@ -26,381 +319,94 @@
           "review progress",
           "show status",
           "how are we doing"
-        ],
-        "context": [
-          "task context",
-          "show context",
-          "get details",
-          "context for task"
-        ],
-        "list": [
-          "show my tasks",
-          "list tasks",
-          "what tasks do I have",
-          "all tasks"
-        ]
-      }
-    },
-
-    "deploy_skill": {
-      "namespace": "deploy",
-      "description": "Deployment domain skill template",
-      "trigger_templates": {
-        "start": [
-          "deploy",
-          "start deployment",
-          "deploy now",
-          "push to production",
-          "release"
-        ],
-        "status": [
-          "deployment status",
-          "is deployment done",
-          "check deployment",
-          "status"
-        ],
-        "rollback": [
-          "rollback",
-          "undo deployment",
-          "revert deployment",
-          "go back"
         ]
       }
     },
 
     "test_skill": {
-      "namespace": "test",
       "description": "Testing domain skill template",
+      "namespace": "test",
       "trigger_templates": {
-        "run": [
-          "run tests",
-          "test",
-          "check tests",
-          "verify tests"
-        ],
-        "coverage": [
-          "test coverage",
-          "show coverage",
-          "how much is tested"
-        ],
-        "report": [
-          "test report",
-          "show test results",
-          "what failed"
-        ]
-      }
-    }
-  },
-
-  "plugin_manifest_template": {
-    "filename": "plugin.yaml",
-    "file_path": ".claude/plugins/{plugin-name}/plugin.yaml",
-    "template": {
-      "name": "{plugin-name}",
-      "version": "{version}",
-      "description": "{description}",
-
-      "metadata": {
-        "author": "{author}",
-        "created_at": "{timestamp}",
-        "last_modified": "{timestamp}",
-        "maintainer": "{maintainer}",
-        "license": "MIT",
-        "tags": ["{domain}", "automation"],
-        "keywords": ["{keywords}"]
-      },
-
-      "components": {
-        "commands": [
-          {
-            "namespace": "{domain}",
-            "commands": [
-              {
-                "name": "{operation}",
-                "path": "./commands/{domain}/{operation}.md",
-                "description": "{description}",
-                "parameters": []
-              }
-            ]
-          }
-        ],
-        "skills": [
-          {
-            "name": "{domain}-expert",
-            "path": "./skills/{domain}-expert/SKILL.md",
-            "description": "{domain} domain expert",
-            "trigger_phrases": [],
-            "linked_commands": []
-          }
-        ],
-        "mcp_servers": [
-          {
-            "name": "{domain}-integration",
-            "type": "{integration_type}",
-            "path": "./mcp-servers/{domain}-{integration_type}/",
-            "description": "{integration} integration for {domain}",
-            "required_config": [],
-            "operations": {
-              "read": [],
-              "write": []
-            }
-          }
-        ],
-        "hooks": [
-          {
-            "event": "pre-commit",
-            "script": "./hooks/pre-commit/{domain}-validate.sh",
-            "description": "{domain} validation",
-            "required_env": [],
-            "triggers_when": "Commit about to be created"
-          }
-        ]
-      },
-
-      "quality": {
-        "test_status": "untested",
-        "security_review": "pending",
-        "documentation_complete": false,
-        "performance_tested": false,
-        "quality_score": 5,
-        "issues": [],
-        "recommended_next_steps": [
-          "Run tests: /test:command {domain}:*",
-          "Security review: /security:review {plugin-name}",
-          "Performance benchmarks: /perf:measure {domain}:*"
-        ]
-      },
-
-      "team_sharing": {
-        "enabled": true,
-        "team_members": [],
-        "sharing_scope": "team",
-        "installable": true,
-        "installation_instructions": [
-          "Unzip plugin to .claude/plugins/",
-          "Update .env with credentials",
-          "Run /registry:scan to verify",
-          "Test: /{domain}:main"
-        ],
-        "distribution": {
-          "format": "zip",
-          "includes_env": false,
-          "size_estimate": "~25kb"
-        }
-      },
-
-      "dependencies": [
-        {
-          "name": "system-dependency",
-          "type": "system",
-          "required": true,
-          "version": ">=5.0"
-        }
-      ],
-
-      "marketplace": {
-        "published": false,
-        "registry": "internal",
-        "discoverable": false,
-        "download_url": "",
-        "visibility": "private"
-      },
-
-      "evolution": [
-        {
-          "type": "created",
-          "timestamp": "{timestamp}",
-          "operation": "to-plugin",
-          "source": "{domain} domain"
-        }
-      ]
-    }
-  },
-
-  "plugin_readme_template": {
-    "filename": "README.md",
-    "file_path": ".claude/plugins/{plugin-name}/README.md",
-    "template": "# {Plugin Title}\n\n{Description}\n\n## Quick Start\n\n```bash\n# Use the commands\n{command_examples}\n```\n\n## Setup\n\n1. **Install** (if not already)\n   Already in `.claude/plugins/{plugin-name}/`\n\n2. **Configure** (if needed)\n   ```bash\n   export {ENV_VAR_1}=\"your-value\"\n   export {ENV_VAR_2}=\"your-value\"\n   ```\n\n3. **Test**\n   ```bash\n   /{domain}:{main_command}\n   ```\n\n## Features\n\n✅ {feature_1}\n✅ {feature_2}\n✅ {feature_3}\n\n## Commands\n\n{command_descriptions}\n\n## Integration\n\nWorks seamlessly with other domains:\n- Reference other domains here\n- Show how to use together\n\n## Customization\n\nEdit command files in `commands/{domain}/` to customize:\n- Change behavior\n- Add filters\n- Modify output format\n- Add new operations\n\n## Troubleshooting\n\nHaving issues?\n\n1. Check credentials are set correctly\n2. Verify configuration file\n3. Run tests: `/test:command {domain}:*`\n4. Check logs: `/debug:logs {domain}`\n\n## Support\n\nSee TROUBLESHOOTING.md for common issues.\n"
-  },
-
-  "plugin_team_setup_template": {
-    "filename": "TEAM-SETUP.md",
-    "file_path": ".claude/plugins/{plugin-name}/TEAM-SETUP.md",
-    "template": "# {Plugin Title} - Team Setup Guide\n\nFollow these steps to install and configure for your team.\n\n## Installation\n\n### Step 1: Unzip Plugin\n\n```bash\ncd your-project/.claude/plugins/\nunzip pm-automation.zip\n# Creates: pm-automation/\n```\n\n### Step 2: Set Up Environment\n\n```bash\ncd pm-automation\ncp .env.example .env\n```\n\nEdit `.env` and set your credentials:\n```bash\n# .env\nNOTION_API_KEY=\"your-api-key\"\nNOTION_DATABASE_ID=\"your-db-id\"\n```\n\n### Step 3: Verify Installation\n\n```bash\n/registry:scan pm-automation\n# Should show all components ready\n```\n\n### Step 4: Test Commands\n\n```bash\n/{domain}:{main_command}\n# Should work if credentials are correct\n```\n\n## Team Communication\n\nAfter installation, tell your team:\n\n> **New Plugin Available**: {Plugin Title}\n>\n> Use the following commands:\n> - `/{domain}:command1` - Description\n> - `/{domain}:command2` - Description\n>\n> **Auto-Discovery**: When you mention certain phrases, Claude will suggest these commands.\n>\n> **Example**: \"What should I work on?\" → Claude suggests `/{domain}:{main_command}`\n>\n> Questions? See {Plugin Title} docs in `.claude/plugins/{plugin-name}/`\n\n## Configuration Options\n\nSee CONFIGURATION.md for detailed configuration.\n\n## Updating Credentials\n\nWhen credentials change:\n\n1. Update `.env` file\n2. Restart your Claude Code session\n3. Test: `/{domain}:{main_command}`\n\n## Uninstalling\n\nTo remove the plugin:\n\n```bash\nrm -rf .claude/plugins/{plugin-name}/\n/registry:scan  # Verify removed\n```\n\nCommands will no longer be available.\n\n## Support\n\nSee TROUBLESHOOTING.md for common issues.\n"
-  },
-
-  "evolution_history_template": {
-    "filename": "{component}.evolution.json",
-    "file_path": ".claude/history/{component}.evolution.json",
-    "template": {
-      "component": "{component}",
-      "evolution_type": "{add-skill|to-plugin|split|remove-skill|rollback}",
-      "timestamp": "{timestamp}",
-      "applied_by": "{user}",
-
-      "before": {
-        "type": "{command|domain|skill|plugin}",
-        "version": "{version}",
-        "status": "{ready|untested|needs-config}"
-      },
-
-      "after": {
-        "type": "{command|domain|skill|plugin}",
-        "version": "{version}",
-        "status": "{ready|untested|needs-config}"
-      },
-
-      "changes": [
-        {
-          "file": "{filepath}",
-          "action": "{created|modified|deleted}",
-          "description": "{what changed}",
-          "checksum_before": "{sha256:old}",
-          "checksum_after": "{sha256:new}"
-        }
-      ],
-
-      "can_rollback": true,
-      "rollback_command": "/evolve:rollback {component}",
-
-      "metadata": {
-        "domain": "{domain}",
-        "operation": "{operation}",
-        "dependents": [],
-        "quality_change": "+0.5"
+        "coverage": ["test coverage", "show coverage", "how much is tested"],
+        "report": ["test report", "show test results", "what failed"],
+        "run": ["run tests", "test", "check tests", "verify tests"]
       }
     }
   },
 
   "split_analysis_template": {
-    "filename": "{component}.analysis.json",
     "file_path": ".claude/analysis/splits/{component}.analysis.json",
+    "filename": "{component}.analysis.json",
     "template": {
-      "component": "{component}",
-      "type": "{domain|command|plugin}",
       "analysis_timestamp": "{timestamp}",
 
-      "current_structure": {
-        "total_size": 5124,
-        "total_files": 9,
-        "complexity_score": 6.5,
-        "cohesion_score": 5.2,
-        "reusability_score": 7.1
-      },
-
-      "suggested_splits": [
-        {
-          "name": "{new-domain-1}",
-          "description": "{Description}",
-          "components": ["{component_file}"],
-          "size": 2000,
-          "complexity": 2,
-          "cohesion": 9.0,
-          "reusability": 8.5,
-          "standalone_viable": true,
-          "dependencies": []
-        }
-      ],
-
       "benefit_analysis": {
+        "complexity_reduction": "25%",
         "maintainability_improvement": "35%",
         "reusability_improvement": "45%",
-        "testing_improvement": "40%",
-        "complexity_reduction": "25%"
+        "testing_improvement": "40%"
       },
 
+      "component": "{component}",
+      "current_structure": {
+        "cohesion_score": 5.2,
+        "complexity_score": 6.5,
+        "reusability_score": 7.1,
+        "total_files": 9,
+        "total_size": 5124
+      },
+
+      "migration_phases": [
+        {
+          "estimated_time": "15 mins",
+          "name": "Create New Domains",
+          "phase": 1
+        },
+        {
+          "estimated_time": "20 mins",
+          "name": "Test and Validate",
+          "phase": 2
+        }
+      ],
       "risk_factors": [
         "Coordination needed between split domains",
         "Dependency management becomes important",
         "Migration guide required for users"
       ],
 
-      "migration_phases": [
+      "suggested_splits": [
         {
-          "phase": 1,
-          "name": "Create New Domains",
-          "estimated_time": "15 mins"
-        },
-        {
-          "phase": 2,
-          "name": "Test and Validate",
-          "estimated_time": "20 mins"
+          "cohesion": 9.0,
+          "complexity": 2,
+          "components": ["{component_file}"],
+          "dependencies": [],
+          "description": "{Description}",
+          "name": "{new-domain-1}",
+          "reusability": 8.5,
+          "size": 2000,
+          "standalone_viable": true
         }
-      ]
+      ],
+
+      "type": "{domain|command|plugin}"
     }
-  },
-
-  "command_deprecation_template": {
-    "filename": "DEPRECATED.md",
-    "file_path": ".claude/commands/{domain}/DEPRECATED.md",
-    "template": "# DEPRECATED: {domain} Domain\n\n**Status**: Deprecated (v{version})\n**Sunset Date**: {date}\n\nThis domain has been split into smaller, more focused domains.\n\n## Migration Guide\n\n### Old Commands\n\n| Old Command | New Command | Notes |\n|-------------|-------------|-------|\n| `/{old-domain}:operation1` | `/{new-domain}:operation1` | Moved to {new-domain} |\n| `/{old-domain}:operation2` | `/{new-domain}:operation2` | Moved to {new-domain} |\n\n## Timeline\n\n- **Now**: Old commands still work\n  - `/{old-domain}:operation1` redirects to `/{new-domain}:operation1`\n  - No action needed\n\n- **After {migration_period}**: Deprecated commands removed\n  - Update to new commands if not yet done\n  - Migration guide available at time of removal\n\n## Why This Change?\n\n- Smaller, focused domains are easier to maintain\n- Each domain can evolve independently\n- Better code reuse\n- Clearer responsibilities\n\n## Getting Help\n\nFor migration questions:\n1. See migration guide above\n2. Check new domain documentation\n3. Ask: \"How do I use {new-domain} instead?\"\n"
-  },
-
-  "mcp_stub_template": {
-    "filename": "mcp.json",
-    "file_path": ".claude/mcp-servers/{domain}-{service}/mcp.json",
-    "template": {
-      "name": "{domain}-{service}",
-      "type": "mcp",
-      "description": "{Service} integration for {domain}",
-      "version": "1.0.0",
-
-      "connection": {
-        "type": "{api|database|webhook}",
-        "service": "{service-name}",
-        "auth_type": "{bearer_token|oauth|api_key|none}"
-      },
-
-      "configuration": {
-        "api_key": "${{SERVICE_API_KEY}}",
-        "endpoint": "https://api.example.com/v1"
-      },
-
-      "operations": {
-        "read": {
-          "queries": [
-            "get_items",
-            "list_items",
-            "filter_items"
-          ]
-        },
-        "write": {
-          "mutations": [
-            "create_item",
-            "update_item",
-            "delete_item"
-          ]
-        }
-      },
-
-      "setup": {
-        "required_env_vars": [
-          "SERVICE_API_KEY"
-        ],
-        "instructions": "Get credentials from: https://developer.example.com/"
-      },
-
-      "error_handling": {
-        "auth_failure": "Check API key in .env",
-        "rate_limit": "Retry after waiting",
-        "timeout": "Increase timeout in configuration"
-      }
-    }
-  },
-
-  "hook_template": {
-    "filename": "{domain}-{event}.sh",
-    "file_path": ".claude/hooks/{event}/{domain}-{event}.sh",
-    "template": "#!/bin/bash\n# Hook: {domain} {event}\n# Purpose: {description}\n# Triggers: {when_triggered}\n\n# TODO: Implement hook logic\n# This is a stub. Customize with:\n# - Validation logic\n# - Required checks\n# - Error handling\n# - Success criteria\n\necho \"Running {domain} {event} hook...\"\n\n# Example: Pre-commit validation\n# COMMIT_MSG=$(cat \"$1\")\n# if ! echo \"$COMMIT_MSG\" | grep -qE 'TASK-[0-9]+'; then\n#     echo \"❌ Commit must reference a task\"\n#     exit 1\n# fi\n\necho \"✅ Hook validation passed\"\nexit 0\n"
   },
 
   "trigger_phrase_suggestions": {
-    "task_management": [
-      "next task",
-      "what should I work on",
-      "next {domain} task",
-      "show me next",
-      "what's my task"
+    "action_commands": [
+      "start",
+      "run",
+      "execute",
+      "do {operation}",
+      "perform {operation}"
+    ],
+    "deployment": ["deploy", "release", "push", "publish", "go live"],
+    "information_retrieval": [
+      "show",
+      "list",
+      "get",
+      "what {domain}",
+      "all {domain}"
     ],
     "status_review": [
       "status",
@@ -409,57 +415,15 @@
       "show status",
       "review"
     ],
-    "information_retrieval": [
-      "show",
-      "list",
-      "get",
-      "what {domain}",
-      "all {domain}"
+    "task_management": [
+      "next task",
+      "what should I work on",
+      "next {domain} task",
+      "show me next",
+      "what's my task"
     ],
-    "action_commands": [
-      "start",
-      "run",
-      "execute",
-      "do {operation}",
-      "perform {operation}"
-    ],
-    "deployment": [
-      "deploy",
-      "release",
-      "push",
-      "publish",
-      "go live"
-    ],
-    "testing": [
-      "test",
-      "run tests",
-      "check",
-      "verify",
-      "coverage"
-    ]
+    "testing": ["test", "run tests", "check", "verify", "coverage"]
   },
 
-  "quality_checks": {
-    "skill": [
-      "skill has description",
-      "skill has trigger_phrases",
-      "trigger_phrases are unique",
-      "linked_command exists",
-      "no circular triggers"
-    ],
-    "plugin": [
-      "plugin.yaml is valid",
-      "all referenced files exist",
-      "commands documented",
-      "dependencies listed",
-      "env.example provided"
-    ],
-    "command": [
-      "command documented",
-      "has examples",
-      "parameters documented",
-      "error handling described",
-      "related commands linked"
-    ]
-  }
+  "version": "1.0.0"
 }

@@ -33,6 +33,7 @@ No installation needed! Files are already in place:
 ## Common Commands
 
 ### Test Slash Commands
+
 ```bash
 /test:command pm:next --mode comprehensive
 /test:command pm:context --args "TASK-001" --mode comprehensive
@@ -41,16 +42,19 @@ No installation needed! Files are already in place:
 ```
 
 ### Test Skills
+
 ```bash
 /test:command pm-expert --mode comprehensive
 ```
 
 ### Test MCP Servers
+
 ```bash
 /test:command notion-mcp --mode comprehensive
 ```
 
 ### Test Hooks
+
 ```bash
 /test:command deploy-hook --env "TOKEN=xyz" --mode comprehensive
 ```
@@ -58,6 +62,7 @@ No installation needed! Files are already in place:
 ## Test Modes
 
 ### Quick Mode (500ms)
+
 - Smoke test only
 - Verifies component exists
 - Can be invoked
@@ -67,6 +72,7 @@ No installation needed! Files are already in place:
 ```
 
 ### Comprehensive Mode (10-30s)
+
 - All 5 test types
 - Validates functionality
 - Checks performance
@@ -103,17 +109,18 @@ No installation needed! Files are already in place:
 
 ## Test Types
 
-| Type | Checks | Time | Always Run |
-|------|--------|------|-----------|
-| **Smoke** | Exists, valid, parseable | 100-500ms | ✅ Yes |
-| **Functional** | Output correct | 1-5s | If comprehensive |
-| **Integration** | Dependencies work | 2-10s | If comprehensive |
-| **Performance** | Fast enough | varies | If comprehensive |
-| **Quality** | Production ready | 500ms-2s | If comprehensive |
+| Type            | Checks                   | Time      | Always Run       |
+| --------------- | ------------------------ | --------- | ---------------- |
+| **Smoke**       | Exists, valid, parseable | 100-500ms | ✅ Yes           |
+| **Functional**  | Output correct           | 1-5s      | If comprehensive |
+| **Integration** | Dependencies work        | 2-10s     | If comprehensive |
+| **Performance** | Fast enough              | varies    | If comprehensive |
+| **Quality**     | Production ready         | 500ms-2s  | If comprehensive |
 
 ## Pre-built Test Cases
 
 PM Domain:
+
 - `pm:next` - 4 test cases
 - `pm:context` - 5 test cases
 - `pm:start` - 3 test cases
@@ -121,12 +128,14 @@ PM Domain:
 - `pm-expert` - 2 test cases
 
 Integration:
+
 - `notion-mcp` - 3 test cases
 - `deploy-hook` - 2 test cases
 
 ## Test Results
 
 ### Success
+
 ```
 ✅ Component Test Results
 ━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -137,6 +146,7 @@ Tokens: 450
 ```
 
 ### Failure
+
 ```
 ❌ Component Test Results
 ━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -158,6 +168,7 @@ After running test with `--report`:
 ## Troubleshooting
 
 ### "Component not found"
+
 ```bash
 # Find the component
 find .claude -name "*component-name*"
@@ -167,6 +178,7 @@ head -10 .claude/commands/component-name.md
 ```
 
 ### "Expected output not found"
+
 ```bash
 # Run without filter to see actual output
 /test:command pm:next --mode comprehensive
@@ -175,6 +187,7 @@ head -10 .claude/commands/component-name.md
 ```
 
 ### "Timeout"
+
 ```bash
 # Increase timeout
 /test:command pm:context --timeout 60
@@ -184,6 +197,7 @@ head -10 .claude/commands/component-name.md
 ```
 
 ### "Dependency not found"
+
 ```bash
 # Test the dependency first
 /test:command dependency-name --mode quick
@@ -202,11 +216,11 @@ head -10 .claude/commands/component-name.md
     "component_type": "command",
     "test_cases": [
       {
-        "id": "my-test-1",
-        "name": "Basic Test",
-        "mode": "comprehensive",
         "command": "my-command",
-        "expected": "expected output"
+        "expected": "expected output",
+        "id": "my-test-1",
+        "mode": "comprehensive",
+        "name": "Basic Test"
       }
     ]
   }
@@ -226,12 +240,12 @@ test:
 
 ## Performance Targets
 
-| Component | Max Time | Max Tokens |
-|-----------|----------|-----------|
-| pm:next | 5s | 1,000 |
-| pm:context | 10s | 5,000 |
-| pm:start | 5s | 500 |
-| pm:complete | 5s | 500 |
+| Component   | Max Time | Max Tokens |
+| ----------- | -------- | ---------- |
+| pm:next     | 5s       | 1,000      |
+| pm:context  | 10s      | 5,000      |
+| pm:start    | 5s       | 500        |
+| pm:complete | 5s       | 500        |
 
 ## Integration with Workflow
 
@@ -259,13 +273,13 @@ Improve based on feedback
 
 ## Documentation Files
 
-| File | Purpose |
-|------|---------|
-| `test-command.md` | Full command specification |
-| `test-framework.ts` | Testing engine (TypeScript) |
-| `test-templates.json` | Pre-built test library |
-| `TEST-GUIDE.md` | Complete testing guide |
-| `IMPLEMENTATION-SUMMARY-test-command.md` | Architecture & details |
+| File                                     | Purpose                     |
+| ---------------------------------------- | --------------------------- |
+| `test-command.md`                        | Full command specification  |
+| `test-framework.ts`                      | Testing engine (TypeScript) |
+| `test-templates.json`                    | Pre-built test library      |
+| `TEST-GUIDE.md`                          | Complete testing guide      |
+| `IMPLEMENTATION-SUMMARY-test-command.md` | Architecture & details      |
 
 ## Statistics
 
@@ -279,6 +293,7 @@ Improve based on feedback
 ## Example Workflows
 
 ### Smoke Test All Components
+
 ```bash
 for cmd in pm:next pm:context pm:start pm:complete; do
   /test:command $cmd --mode quick
@@ -286,6 +301,7 @@ done
 ```
 
 ### Full Test Suite with Reports
+
 ```bash
 /test:command pm:next --mode comprehensive --report
 /test:command pm:context --args "TASK-001" --mode comprehensive --report
@@ -293,11 +309,13 @@ done
 ```
 
 ### Performance Benchmark
+
 ```bash
 /test:command pm:context --args "TASK-001" --timeout 30 --mode comprehensive --report
 ```
 
 ### Test with Environment
+
 ```bash
 /test:command deploy --env "ENV=staging" --env "TOKEN=abc" --mode comprehensive --report
 ```

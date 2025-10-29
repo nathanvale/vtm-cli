@@ -1,242 +1,353 @@
 {
-  "timestamp": "2025-10-29T08:00:00Z",
-  "filter": "",
-  "total_components": 22,
   "by_type": {
-    "commands": 12,
-    "skills": 2,
-    "mcp_servers": 0,
-    "hooks": 4,
     "agents": 3,
-    "plugins": 1
+    "commands": 16,
+    "hooks": 4,
+    "mcp_servers": 3,
+    "plugins": 1,
+    "skills": 2
   },
   "components": [
     {
-      "id": "commands:scaffold-domain",
-      "type": "command",
-      "namespace": "commands",
-      "name": "scaffold-domain",
+      "dependencies": [],
       "description": "Scaffold Domain - Code Generator",
-      "version": "1.0.0",
+      "id": "commands:scaffold-domain",
       "location": ".claude/commands/scaffold-domain.md",
-      "tags": ["commands", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "scaffold-domain",
+      "namespace": "commands",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["commands", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "commands:create-command",
-      "type": "command",
-      "namespace": "commands",
-      "name": "create-command",
+      "dependencies": [],
       "description": "Create New Slash Command",
-      "version": "1.0.0",
+      "id": "commands:create-command",
       "location": ".claude/commands/create-command.md",
-      "tags": ["commands", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "create-command",
+      "namespace": "commands",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["commands", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "commands:registry-scan",
-      "type": "command",
-      "namespace": "commands",
-      "name": "registry-scan",
+      "dependencies": [],
       "description": "Registry Scan - Component Discovery",
-      "version": "1.0.0",
+      "id": "commands:registry-scan",
       "location": ".claude/commands/registry-scan.md",
-      "tags": ["commands", "command"],
-      "dependencies": [],
-      "used_by": [],
-      "quality": {
-        "tested": false,
-        "documented": true,
-        "security_reviewed": false
-      }
-    },
-    {
-      "id": "commands:test-command",
-      "type": "command",
+      "name": "registry-scan",
       "namespace": "commands",
-      "name": "test-command",
-      "description": "Test Command - Component Validation System",
-      "version": "1.0.0",
-      "location": ".claude/commands/test-command.md",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
       "tags": ["commands", "command"],
-      "dependencies": [],
+      "type": "command",
       "used_by": [],
-      "quality": {
-        "tested": false,
-        "documented": true,
-        "security_reviewed": false
-      }
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:stats",
+      "dependencies": [],
+      "description": "Test Command - Component Validation System",
+      "id": "commands:test-command",
+      "location": ".claude/commands/test-command.md",
+      "name": "test-command",
+      "namespace": "commands",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["commands", "command"],
       "type": "command",
-      "namespace": "vtm",
-      "name": "stats",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [],
       "description": "VTM: Stats",
-      "version": "1.0.0",
+      "id": "vtm:stats",
       "location": ".claude/commands/vtm/stats.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "stats",
+      "namespace": "vtm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:complete",
-      "type": "command",
+      "dependencies": ["decision-engine"],
+      "description": "Analyze domain architecture and suggest improvements",
+      "id": "vtm:analyze",
+      "location": "src/index.ts",
+      "name": "analyze",
       "namespace": "vtm",
-      "name": "complete",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": true
+      },
+      "tags": ["vtm", "command", "cli", "architecture"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [],
       "description": "VTM: Complete",
-      "version": "1.0.0",
+      "id": "vtm:complete",
       "location": ".claude/commands/vtm/complete.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "complete",
+      "namespace": "vtm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:context",
-      "type": "command",
-      "namespace": "vtm",
-      "name": "context",
+      "dependencies": [],
       "description": "VTM: Context",
-      "version": "1.0.0",
+      "id": "vtm:context",
       "location": ".claude/commands/vtm/context.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "context",
+      "namespace": "vtm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:next",
-      "type": "command",
-      "namespace": "vtm",
-      "name": "next",
+      "dependencies": [],
       "description": "VTM: Next",
-      "version": "1.0.0",
+      "id": "vtm:next",
       "location": ".claude/commands/vtm/next.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "next",
+      "namespace": "vtm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:list",
-      "type": "command",
-      "namespace": "vtm",
-      "name": "list",
+      "dependencies": [],
       "description": "VTM: List",
-      "version": "1.0.0",
+      "id": "vtm:list",
       "location": ".claude/commands/vtm/list.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
+      "name": "list",
+      "namespace": "vtm",
       "quality": {
-        "tested": false,
         "documented": true,
-        "security_reviewed": false
-      }
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm:task",
-      "type": "command",
-      "namespace": "vtm",
-      "name": "task",
+      "dependencies": [],
       "description": "VTM: Task",
-      "version": "1.0.0",
+      "id": "vtm:task",
       "location": ".claude/commands/vtm/task.md",
-      "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
-      "quality": {
-        "tested": false,
-        "documented": true,
-        "security_reviewed": false
-      }
-    },
-    {
-      "id": "vtm:start",
-      "type": "command",
+      "name": "task",
       "namespace": "vtm",
-      "name": "start",
-      "description": "VTM: Start",
-      "version": "1.0.0",
-      "location": ".claude/commands/vtm/start.md",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
       "tags": ["vtm", "command"],
-      "dependencies": [],
-      "used_by": [],
-      "quality": {
-        "tested": false,
-        "documented": true,
-        "security_reviewed": false
-      }
-    },
-    {
-      "id": "plan:to-vtm",
       "type": "command",
-      "namespace": "plan",
-      "name": "to-vtm",
-      "description": "Transform ADR+Spec pairs into VTM tasks with intelligent dependency analysis",
-      "version": "1.0.0",
-      "location": ".claude/commands/plan/to-vtm.md",
-      "tags": ["plan", "command", "vtm-bridge"],
-      "dependencies": ["vtm-cli"],
-      "used_by": ["plan-expert"],
-      "quality": {
-        "tested": false,
-        "documented": true,
-        "security_reviewed": false
-      }
-    },
-    {
-      "id": "vtm-expert",
-      "type": "skill",
-      "name": "vtm-expert",
-      "description": "VTM Expert Skill",
-      "version": "1.0.0",
-      "location": ".claude/skills/vtm-expert/SKILL.md",
-      "trigger_phrases": [],
-      "dependencies": [],
       "used_by": [],
-      "quality": {
-        "triggers_tested": false,
-        "documented": true
-      }
+      "version": "1.0.0"
     },
     {
-      "id": "plan-expert",
+      "dependencies": [],
+      "description": "VTM: Start",
+      "id": "vtm:start",
+      "location": ".claude/commands/vtm/start.md",
+      "name": "start",
+      "namespace": "vtm",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["vtm", "command"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": ["vtm:start", "vtm:context", "vtm-session"],
+      "description": "VTM: Work - Start a task and display its context in one step",
+      "id": "vtm:work",
+      "location": ".claude/commands/vtm/work.md",
+      "name": "work",
+      "namespace": "vtm",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": true
+      },
+      "tags": ["vtm", "command", "workflow"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": ["vtm:complete", "vtm:next", "vtm-session"],
+      "description": "VTM: Done - Complete current or specific task and show next steps",
+      "id": "vtm:done",
+      "location": ".claude/commands/vtm/done.md",
+      "name": "done",
+      "namespace": "vtm",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": true
+      },
+      "tags": ["vtm", "command", "workflow"],
+      "type": "command",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": ["vtm-cli"],
+      "description": "Transform ADR+Spec pairs into VTM tasks with intelligent dependency analysis",
+      "id": "plan:to-vtm",
+      "location": ".claude/commands/plan/to-vtm.md",
+      "name": "to-vtm",
+      "namespace": "plan",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["plan", "command", "vtm-bridge"],
+      "type": "command",
+      "used_by": ["plan-expert"],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": ["tavily-mcp", "firecrawl-mcp", "context7-mcp"],
+      "description": "AI-powered research and ideation partner for exploring options before implementation",
+      "id": "helpers:thinking-partner",
+      "location": ".claude/commands/helpers/thinking-partner.md",
+      "name": "thinking-partner",
+      "namespace": "helpers",
+      "quality": {
+        "documented": true,
+        "security_reviewed": false,
+        "tested": false
+      },
+      "tags": ["helpers", "command", "research", "ideation"],
+      "type": "command",
+      "used_by": ["plan-expert"],
+      "version": "1.0.0"
+    },
+    {
+      "capabilities": ["web_search", "semantic_search", "content_extraction"],
+      "description": "Web search MCP server using Tavily AI search engine",
+      "id": "tavily-mcp",
+      "name": "tavily-mcp",
+      "quality": {
+        "configured": true,
+        "tested": true
+      },
+      "type": "mcp_server",
+      "used_by": ["helpers:thinking-partner"],
+      "version": "1.0.0"
+    },
+    {
+      "capabilities": [
+        "web_scraping",
+        "content_crawling",
+        "markdown_conversion"
+      ],
+      "description": "Web scraping and crawling MCP server for code examples and documentation",
+      "id": "firecrawl-mcp",
+      "name": "firecrawl-mcp",
+      "quality": {
+        "configured": true,
+        "tested": true
+      },
+      "type": "mcp_server",
+      "used_by": ["helpers:thinking-partner"],
+      "version": "1.0.0"
+    },
+    {
+      "capabilities": ["library_docs", "code_examples", "api_reference"],
+      "description": "Library documentation MCP server for official package docs and code examples",
+      "id": "context7-mcp",
+      "name": "context7-mcp",
+      "quality": {
+        "configured": true,
+        "tested": true
+      },
+      "type": "mcp_server",
+      "used_by": ["helpers:thinking-partner"],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": [],
+      "description": "VTM Expert Skill",
+      "id": "vtm-expert",
+      "location": ".claude/skills/vtm-expert/SKILL.md",
+      "name": "vtm-expert",
+      "quality": {
+        "documented": true,
+        "triggers_tested": false
+      },
+      "trigger_phrases": [],
       "type": "skill",
-      "name": "plan-expert",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
+      "dependencies": ["filesystem-mcp", "plan:to-vtm"],
       "description": "Planning and architecture decision domain expert",
-      "version": "1.0.0",
+      "id": "plan-expert",
       "location": ".claude/skills/plan-expert/SKILL.md",
+      "name": "plan-expert",
+      "quality": {
+        "documented": true,
+        "triggers_tested": false
+      },
       "trigger_phrases": [
         "create an adr",
         "document a decision",
@@ -248,126 +359,126 @@
         "let's plan",
         "help me plan"
       ],
-      "dependencies": ["filesystem-mcp", "plan:to-vtm"],
+      "type": "skill",
       "used_by": [],
-      "quality": {
-        "triggers_tested": false,
-        "documented": true
-      }
+      "version": "1.0.0"
     },
     {
-      "id": "file-analyzer",
-      "type": "agent",
-      "name": "file-analyzer",
+      "capabilities": [],
+      "dependencies": [],
       "description": "file-analyzer agent",
-      "version": "1.0.0",
+      "id": "file-analyzer",
       "location": ".claude/agents/file-analyzer.md",
-      "capabilities": [],
-      "dependencies": [],
-      "used_by": [],
+      "name": "file-analyzer",
       "quality": {
-        "tested": false,
-        "documented": true
-      }
+        "documented": true,
+        "tested": false
+      },
+      "type": "agent",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "quality-check-fixer",
-      "type": "agent",
-      "name": "quality-check-fixer",
+      "capabilities": [],
+      "dependencies": [],
       "description": "quality-check-fixer agent",
-      "version": "1.0.0",
+      "id": "quality-check-fixer",
       "location": ".claude/agents/quality-check-fixer.md",
-      "capabilities": [],
-      "dependencies": [],
-      "used_by": [],
+      "name": "quality-check-fixer",
       "quality": {
-        "tested": false,
-        "documented": true
-      }
-    },
-    {
-      "id": "code-analyzer",
+        "documented": true,
+        "tested": false
+      },
       "type": "agent",
-      "name": "code-analyzer",
-      "description": "code-analyzer agent",
-      "version": "1.0.0",
-      "location": ".claude/agents/code-analyzer.md",
+      "used_by": [],
+      "version": "1.0.0"
+    },
+    {
       "capabilities": [],
       "dependencies": [],
-      "used_by": [],
+      "description": "code-analyzer agent",
+      "id": "code-analyzer",
+      "location": ".claude/agents/code-analyzer.md",
+      "name": "code-analyzer",
       "quality": {
-        "tested": false,
-        "documented": true
-      }
+        "documented": true,
+        "tested": false
+      },
+      "type": "agent",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm-pre-commit",
-      "type": "hook",
-      "name": "vtm-pre-commit",
+      "dependencies": [],
       "description": "commit hook for automation",
-      "version": "1.0.0",
-      "location": ".claude/hooks/vtm/vtm-pre-commit.sh",
       "hook_type": "commit",
-      "dependencies": [],
-      "used_by": [],
+      "id": "vtm-pre-commit",
+      "location": ".claude/hooks/vtm/vtm-pre-commit.sh",
+      "name": "vtm-pre-commit",
       "quality": {
         "implemented": true,
         "tested": false
-      }
+      },
+      "type": "hook",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm-post-checkout",
-      "type": "hook",
-      "name": "vtm-post-checkout",
+      "dependencies": [],
       "description": "checkout hook for automation",
-      "version": "1.0.0",
-      "location": ".claude/hooks/vtm/vtm-post-checkout.sh",
       "hook_type": "checkout",
-      "dependencies": [],
-      "used_by": [],
+      "id": "vtm-post-checkout",
+      "location": ".claude/hooks/vtm/vtm-post-checkout.sh",
+      "name": "vtm-post-checkout",
       "quality": {
         "implemented": true,
         "tested": false
-      }
+      },
+      "type": "hook",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm-post-merge",
-      "type": "hook",
-      "name": "vtm-post-merge",
+      "dependencies": [],
       "description": "merge hook for automation",
-      "version": "1.0.0",
-      "location": ".claude/hooks/vtm/vtm-post-merge.sh",
       "hook_type": "merge",
-      "dependencies": [],
-      "used_by": [],
+      "id": "vtm-post-merge",
+      "location": ".claude/hooks/vtm/vtm-post-merge.sh",
+      "name": "vtm-post-merge",
       "quality": {
         "implemented": true,
         "tested": false
-      }
+      },
+      "type": "hook",
+      "used_by": [],
+      "version": "1.0.0"
     },
     {
-      "id": "vtm-pre-push",
-      "type": "hook",
-      "name": "vtm-pre-push",
-      "description": "push hook for automation",
-      "version": "1.0.0",
-      "location": ".claude/hooks/vtm/vtm-pre-push.sh",
-      "hook_type": "push",
       "dependencies": [],
-      "used_by": [],
+      "description": "push hook for automation",
+      "hook_type": "push",
+      "id": "vtm-pre-push",
+      "location": ".claude/hooks/vtm/vtm-pre-push.sh",
+      "name": "vtm-pre-push",
       "quality": {
         "implemented": true,
         "tested": false
-      }
+      },
+      "type": "hook",
+      "used_by": [],
+      "version": "1.0.0"
     }
   ],
+  "filter": "",
+  "health": {
+    "circular_dependencies": 0,
+    "missing_implementations": 0,
+    "quality_issues": [],
+    "unused_components": 0
+  },
   "relationships": {
     "_note": "Auto-generated relationships between components"
   },
-  "health": {
-    "missing_implementations": 0,
-    "unused_components": 0,
-    "circular_dependencies": 0,
-    "quality_issues": []
-  }
+  "timestamp": "2025-10-29T19:05:00Z",
+  "total_components": 29
 }

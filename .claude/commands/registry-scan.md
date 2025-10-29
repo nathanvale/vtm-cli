@@ -11,6 +11,7 @@ Discovers and indexes all components in `.claude/` directory, generating a compr
 ## About This Command
 
 Scans `.claude/` and identifies:
+
 - Slash commands and their namespaces
 - Skills and their trigger phrases
 - MCP servers and their configuration
@@ -19,6 +20,7 @@ Scans `.claude/` and identifies:
 - Agents and their capabilities
 
 Generates `.claude/registry.json` with:
+
 - Complete component inventory
 - Dependency relationships
 - Quality assessments
@@ -105,17 +107,17 @@ if dir_exists ".claude/commands"; then
         if [[ -z "$cmd_file" ]]; then
             continue
         fi
-        
+
         # Extract namespace and name
         namespace=$(basename "$(dirname "$cmd_file")")
         cmd_name=$(basename "$cmd_file" .md)
         cmd_id="$namespace:$cmd_name"
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$cmd_id" =~ $FILTER ]]; then
             continue
         fi
-        
+
         COMMANDS+=("$cmd_id|$cmd_file|$namespace|$cmd_name")
     done < <(find ".claude/commands" -type f \( -name "*.md" -o -name "*.sh" \) 2>/dev/null)
 fi
@@ -126,14 +128,14 @@ if dir_exists ".claude/skills"; then
         if [[ -z "$skill_file" ]]; then
             continue
         fi
-        
+
         skill_name=$(basename "$(dirname "$skill_file")")
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$skill_name" =~ $FILTER ]]; then
             continue
         fi
-        
+
         SKILLS+=("$skill_name|$skill_file")
     done < <(find ".claude/skills" -name "SKILL.md" 2>/dev/null)
 fi
@@ -144,14 +146,14 @@ if dir_exists ".claude/mcp-servers"; then
         if [[ -z "$mcp_file" ]]; then
             continue
         fi
-        
+
         mcp_name=$(basename "$(dirname "$mcp_file")")
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$mcp_name" =~ $FILTER ]]; then
             continue
         fi
-        
+
         MCP_SERVERS+=("$mcp_name|$mcp_file")
     done < <(find ".claude/mcp-servers" -name "mcp.json" 2>/dev/null)
 fi
@@ -162,14 +164,14 @@ if dir_exists ".claude/hooks"; then
         if [[ -z "$hook_file" ]]; then
             continue
         fi
-        
+
         hook_name=$(basename "$(dirname "$hook_file")")
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$hook_name" =~ $FILTER ]]; then
             continue
         fi
-        
+
         HOOKS+=("$hook_name|$hook_file")
     done < <(find ".claude/hooks" -type f \( -name "*.sh" -o -name "*.bash" \) 2>/dev/null)
 fi
@@ -180,15 +182,15 @@ if dir_exists ".claude/agents"; then
         if [[ -z "$agent_file" ]]; then
             continue
         fi
-        
+
         agent_name=$(basename "$agent_file" .yaml)
         agent_name=$(basename "$agent_name" .yml)
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$agent_name" =~ $FILTER ]]; then
             continue
         fi
-        
+
         AGENTS+=("$agent_name|$agent_file")
     done < <(find ".claude/agents" -name "*.yaml" -o -name "*.yml" 2>/dev/null)
 fi
@@ -199,14 +201,14 @@ if dir_exists ".claude/plugins"; then
         if [[ -z "$plugin_file" ]]; then
             continue
         fi
-        
+
         plugin_name=$(basename "$(dirname "$plugin_file")")
-        
+
         # Skip if filtering and doesn't match
         if [[ -n "$FILTER" && ! "$plugin_name" =~ $FILTER ]]; then
             continue
         fi
-        
+
         PLUGINS+=("$plugin_name|$plugin_file")
     done < <(find ".claude/plugins" -name "plugin.yaml" 2>/dev/null)
 fi
@@ -249,7 +251,7 @@ REGISTRY=$(cat <<EOF
   "timestamp": "$TIMESTAMP",
   "filter": "$FILTER",
   "total_components": $TOTAL_COMPONENTS,
-  
+
   "by_type": {
     "commands": $CMD_COUNT,
     "skills": $SKILL_COUNT,
@@ -258,7 +260,7 @@ REGISTRY=$(cat <<EOF
     "agents": $AGENT_COUNT,
     "plugins": $PLUGIN_COUNT
   },
-  
+
   "components": [
 EOF
 )
@@ -268,20 +270,20 @@ FIRST_COMPONENT=true
 # Add commands to registry
 for cmd_entry in "${COMMANDS[@]}"; do
     IFS='|' read -r cmd_id cmd_file namespace cmd_name <<< "$cmd_entry"
-    
+
     if [[ -z "$cmd_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     # Extract metadata from command file
     if [[ -f "$cmd_file" ]]; then
         DESCRIPTION=$(grep -i "^description:" "$cmd_file" 2>/dev/null | sed 's/^description: *//' | head -1)
     else
         DESCRIPTION="$cmd_name command"
     fi
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -309,18 +311,18 @@ done
 # Add skills to registry
 for skill_entry in "${SKILLS[@]}"; do
     IFS='|' read -r skill_name skill_file <<< "$skill_entry"
-    
+
     if [[ -z "$skill_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     # Extract trigger phrases
     TRIGGER_PHRASES=$(grep -A 10 "trigger_phrases:" "$skill_file" 2>/dev/null | grep "^  -" | sed 's/.*- "//' | sed 's/"$//' | jq -R . 2>/dev/null || echo '[]')
-    
+
     DESCRIPTION=$(grep -i "^description:" "$skill_file" 2>/dev/null | sed 's/^description: *//' | head -1)
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -346,18 +348,18 @@ done
 # Add MCPs to registry
 for mcp_entry in "${MCP_SERVERS[@]}"; do
     IFS='|' read -r mcp_name mcp_file <<< "$mcp_entry"
-    
+
     if [[ -z "$mcp_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     DESCRIPTION=$(grep "description" "$mcp_file" 2>/dev/null | head -1 | sed 's/.*"description": "//' | sed 's/",.*//')
-    
+
     # Check for required config
     REQUIRES_CONFIG=$(grep -q "required_env_vars" "$mcp_file" 2>/dev/null && echo "true" || echo "false")
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -383,16 +385,16 @@ done
 # Add hooks to registry
 for hook_entry in "${HOOKS[@]}"; do
     IFS='|' read -r hook_name hook_file <<< "$hook_entry"
-    
+
     if [[ -z "$hook_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     # Extract hook type from filename
     HOOK_TYPE=$(basename "$hook_file" .sh | sed 's/.*-//')
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -418,15 +420,15 @@ done
 # Add agents to registry
 for agent_entry in "${AGENTS[@]}"; do
     IFS='|' read -r agent_name agent_file <<< "$agent_entry"
-    
+
     if [[ -z "$agent_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     DESCRIPTION=$(grep -i "^description:" "$agent_file" 2>/dev/null | sed 's/^description: *//' | head -1)
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -452,15 +454,15 @@ done
 # Add plugins to registry
 for plugin_entry in "${PLUGINS[@]}"; do
     IFS='|' read -r plugin_name plugin_file <<< "$plugin_entry"
-    
+
     if [[ -z "$plugin_file" ]]; then
         continue
     fi
-    
+
     [[ "$FIRST_COMPONENT" == true ]] || REGISTRY+=$'\n    },'
-    
+
     DESCRIPTION=$(grep "description:" "$plugin_file" 2>/dev/null | head -1 | sed 's/.*description: *//' | sed 's/^ *//')
-    
+
     REGISTRY+=$(cat <<EOF
 
     {
@@ -586,27 +588,27 @@ fi
 if [[ $TOTAL_COMPONENTS -gt 0 ]]; then
     section "Quality Assessment"
     echo ""
-    
+
     # Check for untested components
     UNTESTED=$((CMD_COUNT + SKILL_COUNT))
     if [[ $UNTESTED -gt 0 ]]; then
         warn "$UNTESTED components need testing"
         item "Run: /test:command to test individual commands"
     fi
-    
+
     # Check for unconfigured MCPs
     if [[ $MCP_COUNT -gt 0 ]]; then
         warn "$MCP_COUNT MCP servers need configuration"
         item "Set required environment variables"
         item "Test connection before use"
     fi
-    
+
     # Check for unimplemented hooks
     if [[ $HOOK_COUNT -gt 0 ]]; then
         warn "$HOOK_COUNT hooks need implementation"
         item "Add logic to .claude/hooks/ scripts"
     fi
-    
+
     echo ""
 fi
 

@@ -46,29 +46,32 @@ We will implement a **Plan-to-VTM Bridge** using an agent-based extraction appro
 Extend the VTM CLI with two new commands:
 
 **`vtm summary --incomplete`**
+
 - Returns JSON summary of tasks with status='pending' or 'in-progress'
 - Enables token-efficient context sharing with agents
 - Example output:
+
 ```json
 {
   "incomplete_tasks": [
     {
+      "dependencies": [],
       "id": "TASK-001",
-      "title": "Set up database schema",
       "status": "pending",
-      "dependencies": []
+      "title": "Set up database schema"
     },
     {
+      "dependencies": ["TASK-001"],
       "id": "TASK-002",
-      "title": "Create API endpoints",
       "status": "in-progress",
-      "dependencies": ["TASK-001"]
+      "title": "Create API endpoints"
     }
   ]
 }
 ```
 
 **`vtm ingest <file>`**
+
 - Accepts JSON file containing new tasks to merge into vtm.json
 - Validates task structure, assigns sequential IDs
 - Performs dependency validation and conflict detection
@@ -132,7 +135,7 @@ Create `.claude/commands/plan-to-vtm.md` that:
 
 ### Why Agent-Based Extraction?
 
-1. **Semantic Understanding**: Agents can understand *why* tasks depend on each other, not just parse structure
+1. **Semantic Understanding**: Agents can understand _why_ tasks depend on each other, not just parse structure
    - Example: Agent recognizes "API endpoints need database schema" even if not explicitly stated
    - Can infer dependencies across existing and new tasks
 
@@ -198,6 +201,7 @@ Create `.claude/commands/plan-to-vtm.md` that:
 **Approach**: Write regex/string parsers to extract tasks from ADRs and specs.
 
 **Reasons for Rejection**:
+
 - **Brittle**: Breaks when document format changes
 - **Unmaintainable**: Complex regex patterns hard to debug
 - **No Semantic Understanding**: Can't infer dependencies intelligently
@@ -208,6 +212,7 @@ Create `.claude/commands/plan-to-vtm.md` that:
 **Approach**: Developers manually copy tasks from ADRs to vtm.json.
 
 **Reasons for Rejection**:
+
 - **Not Scalable**: Time-consuming for large features
 - **Error-Prone**: Easy to miss dependencies or introduce typos
 - **Defeats Purpose**: VTM aims to reduce manual overhead
@@ -217,6 +222,7 @@ Create `.claude/commands/plan-to-vtm.md` that:
 **Approach**: Create bash/TypeScript utilities in .claude/lib to handle task ingestion.
 
 **Reasons for Rejection**:
+
 - **Duplicates Logic**: Would reimplement VTMWriter's validation and atomic writes
 - **Divergence Risk**: Two codebases handling VTM operations could drift
 - **No Test Coverage**: .claude/lib utilities harder to test than VTM CLI
@@ -227,6 +233,7 @@ Create `.claude/commands/plan-to-vtm.md` that:
 **Approach**: Simply append tasks from ADR/spec to vtm.json without dependency analysis.
 
 **Reasons for Rejection**:
+
 - **Breaks Workflow**: Tasks start prematurely without proper blockers
 - **Loses Intelligence**: Doesn't leverage semantic understanding of relationships
 - **Poor UX**: Forces developers to manually fix dependencies later

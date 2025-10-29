@@ -44,14 +44,14 @@ This specification defines the implementation of risk-based task filtering for V
 
 ## Success Criteria
 
-- [X] `vtm list --risk high` returns only TDD and Integration tasks
-- [X] `vtm next --risk high` suggests next ready high-risk task
-- [X] `vtm list --by-risk` groups output into high/medium/low sections
-- [X] Risk filters compose: `vtm list --status pending --risk high` works correctly
-- [X] Risk badges appear in task output (e.g., `[HIGH RISK]` for TDD tasks)
-- [X] Help text (`vtm list --help`) documents risk level mapping
-- [X] 100% test coverage for risk filtering logic
-- [X] Zero breaking changes to existing VTM files or CLI behavior
+- [x] `vtm list --risk high` returns only TDD and Integration tasks
+- [x] `vtm next --risk high` suggests next ready high-risk task
+- [x] `vtm list --by-risk` groups output into high/medium/low sections
+- [x] Risk filters compose: `vtm list --status pending --risk high` works correctly
+- [x] Risk badges appear in task output (e.g., `[HIGH RISK]` for TDD tasks)
+- [x] Help text (`vtm list --help`) documents risk level mapping
+- [x] 100% test coverage for risk filtering logic
+- [x] Zero breaking changes to existing VTM files or CLI behavior
 
 ---
 
@@ -163,29 +163,29 @@ test/
 // src/lib/types.ts
 
 // Existing type (no changes)
-export type TestStrategy = 'TDD' | 'Unit' | 'Integration' | 'Direct'
+export type TestStrategy = "TDD" | "Unit" | "Integration" | "Direct"
 
 // New type for risk levels
-export type RiskLevel = 'high' | 'medium' | 'low'
+export type RiskLevel = "high" | "medium" | "low"
 
 // New function: Risk mapping
 export function getRiskLevel(testStrategy: TestStrategy): RiskLevel {
   switch (testStrategy) {
-    case 'TDD':
-    case 'Integration':
-      return 'high'
-    case 'Unit':
-      return 'medium'
-    case 'Direct':
-      return 'low'
+    case "TDD":
+    case "Integration":
+      return "high"
+    case "Unit":
+      return "medium"
+    case "Direct":
+      return "low"
   }
 }
 
 // Optional: Reverse mapping for documentation/help text
 export const RISK_LEVEL_MAPPING: Record<RiskLevel, TestStrategy[]> = {
-  high: ['TDD', 'Integration'],
-  medium: ['Unit'],
-  low: ['Direct'],
+  high: ["TDD", "Integration"],
+  medium: ["Unit"],
+  low: ["Direct"],
 }
 ```
 
@@ -207,7 +207,7 @@ export class VTMReader {
   getTasksByRisk(riskLevel: RiskLevel): Task[] {
     const vtm = this.load()
     return vtm.tasks.filter(
-      (task) => getRiskLevel(task.test_strategy) === riskLevel
+      (task) => getRiskLevel(task.test_strategy) === riskLevel,
     )
   }
 
@@ -219,7 +219,7 @@ export class VTMReader {
   getReadyTasksByRisk(riskLevel: RiskLevel): Task[] {
     const readyTasks = this.getReadyTasks()
     return readyTasks.filter(
-      (task) => getRiskLevel(task.test_strategy) === riskLevel
+      (task) => getRiskLevel(task.test_strategy) === riskLevel,
     )
   }
 
@@ -230,9 +230,9 @@ export class VTMReader {
   groupTasksByRisk(): Record<RiskLevel, Task[]> {
     const vtm = this.load()
     return {
-      high: this.getTasksByRisk('high'),
-      medium: this.getTasksByRisk('medium'),
-      low: this.getTasksByRisk('low'),
+      high: this.getTasksByRisk("high"),
+      medium: this.getTasksByRisk("medium"),
+      low: this.getTasksByRisk("low"),
     }
   }
 }
@@ -251,11 +251,14 @@ export class VTMReader {
 
 // Extend vtm list command
 program
-  .command('list')
-  .description('List tasks')
-  .option('-s, --status <status>', 'Filter by status (pending|in_progress|completed|blocked)')
-  .option('-r, --risk <level>', 'Filter by risk level (high|medium|low)')
-  .option('--by-risk', 'Group tasks by risk level')
+  .command("list")
+  .description("List tasks")
+  .option(
+    "-s, --status <status>",
+    "Filter by status (pending|in_progress|completed|blocked)",
+  )
+  .option("-r, --risk <level>", "Filter by risk level (high|medium|low)")
+  .option("--by-risk", "Group tasks by risk level")
   .action((options) => {
     const reader = new VTMReader()
     let tasks = reader.load().tasks
@@ -281,9 +284,9 @@ program
 
 // Extend vtm next command
 program
-  .command('next')
-  .description('Get next ready task')
-  .option('-r, --risk <level>', 'Filter to high/medium/low risk tasks')
+  .command("next")
+  .description("Get next ready task")
+  .option("-r, --risk <level>", "Filter to high/medium/low risk tasks")
   .action((options) => {
     const reader = new VTMReader()
     let readyTasks = reader.getReadyTasks()
@@ -291,12 +294,12 @@ program
     if (options.risk) {
       const riskLevel = options.risk as RiskLevel
       readyTasks = readyTasks.filter(
-        (t) => getRiskLevel(t.test_strategy) === riskLevel
+        (t) => getRiskLevel(t.test_strategy) === riskLevel,
       )
     }
 
     if (readyTasks.length === 0) {
-      console.log('No ready tasks matching criteria')
+      console.log("No ready tasks matching criteria")
       return
     }
 
@@ -316,29 +319,29 @@ function displayTask(task: Task) {
 
 function getRiskBadge(riskLevel: RiskLevel): string {
   switch (riskLevel) {
-    case 'high':
-      return chalk.red('[HIGH RISK]')
-    case 'medium':
-      return chalk.yellow('[MEDIUM RISK]')
-    case 'low':
-      return chalk.green('[LOW RISK]')
+    case "high":
+      return chalk.red("[HIGH RISK]")
+    case "medium":
+      return chalk.yellow("[MEDIUM RISK]")
+    case "low":
+      return chalk.green("[LOW RISK]")
   }
 }
 
 function displayTasksGroupedByRisk(tasks: Task[]) {
   const grouped = {
-    high: tasks.filter((t) => getRiskLevel(t.test_strategy) === 'high'),
-    medium: tasks.filter((t) => getRiskLevel(t.test_strategy) === 'medium'),
-    low: tasks.filter((t) => getRiskLevel(t.test_strategy) === 'low'),
+    high: tasks.filter((t) => getRiskLevel(t.test_strategy) === "high"),
+    medium: tasks.filter((t) => getRiskLevel(t.test_strategy) === "medium"),
+    low: tasks.filter((t) => getRiskLevel(t.test_strategy) === "low"),
   }
 
-  console.log(chalk.red.bold('\n=== HIGH RISK TASKS ==='))
+  console.log(chalk.red.bold("\n=== HIGH RISK TASKS ==="))
   grouped.high.forEach(displayTask)
 
-  console.log(chalk.yellow.bold('\n=== MEDIUM RISK TASKS ==='))
+  console.log(chalk.yellow.bold("\n=== MEDIUM RISK TASKS ==="))
   grouped.medium.forEach(displayTask)
 
-  console.log(chalk.green.bold('\n=== LOW RISK TASKS ==='))
+  console.log(chalk.green.bold("\n=== LOW RISK TASKS ==="))
   grouped.low.forEach(displayTask)
 }
 ```
@@ -382,28 +385,28 @@ No configuration files or environment variables required. Risk mapping is hardco
 
 **Coverage Target**: 100% for getRiskLevel function
 
-| Scenario                        | Test Case                              | Expected Outcome      |
-| ------------------------------- | -------------------------------------- | --------------------- |
-| TDD strategy maps to high       | `getRiskLevel('TDD')`                  | Returns `'high'`      |
-| Integration strategy maps to high | `getRiskLevel('Integration')`         | Returns `'high'`      |
-| Unit strategy maps to medium    | `getRiskLevel('Unit')`                 | Returns `'medium'`    |
-| Direct strategy maps to low     | `getRiskLevel('Direct')`               | Returns `'low'`       |
-| Invalid strategy (type guard)   | `getRiskLevel('Invalid' as any)`       | TypeScript error      |
+| Scenario                          | Test Case                        | Expected Outcome   |
+| --------------------------------- | -------------------------------- | ------------------ |
+| TDD strategy maps to high         | `getRiskLevel('TDD')`            | Returns `'high'`   |
+| Integration strategy maps to high | `getRiskLevel('Integration')`    | Returns `'high'`   |
+| Unit strategy maps to medium      | `getRiskLevel('Unit')`           | Returns `'medium'` |
+| Direct strategy maps to low       | `getRiskLevel('Direct')`         | Returns `'low'`    |
+| Invalid strategy (type guard)     | `getRiskLevel('Invalid' as any)` | TypeScript error   |
 
 #### Integration Tests
 
 **Coverage Target**: All VTMReader risk methods and CLI combinations
 
-| Scenario                             | Test Case                                          | Dependencies           | Expected Outcome                      |
-| ------------------------------------ | -------------------------------------------------- | ---------------------- | ------------------------------------- |
-| Filter tasks by high risk            | `reader.getTasksByRisk('high')`                    | VTM with mixed tasks   | Returns TDD + Integration tasks only  |
-| Filter ready tasks by risk           | `reader.getReadyTasksByRisk('medium')`             | VTM with dependencies  | Returns ready Unit tasks only         |
-| Group tasks by risk                  | `reader.groupTasksByRisk()`                        | VTM with mixed tasks   | Returns object with 3 arrays          |
-| CLI: list --risk high                | Run CLI with flag                                  | Mock VTM file          | Displays high-risk tasks with badges  |
-| CLI: list --status pending --risk high | Run CLI with combined flags                      | Mock VTM file          | Displays pending high-risk tasks      |
-| CLI: list --by-risk                  | Run CLI with grouping flag                         | Mock VTM file          | Displays grouped output by risk       |
-| CLI: next --risk high                | Run CLI with risk filter                           | Mock VTM file          | Suggests next ready high-risk task    |
-| CLI: invalid risk level              | `list --risk invalid`                              | N/A                    | Shows error message with valid levels |
+| Scenario                               | Test Case                              | Dependencies          | Expected Outcome                      |
+| -------------------------------------- | -------------------------------------- | --------------------- | ------------------------------------- |
+| Filter tasks by high risk              | `reader.getTasksByRisk('high')`        | VTM with mixed tasks  | Returns TDD + Integration tasks only  |
+| Filter ready tasks by risk             | `reader.getReadyTasksByRisk('medium')` | VTM with dependencies | Returns ready Unit tasks only         |
+| Group tasks by risk                    | `reader.groupTasksByRisk()`            | VTM with mixed tasks  | Returns object with 3 arrays          |
+| CLI: list --risk high                  | Run CLI with flag                      | Mock VTM file         | Displays high-risk tasks with badges  |
+| CLI: list --status pending --risk high | Run CLI with combined flags            | Mock VTM file         | Displays pending high-risk tasks      |
+| CLI: list --by-risk                    | Run CLI with grouping flag             | Mock VTM file         | Displays grouped output by risk       |
+| CLI: next --risk high                  | Run CLI with risk filter               | Mock VTM file         | Suggests next ready high-risk task    |
+| CLI: invalid risk level                | `list --risk invalid`                  | N/A                   | Shows error message with valid levels |
 
 ---
 
@@ -414,6 +417,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Create the core risk mapping function that translates test strategies to risk levels. This is the foundation for all filtering logic.
 
 **Acceptance Criteria**:
+
 - `getRiskLevel()` function exists in `src/lib/types.ts`
 - Function maps TDD and Integration to 'high'
 - Function maps Unit to 'medium'
@@ -429,6 +433,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 2
 
 **Files**:
+
 - Modify: `src/lib/types.ts` (add getRiskLevel function and RiskLevel type)
 - Create: `test/risk-mapping.test.ts` (unit tests for mapping logic)
 
@@ -439,6 +444,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Add three new methods to VTMReader class for risk-based task queries: `getTasksByRisk()`, `getReadyTasksByRisk()`, and `groupTasksByRisk()`.
 
 **Acceptance Criteria**:
+
 - `getTasksByRisk(level)` returns tasks matching specified risk level
 - `getReadyTasksByRisk(level)` returns ready tasks matching risk level (respects blocking dependencies)
 - `groupTasksByRisk()` returns object with high/medium/low arrays
@@ -453,6 +459,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 3
 
 **Files**:
+
 - Modify: `src/lib/vtm-reader.ts` (add risk filtering methods)
 - Create: `test/vtm-reader-risk.test.ts` (integration tests for filtering)
 - Modify: `test/fixtures/vtm-risk-test.json` (test data with mixed risk tasks)
@@ -464,6 +471,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Extend the `vtm list` command with `--risk` flag to filter tasks by risk level. Include risk badges in output display.
 
 **Acceptance Criteria**:
+
 - `vtm list --risk high` filters to high-risk tasks only
 - `vtm list --risk medium` filters to medium-risk tasks
 - `vtm list --risk low` filters to low-risk tasks
@@ -480,6 +488,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 3
 
 **Files**:
+
 - Modify: `src/index.ts` (add --risk option to list command)
 - Modify: `src/index.ts` (add getRiskBadge helper function)
 - Modify: `src/index.ts` (update displayTask to show risk badges)
@@ -492,6 +501,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Implement `--by-risk` flag for `vtm list` that groups output into three sections (high/medium/low risk) with clear visual separation.
 
 **Acceptance Criteria**:
+
 - `vtm list --by-risk` displays three sections: HIGH RISK, MEDIUM RISK, LOW RISK
 - Sections use bold colored headers (red/yellow/green)
 - Empty sections show "(none)" instead of omitting section
@@ -506,6 +516,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 2
 
 **Files**:
+
 - Modify: `src/index.ts` (add --by-risk option and displayTasksGroupedByRisk function)
 - Modify: `test/cli-list-risk.test.ts` (add grouping tests)
 
@@ -516,6 +527,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Extend the `vtm next` command with `--risk` flag to suggest next ready task matching specified risk level. Useful for focusing on high-risk work first.
 
 **Acceptance Criteria**:
+
 - `vtm next --risk high` suggests next ready high-risk task
 - `vtm next --risk medium` suggests next ready medium-risk task
 - `vtm next --risk low` suggests next ready low-risk task
@@ -531,6 +543,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 2
 
 **Files**:
+
 - Modify: `src/index.ts` (add --risk option to next command)
 - Create: `test/cli-next-risk.test.ts` (CLI integration tests for next command)
 
@@ -541,6 +554,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Description**: Update README, CLI help text, and inline code documentation to explain risk filtering features and test strategy → risk level mapping.
 
 **Acceptance Criteria**:
+
 - README.md includes risk filtering examples in Usage section
 - CLI help text (`vtm list --help`, `vtm next --help`) documents --risk and --by-risk flags
 - Help text includes risk level mapping table (TDD/Integration=high, Unit=medium, Direct=low)
@@ -555,6 +569,7 @@ No configuration files or environment variables required. Risk mapping is hardco
 **Estimated Hours**: 2
 
 **Files**:
+
 - Modify: `README.md` (add risk filtering section with examples)
 - Modify: `CHANGELOG.md` (add entry for v1.X.0 with risk filtering feature)
 - Modify: `src/lib/types.ts` (add JSDoc to getRiskLevel)
@@ -564,12 +579,12 @@ No configuration files or environment variables required. Risk mapping is hardco
 
 ## Risks & Mitigations
 
-| Risk                                                     | Impact | Probability | Mitigation                                                                 |
-| -------------------------------------------------------- | ------ | ----------- | -------------------------------------------------------------------------- |
-| Test strategy → risk mapping doesn't fit all use cases  | Medium | Medium      | Document mapping clearly; future config option for custom mappings         |
-| Users confused by implicit risk vs explicit test strategy | Low   | Medium      | Comprehensive help text; show both risk and strategy in output             |
-| Performance degradation with large task lists            | Low    | Low         | Risk filtering uses simple array filter (O(n)); acceptable for <1000 tasks |
-| Breaking changes to existing CLI usage                   | High   | Low         | All flags are optional; existing commands work unchanged                   |
+| Risk                                                      | Impact | Probability | Mitigation                                                                 |
+| --------------------------------------------------------- | ------ | ----------- | -------------------------------------------------------------------------- |
+| Test strategy → risk mapping doesn't fit all use cases    | Medium | Medium      | Document mapping clearly; future config option for custom mappings         |
+| Users confused by implicit risk vs explicit test strategy | Low    | Medium      | Comprehensive help text; show both risk and strategy in output             |
+| Performance degradation with large task lists             | Low    | Low         | Risk filtering uses simple array filter (O(n)); acceptable for <1000 tasks |
+| Breaking changes to existing CLI usage                    | High   | Low         | All flags are optional; existing commands work unchanged                   |
 
 ---
 
@@ -631,6 +646,6 @@ All questions resolved during ADR-047 review.
 
 ## Version History
 
-| Version | Date       | Author       | Changes                                        |
-| ------- | ---------- | ------------ | ---------------------------------------------- |
+| Version | Date       | Author       | Changes                                          |
+| ------- | ---------- | ------------ | ------------------------------------------------ |
 | 1.0.0   | 2025-10-29 | VTM CLI Team | Initial specification approved alongside ADR-047 |

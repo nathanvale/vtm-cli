@@ -30,9 +30,9 @@ Transforms a manual-only command into an auto-discoverable command by creating a
 ## Arguments
 
 ```javascript
-const command = ARGUMENTS[0]; // Format: namespace:operation (e.g., "pm:next")
-const triggerPhrasesArg = ARGUMENTS.slice(1).join(' '); // Optional comma-separated phrases
-const dryRun = ARGUMENTS.includes('--dry-run');
+const command = ARGUMENTS[0] // Format: namespace:operation (e.g., "pm:next")
+const triggerPhrasesArg = ARGUMENTS.slice(1).join(" ") // Optional comma-separated phrases
+const dryRun = ARGUMENTS.includes("--dry-run")
 ```
 
 ---
@@ -42,24 +42,24 @@ const dryRun = ARGUMENTS.includes('--dry-run');
 Execute the evolution using the EvolveManager:
 
 ```javascript
-const { EvolveManager } = require('./.claude/lib/evolve');
-const evolve = new EvolveManager();
+const { EvolveManager } = require("./.claude/lib/evolve")
+const evolve = new EvolveManager()
 
 // Parse trigger phrases if provided
-let triggerPhrases = undefined;
-if (triggerPhrasesArg && triggerPhrasesArg !== '--dry-run') {
+let triggerPhrases = undefined
+if (triggerPhrasesArg && triggerPhrasesArg !== "--dry-run") {
   triggerPhrases = triggerPhrasesArg
-    .split(',')
-    .map(p => p.trim())
-    .filter(p => p.length > 0);
+    .split(",")
+    .map((p) => p.trim())
+    .filter((p) => p.length > 0)
 }
 
 // Execute evolution
 try {
-  evolve.addSkill(command, triggerPhrases, { dryRun });
+  evolve.addSkill(command, triggerPhrases, { dryRun })
 } catch (error) {
-  console.error('❌ Evolution failed:', error.message);
-  process.exit(1);
+  console.error("❌ Evolution failed:", error.message)
+  process.exit(1)
 }
 ```
 
@@ -101,6 +101,7 @@ Undo anytime:
 ## Validation
 
 The command will validate:
+
 - ✅ Command exists
 - ✅ Skill doesn't already exist
 - ✅ Trigger phrases don't conflict with existing skills
@@ -111,18 +112,21 @@ The command will validate:
 ## Error Handling
 
 **Command not found:**
+
 ```
 ❌ Command not found: .claude/commands/pm/next.md
 Make sure the command exists before adding a skill.
 ```
 
 **Skill already exists:**
+
 ```
 ❌ Skill already exists for /pm:next
 Remove it first: /evolve:remove-skill pm:next
 ```
 
 **Invalid format:**
+
 ```
 ❌ Invalid command format. Use: namespace:operation
 Example: /evolve:add-skill pm:next
@@ -133,6 +137,7 @@ Example: /evolve:add-skill pm:next
 ## Before & After
 
 **Before (Manual Only):**
+
 ```
 User: "What should I work on?"
 Claude: "I don't have access to your task list."
@@ -141,6 +146,7 @@ Claude: [executes command]
 ```
 
 **After (Auto-Discovery):**
+
 ```
 User: "What should I work on?"
 Claude: "Let me check... [automatically suggests /pm:next]"

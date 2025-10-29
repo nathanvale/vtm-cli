@@ -9,6 +9,7 @@
 ## What This Command Does
 
 Tests the interaction between two components to ensure they work together correctly:
+
 - Data compatibility (output of A → input of B)
 - Error propagation (errors from A handled by B)
 - State management (shared state between A and B)
@@ -41,12 +42,14 @@ Tests the interaction between two components to ensure they work together correc
 ## Arguments
 
 ```javascript
-const componentA = ARGUMENTS[0]; // First component
-const componentB = ARGUMENTS[1]; // Second component
-const scenario = ARGUMENTS.includes('--scenario') ?
-  ARGUMENTS[ARGUMENTS.indexOf('--scenario') + 1] : 'basic';
-const mode = ARGUMENTS.includes('--mode') ?
-  ARGUMENTS[ARGUMENTS.indexOf('--mode') + 1] : 'quick';
+const componentA = ARGUMENTS[0] // First component
+const componentB = ARGUMENTS[1] // Second component
+const scenario = ARGUMENTS.includes("--scenario")
+  ? ARGUMENTS[ARGUMENTS.indexOf("--scenario") + 1]
+  : "basic"
+const mode = ARGUMENTS.includes("--mode")
+  ? ARGUMENTS[ARGUMENTS.indexOf("--mode") + 1]
+  : "quick"
 ```
 
 ---
@@ -54,60 +57,75 @@ const mode = ARGUMENTS.includes('--mode') ?
 ## Test Scenarios
 
 ### 1. Data Flow (default)
+
 Tests output of A can be consumed by B:
+
 ```bash
 /test:integration pm:next pm:start --scenario data-flow
 ```
 
 **Checks:**
+
 - A produces valid output
 - B accepts A's output format
 - Data transforms correctly
 - No data loss
 
 ### 2. Error Handling
+
 Tests error propagation:
+
 ```bash
 /test:integration pm:next pm:start --scenario error-handling
 ```
 
 **Checks:**
+
 - Errors from A caught by B
 - Error messages preserved
 - Graceful degradation
 - Recovery possible
 
 ### 3. Performance
+
 Tests combined execution:
+
 ```bash
 /test:integration pm:next pm:context --scenario performance
 ```
 
 **Checks:**
+
 - Total execution time acceptable
 - No performance bottlenecks
 - Resource usage reasonable
 - Parallel execution possible
 
 ### 4. State Management
+
 Tests shared state:
+
 ```bash
 /test:integration pm:context vtm:reader --scenario state
 ```
 
 **Checks:**
+
 - Shared state consistent
 - No race conditions
 - State updates atomic
 - Rollback possible
 
 ### 5. Concurrent Usage
+
 Tests simultaneous execution:
+
 ```bash
 /test:integration pm:next pm:review --scenario concurrent
 ```
 
 **Checks:**
+
 - Can run concurrently
 - No resource conflicts
 - Output not corrupted
@@ -208,31 +226,41 @@ Recommendation: Safe to use together
 ## Integration Patterns Tested
 
 ### 1. Producer-Consumer
+
 Component A produces data, B consumes it:
+
 ```
 A (pm:next) → data → B (pm:start)
 ```
 
 ### 2. Transform Chain
+
 A transforms input, B transforms A's output:
+
 ```
 input → A (parse) → intermediate → B (format) → output
 ```
 
 ### 3. Shared Resource
+
 A and B both access same resource:
+
 ```
 A ← resource → B
 ```
 
 ### 4. Event-Driven
+
 A triggers event, B responds:
+
 ```
 A (action) → event → B (handler)
 ```
 
 ### 5. Bidirectional
+
 A and B communicate both ways:
+
 ```
 A ↔ B
 ```
@@ -242,30 +270,35 @@ A ↔ B
 ## What Gets Tested
 
 ### Compatibility Checks
+
 - ✅ Output format of A matches input format of B
 - ✅ Data types compatible
 - ✅ Required fields present
 - ✅ Optional fields handled
 
 ### Error Handling
+
 - ✅ Errors from A propagated to B
 - ✅ Error messages preserved
 - ✅ Stack traces useful
 - ✅ Recovery possible
 
 ### Performance
+
 - ✅ Combined execution time acceptable
 - ✅ No performance degradation
 - ✅ Resource usage reasonable
 - ✅ Bottlenecks identified
 
 ### Dependencies
+
 - ✅ Dependency graph correct
 - ✅ No circular dependencies
 - ✅ Execution order valid
 - ✅ Missing dependencies detected
 
 ### State Management
+
 - ✅ Shared state consistent
 - ✅ No race conditions
 - ✅ Atomic updates
@@ -276,6 +309,7 @@ A ↔ B
 ## Validation
 
 The command will validate:
+
 - ✅ Both components exist
 - ✅ Components can be executed
 - ✅ Integration pattern identified
@@ -286,12 +320,14 @@ The command will validate:
 ## Error Handling
 
 **Component not found:**
+
 ```
 ❌ Component not found: pm:next
 Create component first: /scaffold:domain pm
 ```
 
 **Components incompatible:**
+
 ```
 ❌ Integration test FAILED
 
@@ -306,6 +342,7 @@ Fix:
 ```
 
 **Circular dependency:**
+
 ```
 ❌ Circular dependency detected
 
@@ -323,13 +360,13 @@ Fix:
 
 Test common integration pairs:
 
-| Component A | Component B | Pattern | Status |
-|------------|-------------|---------|--------|
-| pm:next | pm:start | Producer-Consumer | ✅ |
-| pm:next | pm:context | Producer-Consumer | ✅ |
-| pm:start | pm:complete | Sequential | ✅ |
-| pm:context | vtm:reader | Shared Resource | ✅ |
-| pm:next | pm:review | Independent | ⚠️ |
+| Component A | Component B | Pattern           | Status |
+| ----------- | ----------- | ----------------- | ------ |
+| pm:next     | pm:start    | Producer-Consumer | ✅     |
+| pm:next     | pm:context  | Producer-Consumer | ✅     |
+| pm:start    | pm:complete | Sequential        | ✅     |
+| pm:context  | vtm:reader  | Shared Resource   | ✅     |
+| pm:next     | pm:review   | Independent       | ⚠️     |
 
 ---
 
@@ -347,29 +384,31 @@ Test common integration pairs:
 Execute integration testing:
 
 ```javascript
-const { TestFramework } = require('./.claude/lib/test-framework');
+const { TestFramework } = require("./.claude/lib/test-framework")
 
 // Parse arguments
-const componentA = ARGUMENTS[0];
-const componentB = ARGUMENTS[1];
+const componentA = ARGUMENTS[0]
+const componentB = ARGUMENTS[1]
 
 if (!componentA || !componentB) {
-  console.error('❌ Two components required');
-  console.error('Usage: /test:integration {componentA} {componentB} [options]');
-  process.exit(1);
+  console.error("❌ Two components required")
+  console.error("Usage: /test:integration {componentA} {componentB} [options]")
+  process.exit(1)
 }
 
 // Parse options
-const scenario = ARGUMENTS.includes('--scenario') ?
-  ARGUMENTS[ARGUMENTS.indexOf('--scenario') + 1] : 'data-flow';
-const mode = ARGUMENTS.includes('--mode') ?
-  ARGUMENTS[ARGUMENTS.indexOf('--mode') + 1] : 'quick';
+const scenario = ARGUMENTS.includes("--scenario")
+  ? ARGUMENTS[ARGUMENTS.indexOf("--scenario") + 1]
+  : "data-flow"
+const mode = ARGUMENTS.includes("--mode")
+  ? ARGUMENTS[ARGUMENTS.indexOf("--mode") + 1]
+  : "quick"
 
 // Initialize test framework
 const testFramework = new TestFramework({
   basePath: process.cwd(),
-  verbose: mode === 'comprehensive'
-});
+  verbose: mode === "comprehensive",
+})
 
 // Run integration tests
 try {
@@ -378,34 +417,33 @@ try {
     mode,
     checkDataFlow: true,
     checkErrorHandling: true,
-    checkPerformance: mode === 'comprehensive',
+    checkPerformance: mode === "comprehensive",
     checkDependencies: true,
-    checkConcurrent: scenario === 'concurrent'
-  });
+    checkConcurrent: scenario === "concurrent",
+  })
 
   // Display results
-  console.log(`\n🔗 Testing integration: ${componentA} ↔ ${componentB}\n`);
+  console.log(`\n🔗 Testing integration: ${componentA} ↔ ${componentB}\n`)
 
   if (results.passed) {
-    console.log('✅ All integration tests passed');
-    console.log(`\nComponents are compatible and work well together.`);
+    console.log("✅ All integration tests passed")
+    console.log(`\nComponents are compatible and work well together.`)
   } else {
-    console.error('❌ Some integration tests failed');
-    console.error('\nSee details above for specific failures.');
-    process.exit(1);
+    console.error("❌ Some integration tests failed")
+    console.error("\nSee details above for specific failures.")
+    process.exit(1)
   }
 
   // Show recommendations
   if (results.recommendations && results.recommendations.length > 0) {
-    console.log('\n💡 Recommendations:');
-    results.recommendations.forEach(rec => {
-      console.log(`  • ${rec}`);
-    });
+    console.log("\n💡 Recommendations:")
+    results.recommendations.forEach((rec) => {
+      console.log(`  • ${rec}`)
+    })
   }
-
 } catch (error) {
-  console.error('❌ Integration test failed:', error.message);
-  process.exit(1);
+  console.error("❌ Integration test failed:", error.message)
+  process.exit(1)
 }
 ```
 

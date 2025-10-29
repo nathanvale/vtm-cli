@@ -33,9 +33,9 @@ Shows evolution history for a component and allows you to roll back to any previ
 ## Arguments
 
 ```javascript
-const component = ARGUMENTS[0]; // Component name (e.g., "pm:next" or "pm")
-const targetVersion = ARGUMENTS[1]; // Optional: specific version or evolution type
-const dryRun = ARGUMENTS.includes('--dry-run');
+const component = ARGUMENTS[0] // Component name (e.g., "pm:next" or "pm")
+const targetVersion = ARGUMENTS[1] // Optional: specific version or evolution type
+const dryRun = ARGUMENTS.includes("--dry-run")
 ```
 
 ---
@@ -45,14 +45,14 @@ const dryRun = ARGUMENTS.includes('--dry-run');
 Execute the rollback using the EvolveManager:
 
 ```javascript
-const { EvolveManager } = require('./.claude/lib/evolve');
-const evolve = new EvolveManager();
+const { EvolveManager } = require("./.claude/lib/evolve")
+const evolve = new EvolveManager()
 
 try {
-  evolve.rollback(component, targetVersion, { dryRun });
+  evolve.rollback(component, targetVersion, { dryRun })
 } catch (error) {
-  console.error('❌ Rollback failed:', error.message);
-  process.exit(1);
+  console.error("❌ Rollback failed:", error.message)
+  process.exit(1)
 }
 ```
 
@@ -109,18 +109,21 @@ Undo this rollback:
 ## What Gets Restored
 
 ### Files
+
 - Command file restored from archive
 - Skill files restored (if applicable)
 - MCP configs restored (if applicable)
 - Hook scripts restored (if applicable)
 
 ### Metadata
+
 - Component version reset
 - Dependencies updated
 - Registry updated
 - History preserved (rollback added as new entry)
 
 ### Removed
+
 - Files created after target version
 - Metadata added after target version
 - Plugin packages (if rolling back to-plugin)
@@ -133,19 +136,19 @@ Each evolution is tracked with:
 
 ```json
 {
-  "component": "pm:next",
-  "evolutionType": "add-skill",
-  "timestamp": "2025-10-29T14:32:00Z",
   "appliedBy": "claude",
   "canRollback": true,
-  "rollbackCommand": "/evolve:remove-skill pm:next",
   "changes": [
     {
-      "file": ".claude/skills/pm-next-discovery/",
       "action": "created",
-      "description": "Created skill for auto-discovery"
+      "description": "Created skill for auto-discovery",
+      "file": ".claude/skills/pm-next-discovery/"
     }
-  ]
+  ],
+  "component": "pm:next",
+  "evolutionType": "add-skill",
+  "rollbackCommand": "/evolve:remove-skill pm:next",
+  "timestamp": "2025-10-29T14:32:00Z"
 }
 ```
 
@@ -154,24 +157,28 @@ Each evolution is tracked with:
 ## Rollback Types
 
 ### 1. Specific Version
+
 ```bash
 /evolve:rollback pm:next v1.0.0
 # Restores to exact version
 ```
 
 ### 2. Evolution Type
+
 ```bash
 /evolve:rollback pm:next add-skill
 # Undoes most recent add-skill evolution
 ```
 
 ### 3. Interactive
+
 ```bash
 /evolve:rollback pm:next
 # Shows history, user picks version
 ```
 
 ### 4. Latest (Undo Last)
+
 ```bash
 /evolve:rollback pm:next latest
 # Undoes most recent evolution
@@ -182,16 +189,19 @@ Each evolution is tracked with:
 ## Safety Features
 
 **Preview First:**
+
 - Shows what will change
 - Confirms before proceeding
 - Can dry-run
 
 **Preserves History:**
+
 - Rollback itself recorded
 - Can rollback a rollback
 - Full audit trail
 
 **Validates:**
+
 - Target version exists
 - Archive files present
 - No conflicts
@@ -201,6 +211,7 @@ Each evolution is tracked with:
 ## Validation
 
 The command will validate:
+
 - ✅ Component exists
 - ✅ Component has evolution history
 - ✅ Target version exists in history
@@ -212,6 +223,7 @@ The command will validate:
 ## Error Handling
 
 **No history found:**
+
 ```
 ❌ No evolution history for pm:next
 Component was never evolved.
@@ -222,6 +234,7 @@ Available evolutions:
 ```
 
 **Invalid version:**
+
 ```
 ❌ Version "v2.0.0" not found in history
 
@@ -236,6 +249,7 @@ Use one of these versions or evolution types:
 ```
 
 **Archive missing:**
+
 ```
 ❌ Archive not found for version v1.0.0
 Archive may have been deleted.
@@ -247,6 +261,7 @@ Try:
 ```
 
 **Dependency conflict:**
+
 ```
 ⚠️  Warning: Other components depend on current version
 
@@ -264,6 +279,7 @@ Proceed anyway? (yes/no)
 ## Common Rollback Scenarios
 
 ### Undo Skill Addition
+
 ```bash
 # Added skill, didn't like it
 /evolve:rollback pm:next add-skill
@@ -271,6 +287,7 @@ Proceed anyway? (yes/no)
 ```
 
 ### Undo Plugin Packaging
+
 ```bash
 # Packaged too early
 /evolve:rollback pm to-plugin
@@ -278,6 +295,7 @@ Proceed anyway? (yes/no)
 ```
 
 ### Restore Previous Version
+
 ```bash
 # Something broke, go back
 /evolve:rollback pm:next v1.0.0
@@ -285,6 +303,7 @@ Proceed anyway? (yes/no)
 ```
 
 ### Undo Multiple Evolutions
+
 ```bash
 # Rollback to early state
 /evolve:rollback pm:next 1
@@ -315,6 +334,7 @@ Proceed anyway? (yes/no)
 ## Rollback Best Practices
 
 1. **Always test after rollback:**
+
    ```bash
    /evolve:rollback pm:next v1.0.0
    /test:command pm:next

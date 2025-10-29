@@ -11,6 +11,7 @@ Three powerful slash commands that enable a self-extending system:
 3. **`registry-scan.md`** - Component discovery & health
 
 These commands work together to let you:
+
 - Design new domains through interactive Q&A
 - Generate complete working structures automatically
 - Understand what exists and how it all connects
@@ -25,6 +26,7 @@ These commands work together to let you:
 ```
 
 Answers 5 questions to capture your vision:
+
 - What operations do you need?
 - Should Claude auto-suggest commands?
 - Need external integrations?
@@ -40,6 +42,7 @@ Answers 5 questions to capture your vision:
 ```
 
 Creates complete working structure:
+
 - 4 slash commands (templates ready to customize)
 - 1 Skill (for auto-discovery)
 - 1 MCP stub (if external integration needed)
@@ -55,6 +58,7 @@ Creates complete working structure:
 ```
 
 Shows what you've created:
+
 - All components discovered
 - Dependencies mapped
 - Quality issues identified
@@ -71,11 +75,13 @@ Shows what you've created:
 **Purpose:** Interactive design wizard
 
 **Usage:**
+
 ```bash
 /design:domain {domain-name} [description]
 ```
 
 **What it does:**
+
 1. Validates domain name
 2. Asks 5 interactive questions
 3. Generates design JSON spec
@@ -83,6 +89,7 @@ Shows what you've created:
 5. Suggests next step
 
 **Key features:**
+
 - User-friendly Q&A format
 - Sensible defaults
 - Clear next-step guidance
@@ -95,11 +102,13 @@ Shows what you've created:
 **Purpose:** Auto-generates files from design
 
 **Usage:**
+
 ```bash
 /scaffold:domain {domain-name}
 ```
 
 **What it does:**
+
 1. Reads design specification
 2. Validates design is complete
 3. Creates directory structure
@@ -110,6 +119,7 @@ Shows what you've created:
 8. Builds plugin manifest
 
 **Key features:**
+
 - Templates ready to customize
 - Proper `$ARGUMENTS` handling
 - Editable and extensible
@@ -122,11 +132,13 @@ Shows what you've created:
 **Purpose:** Discover and index components
 
 **Usage:**
+
 ```bash
 /registry:scan [filter]
 ```
 
 **What it does:**
+
 1. Recursively scans `.claude/`
 2. Extracts metadata from components
 3. Builds dependency graph
@@ -135,6 +147,7 @@ Shows what you've created:
 6. Reports findings
 
 **Key features:**
+
 - Finds all component types
 - Quality assessment
 - Dependency relationships
@@ -149,6 +162,7 @@ Shared utility functions used by all commands.
 **Location:** `.claude/lib/mcc-utils.sh`
 
 **What it provides:**
+
 - Validation functions (domain names, JSON, specs)
 - File operations (safe writes, directory creation)
 - JSON operations (get/set fields)
@@ -158,11 +172,13 @@ Shared utility functions used by all commands.
 - Path management
 
 **Sourced by all commands:**
+
 ```bash
 source "$(dirname "$0")/../lib/mcc-utils.sh"
 ```
 
 **Key functions:**
+
 ```bash
 validate_domain_name "$domain"
 validate_json "$file"
@@ -181,6 +197,7 @@ Centralized configuration and constants.
 **Location:** `.claude/lib/mcc-config.sh`
 
 **What it provides:**
+
 - Path definitions
 - Naming conventions and patterns
 - Supported values (systems, hooks)
@@ -190,6 +207,7 @@ Centralized configuration and constants.
 - Output formatting
 
 **Used for:**
+
 - Consistent paths across all commands
 - Validation patterns
 - Supported integrations
@@ -197,6 +215,7 @@ Centralized configuration and constants.
 - Customization options
 
 **Key exports:**
+
 ```bash
 CLAUDE_DIR, DESIGNS_DIR, COMMANDS_DIR
 MCC_VERSION, MCC_SPEC_VERSION
@@ -213,9 +232,9 @@ Located in `.claude/templates/`
 
 Template for generated command files.
 
-**Used by:** scaffold-domain
-**Replaced with:** Actual operation names and descriptions
-**Contains:**
+**Used by:** scaffold-domain **Replaced with:** Actual operation names and
+descriptions **Contains:**
+
 - Proper frontmatter
 - $ARGUMENTS parsing example
 - Documentation
@@ -233,6 +252,7 @@ Template for generated command files.
 **Read by:** `scaffold-domain.md`
 
 **Format:**
+
 ```json
 {
   "name": "string",
@@ -251,6 +271,7 @@ Template for generated command files.
 ```
 
 **Used for:**
+
 - Source of truth for domain design
 - Input to scaffold command
 - Reference for implementation
@@ -262,6 +283,7 @@ Template for generated command files.
 **Created by:** `registry-scan.md`
 
 **Format:**
+
 ```json
 {
   "timestamp": "ISO8601",
@@ -274,6 +296,7 @@ Template for generated command files.
 ```
 
 **Used for:**
+
 - Component discovery
 - Dependency mapping
 - Quality assessment
@@ -429,6 +452,7 @@ nano .claude/designs/pm.json
 **Problem:** `/design:domain` command not found
 
 **Solution:**
+
 ```bash
 # Check files exist
 ls -la .claude/commands/design-domain.md
@@ -441,6 +465,7 @@ ls -la .claude/commands/registry-scan.md
 **Problem:** "Utilities not found" error
 
 **Solution:**
+
 ```bash
 # Check utils file
 ls -la .claude/lib/mcc-utils.sh
@@ -454,18 +479,19 @@ chmod +x .claude/lib/mcc-utils.sh
 **Problem:** "Invalid domain name" error
 
 **Rules:**
+
 - Start with lowercase letter
 - Lowercase letters, numbers, hyphens only
 - No spaces or special characters
 
-**Valid:** pm, task-manager, testing
-**Invalid:** PM, task manager, task_manager
+**Valid:** pm, task-manager, testing **Invalid:** PM, task manager, task_manager
 
 ### Design Validation Fails
 
 **Problem:** "Invalid design spec" error
 
 **Solution:**
+
 ```bash
 # Check required fields
 cat .claude/designs/pm.json | jq '.name, .description, .version, .created_at'
@@ -479,6 +505,7 @@ python3 -m json.tool .claude/designs/pm.json
 **Problem:** Scaffold command runs but no files created
 
 **Solution:**
+
 ```bash
 # Check design exists
 ls -la .claude/designs/pm.json
@@ -576,6 +603,7 @@ cat .claude/registry.json
 ### Large Domains
 
 Scaffolding domains with 20+ operations:
+
 ```bash
 # Run with feedback
 /scaffold:domain large-domain 2>&1 | tee scaffold.log
@@ -584,6 +612,7 @@ Scaffolding domains with 20+ operations:
 ### Registry Size
 
 Keep registry lean by cleaning old backups:
+
 ```bash
 # Remove backups older than 30 days
 find .claude -name "*.backup.*" -mtime +30 -delete

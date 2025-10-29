@@ -40,6 +40,7 @@ The Plan-to-VTM Bridge transforms planning documents (ADRs and technical specifi
 ### Problem Statement
 
 Current workflow requires manual task extraction from planning documents, leading to:
+
 - Lost context from ADR decisions
 - Manual dependency analysis errors
 - Token bloat when loading full VTM
@@ -49,6 +50,7 @@ Current workflow requires manual task extraction from planning documents, leadin
 ### Solution
 
 Automated bridge system that:
+
 - Extracts tasks with rich context from ADR+Spec pairs
 - Uses LLM agent for intelligent dependency reasoning
 - Generates token-efficient VTM summaries
@@ -206,43 +208,43 @@ vtm summary [--incomplete] [--json]
 
 ```json
 {
-  "project": {
-    "name": "Project Name",
-    "description": "Project description"
-  },
-  "stats": {
-    "total_tasks": 25,
-    "completed": 15,
-    "in_progress": 2,
-    "pending": 8,
-    "blocked": 0
-  },
+  "completed_capabilities": [
+    {
+      "capabilities": ["TypeScript compilation", "Project structure"],
+      "completed_at": "2025-10-28T11:30:00Z",
+      "files_created": ["src/", "tsconfig.json", "package.json"],
+      "id": "TASK-001",
+      "title": "Set up project structure"
+    }
+  ],
   "incomplete_tasks": [
     {
-      "id": "TASK-016",
-      "title": "Implement VTM summary command",
-      "description": "...",
       "acceptance_criteria": ["AC1", "AC2"],
       "dependencies": ["TASK-001", "TASK-002"],
-      "test_strategy": "TDD",
-      "risk": "medium",
+      "description": "...",
       "estimated_hours": 3,
       "files": {
         "create": ["src/commands/summary.ts"],
         "modify": ["src/index.ts"]
       },
-      "status": "pending"
+      "id": "TASK-016",
+      "risk": "medium",
+      "status": "pending",
+      "test_strategy": "TDD",
+      "title": "Implement VTM summary command"
     }
   ],
-  "completed_capabilities": [
-    {
-      "id": "TASK-001",
-      "title": "Set up project structure",
-      "files_created": ["src/", "tsconfig.json", "package.json"],
-      "capabilities": ["TypeScript compilation", "Project structure"],
-      "completed_at": "2025-10-28T11:30:00Z"
-    }
-  ]
+  "project": {
+    "description": "Project description",
+    "name": "Project Name"
+  },
+  "stats": {
+    "blocked": 0,
+    "completed": 15,
+    "in_progress": 2,
+    "pending": 8,
+    "total_tasks": 25
+  }
 }
 ```
 
@@ -264,27 +266,29 @@ export class VTMSummarizer {
   }): Promise<string> {
     const vtm = await this.reader.load()
 
-    const incompleteTasks = vtm.tasks.filter(
-      t => t.status !== 'completed'
-    )
+    const incompleteTasks = vtm.tasks.filter((t) => t.status !== "completed")
 
     const completedCapabilities = vtm.tasks
-      .filter(t => t.status === 'completed')
-      .map(t => ({
+      .filter((t) => t.status === "completed")
+      .map((t) => ({
         id: t.id,
         title: t.title,
         files_created: t.files.create,
         capabilities: this.extractCapabilities(t),
-        completed_at: t.completed_at
+        completed_at: t.completed_at,
       }))
 
     if (options.json) {
-      return JSON.stringify({
-        project: vtm.project,
-        stats: vtm.stats,
-        incomplete_tasks: incompleteTasks,
-        completed_capabilities: completedCapabilities
-      }, null, 2)
+      return JSON.stringify(
+        {
+          project: vtm.project,
+          stats: vtm.stats,
+          incomplete_tasks: incompleteTasks,
+          completed_capabilities: completedCapabilities,
+        },
+        null,
+        2,
+      )
     }
 
     // Human-readable format
@@ -296,7 +300,7 @@ export class VTMSummarizer {
     const capabilities = [task.title]
 
     // Add unique capabilities from ACs
-    task.acceptance_criteria.forEach(ac => {
+    task.acceptance_criteria.forEach((ac) => {
       const cap = this.parseCapability(ac)
       if (cap && !capabilities.includes(cap)) {
         capabilities.push(cap)
@@ -310,7 +314,7 @@ export class VTMSummarizer {
     // Extract core capability from AC
     // E.g., "VTMReader can load and parse vtm.json" → "Load and parse VTM"
     // Implementation: simple heuristics or regex
-    return ac.replace(/^.*\s+(can|should|must)\s+/, '').trim()
+    return ac.replace(/^.*\s+(can|should|must)\s+/, "").trim()
   }
 }
 ```
@@ -319,18 +323,18 @@ export class VTMSummarizer {
 
 ```typescript
 program
-  .command('summary')
-  .description('Generate token-efficient VTM summary')
-  .option('--incomplete', 'Show only incomplete tasks')
-  .option('--json', 'Output as JSON')
-  .option('-o, --output <file>', 'Write to file instead of stdout')
+  .command("summary")
+  .description("Generate token-efficient VTM summary")
+  .option("--incomplete", "Show only incomplete tasks")
+  .option("--json", "Output as JSON")
+  .option("-o, --output <file>", "Write to file instead of stdout")
   .action(async (options) => {
     try {
       const summarizer = new VTMSummarizer()
       const summary = await summarizer.generateSummary(options)
 
       if (options.output) {
-        await writeFile(options.output, summary, 'utf-8')
+        await writeFile(options.output, summary, "utf-8")
         console.error(chalk.green(`✅ Summary written to ${options.output}`))
       } else {
         console.log(summary)
@@ -407,7 +411,7 @@ export interface ValidationResult {
 }
 
 export interface ValidationError {
-  type: 'schema' | 'dependency' | 'circular' | 'forward_ref'
+  type: "schema" | "dependency" | "circular" | "forward_ref"
   taskIndex: number
   field?: string
   message: string
@@ -415,7 +419,7 @@ export interface ValidationError {
 }
 
 export interface ValidationWarning {
-  type: 'missing_field' | 'unusual_value'
+  type: "missing_field" | "unusual_value"
   taskIndex: number
   field: string
   message: string
@@ -449,7 +453,10 @@ export class TaskValidator {
     // 2. Assign task IDs
     const nextId = this.getNextTaskId()
     tasks.forEach((task, index) => {
-      taskIdMapping.set(index, `TASK-${String(nextId + index).padStart(3, '0')}`)
+      taskIdMapping.set(
+        index,
+        `TASK-${String(nextId + index).padStart(3, "0")}`,
+      )
     })
 
     // 3. Dependency validation
@@ -458,7 +465,7 @@ export class TaskValidator {
         task,
         index,
         tasks,
-        taskIdMapping
+        taskIdMapping,
       )
       errors.push(...depErrors)
     })
@@ -471,62 +478,64 @@ export class TaskValidator {
       valid: errors.length === 0,
       errors,
       warnings,
-      taskIdMapping
+      taskIdMapping,
     }
   }
 
   private validateTaskSchema(
     task: Partial<Task>,
-    index: number
+    index: number,
   ): ValidationError[] {
     const errors: ValidationError[] = []
     const required = [
-      'title',
-      'description',
-      'acceptance_criteria',
-      'test_strategy',
-      'risk',
-      'estimated_hours'
+      "title",
+      "description",
+      "acceptance_criteria",
+      "test_strategy",
+      "risk",
+      "estimated_hours",
     ]
 
-    required.forEach(field => {
+    required.forEach((field) => {
       if (!(field in task)) {
         errors.push({
-          type: 'schema',
+          type: "schema",
           taskIndex: index,
           field,
-          message: `Missing required field: ${field}`
+          message: `Missing required field: ${field}`,
         })
       }
     })
 
     // Validate enums
-    if (task.test_strategy &&
-        !['TDD', 'Unit', 'Integration', 'Direct'].includes(task.test_strategy)) {
+    if (
+      task.test_strategy &&
+      !["TDD", "Unit", "Integration", "Direct"].includes(task.test_strategy)
+    ) {
       errors.push({
-        type: 'schema',
+        type: "schema",
         taskIndex: index,
-        field: 'test_strategy',
-        message: `Invalid test_strategy: ${task.test_strategy}`
+        field: "test_strategy",
+        message: `Invalid test_strategy: ${task.test_strategy}`,
       })
     }
 
-    if (task.risk && !['low', 'medium', 'high'].includes(task.risk)) {
+    if (task.risk && !["low", "medium", "high"].includes(task.risk)) {
       errors.push({
-        type: 'schema',
+        type: "schema",
         taskIndex: index,
-        field: 'risk',
-        message: `Invalid risk: ${task.risk}`
+        field: "risk",
+        message: `Invalid risk: ${task.risk}`,
       })
     }
 
     // Validate arrays
     if (task.acceptance_criteria && !Array.isArray(task.acceptance_criteria)) {
       errors.push({
-        type: 'schema',
+        type: "schema",
         taskIndex: index,
-        field: 'acceptance_criteria',
-        message: 'acceptance_criteria must be an array'
+        field: "acceptance_criteria",
+        message: "acceptance_criteria must be an array",
       })
     }
 
@@ -537,7 +546,7 @@ export class TaskValidator {
     task: Partial<Task>,
     index: number,
     allTasks: Partial<Task>[],
-    taskIdMapping: Map<number, string>
+    taskIdMapping: Map<number, string>,
   ): ValidationError[] {
     const errors: ValidationError[] = []
 
@@ -548,30 +557,30 @@ export class TaskValidator {
     const assignedId = taskIdMapping.get(index)!
     const assignedNum = this.parseTaskId(assignedId)
 
-    task.dependencies.forEach(depId => {
+    task.dependencies.forEach((depId) => {
       // Check if dependency exists in VTM
-      const existsInVtm = this.vtm!.tasks.some(t => t.id === depId)
+      const existsInVtm = this.vtm!.tasks.some((t) => t.id === depId)
 
       // Check if dependency exists in new tasks
       const depIndex = Array.from(taskIdMapping.entries()).find(
-        ([_, id]) => id === depId
+        ([_, id]) => id === depId,
       )?.[0]
 
       if (!existsInVtm && depIndex === undefined) {
         errors.push({
-          type: 'dependency',
+          type: "dependency",
           taskIndex: index,
-          field: 'dependencies',
+          field: "dependencies",
           message: `Dependency ${depId} does not exist`,
-          details: { dependency: depId }
+          details: { dependency: depId },
         })
         return
       }
 
       // If dependency is in new tasks, check it's incomplete in VTM
       if (existsInVtm) {
-        const vtmTask = this.vtm!.tasks.find(t => t.id === depId)!
-        if (vtmTask.status === 'completed') {
+        const vtmTask = this.vtm!.tasks.find((t) => t.id === depId)!
+        if (vtmTask.status === "completed") {
           // Warning, not error (completed deps are okay)
           return
         }
@@ -581,10 +590,10 @@ export class TaskValidator {
       const depNum = this.parseTaskId(depId)
       if (depNum >= assignedNum) {
         errors.push({
-          type: 'forward_ref',
+          type: "forward_ref",
           taskIndex: index,
           message: `Task ${assignedId} cannot depend on ${depId} (forward reference)`,
-          details: { task: assignedId, dependency: depId }
+          details: { task: assignedId, dependency: depId },
         })
       }
     })
@@ -594,7 +603,7 @@ export class TaskValidator {
 
   private detectCircularDeps(
     tasks: Partial<Task>[],
-    taskIdMapping: Map<number, string>
+    taskIdMapping: Map<number, string>,
   ): ValidationError[] {
     const errors: ValidationError[] = []
 
@@ -602,7 +611,7 @@ export class TaskValidator {
     const graph = new Map<string, string[]>()
 
     // Add existing VTM tasks
-    this.vtm!.tasks.forEach(task => {
+    this.vtm!.tasks.forEach((task) => {
       graph.set(task.id, task.dependencies)
     })
 
@@ -642,10 +651,10 @@ export class TaskValidator {
         const cycle = hasCycle(id, [])
         if (cycle) {
           errors.push({
-            type: 'circular',
+            type: "circular",
             taskIndex: index,
-            message: `Circular dependency detected: ${cycle.join(' → ')}`,
-            details: { cycle }
+            message: `Circular dependency detected: ${cycle.join(" → ")}`,
+            details: { cycle },
           })
         }
       }
@@ -662,38 +671,43 @@ export class TaskValidator {
   }
 
   private parseTaskId(id: string): number {
-    return parseInt(id.replace('TASK-', ''), 10)
+    return parseInt(id.replace("TASK-", ""), 10)
   }
 
   generatePreview(
     tasks: Partial<Task>[],
-    taskIdMapping: Map<number, string>
+    taskIdMapping: Map<number, string>,
   ): string {
-    let preview = chalk.bold('\n📋 Task Ingestion Preview\n')
-    preview += '━'.repeat(60) + '\n\n'
+    let preview = chalk.bold("\n📋 Task Ingestion Preview\n")
+    preview += "━".repeat(60) + "\n\n"
 
     tasks.forEach((task, index) => {
       const id = taskIdMapping.get(index)!
 
-      preview += chalk.bold.blue(id) + chalk.gray(` [${task.estimated_hours}h]`) + '\n'
+      preview +=
+        chalk.bold.blue(id) + chalk.gray(` [${task.estimated_hours}h]`) + "\n"
       preview += `  ${task.title}\n`
-      preview += chalk.gray(`  Risk: ${task.risk} | Test: ${task.test_strategy}\n`)
+      preview += chalk.gray(
+        `  Risk: ${task.risk} | Test: ${task.test_strategy}\n`,
+      )
 
       if (task.dependencies && task.dependencies.length > 0) {
-        preview += chalk.gray('  Dependencies:\n')
-        task.dependencies.forEach(depId => {
-          const depTask = this.vtm!.tasks.find(t => t.id === depId)
+        preview += chalk.gray("  Dependencies:\n")
+        task.dependencies.forEach((depId) => {
+          const depTask = this.vtm!.tasks.find((t) => t.id === depId)
           if (depTask) {
-            const statusIcon = depTask.status === 'completed' ? '✅' : '⏳'
-            preview += chalk.gray(`    ${statusIcon} ${depId}: ${depTask.title}\n`)
+            const statusIcon = depTask.status === "completed" ? "✅" : "⏳"
+            preview += chalk.gray(
+              `    ${statusIcon} ${depId}: ${depTask.title}\n`,
+            )
           }
         })
       }
 
-      preview += '\n'
+      preview += "\n"
     })
 
-    preview += chalk.bold('📊 Summary\n')
+    preview += chalk.bold("📊 Summary\n")
     preview += `  New tasks: ${tasks.length}\n`
     preview += `  Total dependencies: ${tasks.reduce((sum, t) => sum + (t.dependencies?.length || 0), 0)}\n`
 
@@ -703,19 +717,22 @@ export class TaskValidator {
   async assignTaskIds(tasks: Partial<Task>[]): Promise<Task[]> {
     const nextId = this.getNextTaskId()
 
-    return tasks.map((task, index) => ({
-      ...task,
-      id: `TASK-${String(nextId + index).padStart(3, '0')}`,
-      status: 'pending',
-      started_at: null,
-      completed_at: null,
-      commits: [],
-      blocks: [],
-      validation: {
-        tests_pass: false,
-        ac_verified: []
-      }
-    } as Task))
+    return tasks.map(
+      (task, index) =>
+        ({
+          ...task,
+          id: `TASK-${String(nextId + index).padStart(3, "0")}`,
+          status: "pending",
+          started_at: null,
+          completed_at: null,
+          commits: [],
+          blocks: [],
+          validation: {
+            tests_pass: false,
+            ac_verified: [],
+          },
+        }) as Task,
+    )
   }
 }
 ```
@@ -724,19 +741,19 @@ export class TaskValidator {
 
 ```typescript
 program
-  .command('ingest <json-file>')
-  .description('Ingest agent-generated tasks into VTM')
-  .option('--preview', 'Show preview without making changes (default)')
-  .option('--commit', 'Skip confirmation and commit immediately')
-  .option('--validate-only', 'Only validate, no preview or commit')
+  .command("ingest <json-file>")
+  .description("Ingest agent-generated tasks into VTM")
+  .option("--preview", "Show preview without making changes (default)")
+  .option("--commit", "Skip confirmation and commit immediately")
+  .option("--validate-only", "Only validate, no preview or commit")
   .action(async (jsonFile, options) => {
     try {
       // Read input file
-      const content = await readFile(jsonFile, 'utf-8')
+      const content = await readFile(jsonFile, "utf-8")
       const input = JSON.parse(content) as { tasks: Partial<Task>[] }
 
       if (!input.tasks || !Array.isArray(input.tasks)) {
-        console.error(chalk.red('Invalid input: expected { tasks: [...] }'))
+        console.error(chalk.red("Invalid input: expected { tasks: [...] }"))
         process.exit(1)
       }
 
@@ -745,36 +762,43 @@ program
       const result = await validator.validate(input.tasks)
 
       if (!result.valid) {
-        console.error(chalk.red('\n❌ Validation failed:\n'))
-        result.errors.forEach(err => {
-          console.error(chalk.red(`  [${err.type}] Task ${err.taskIndex + 1}: ${err.message}`))
+        console.error(chalk.red("\n❌ Validation failed:\n"))
+        result.errors.forEach((err) => {
+          console.error(
+            chalk.red(
+              `  [${err.type}] Task ${err.taskIndex + 1}: ${err.message}`,
+            ),
+          )
         })
         process.exit(1)
       }
 
       if (options.validateOnly) {
-        console.log(chalk.green('✅ Validation passed'))
+        console.log(chalk.green("✅ Validation passed"))
         return
       }
 
       // Show preview
-      const preview = validator.generatePreview(input.tasks, result.taskIdMapping)
+      const preview = validator.generatePreview(
+        input.tasks,
+        result.taskIdMapping,
+      )
       console.log(preview)
 
       // Confirm unless --commit
       if (!options.commit) {
         const rl = readline.createInterface({
           input: process.stdin,
-          output: process.stdout
+          output: process.stdout,
         })
 
-        const answer = await new Promise<string>(resolve => {
-          rl.question(chalk.yellow('\nCommit these tasks? (y/N): '), resolve)
+        const answer = await new Promise<string>((resolve) => {
+          rl.question(chalk.yellow("\nCommit these tasks? (y/N): "), resolve)
         })
         rl.close()
 
-        if (answer.toLowerCase() !== 'y') {
-          console.log(chalk.gray('Cancelled'))
+        if (answer.toLowerCase() !== "y") {
+          console.log(chalk.gray("Cancelled"))
           return
         }
       }
@@ -785,7 +809,7 @@ program
       await writer.appendTasks(tasksWithIds)
 
       console.log(chalk.green(`\n✅ Added ${tasksWithIds.length} tasks to VTM`))
-      console.log(chalk.cyan('\nRun vtm next to see newly available tasks'))
+      console.log(chalk.cyan("\nRun vtm next to see newly available tasks"))
     } catch (error) {
       console.error(chalk.red(`Error: ${(error as Error).message}`))
       process.exit(1)
@@ -892,7 +916,7 @@ steps:
 
 #### Command Implementation
 
-```markdown
+````markdown
 ---
 allowed-tools: Bash(vtm *, cat), Read(*.md), Write(*.json), AskUserQuestion
 description: Transform ADR+Spec pairs into VTM tasks with intelligent dependency analysis
@@ -908,6 +932,7 @@ Transform planning documents (ADR + technical specification) into executable VTM
 ```bash
 /plan:to-vtm <adr-file> <spec-file> [--commit] [--preview-only]
 ```
+````
 
 ## Parameters
 
@@ -950,6 +975,7 @@ You are transforming planning documents into VTM tasks. Follow these steps preci
    - FLAGS: --commit, --preview-only
 
 2. Check files exist:
+
    ```bash
    if [[ ! -f "$ADR_FILE" ]]; then
      echo "❌ Error: ADR file not found: $ADR_FILE"
@@ -993,13 +1019,15 @@ vtm summary --incomplete --json > /tmp/vtm-summary.json
 ```
 
 Parse the output:
+
 ```typescript
-const vtmSummary = JSON.parse(await Read('/tmp/vtm-summary.json'))
+const vtmSummary = JSON.parse(await Read("/tmp/vtm-summary.json"))
 ```
 
 ### Step 4: Launch Agent
 
 Construct the agent prompt with:
+
 - ADR content
 - Spec content
 - VTM summary (incomplete tasks + completed capabilities)
@@ -1147,6 +1175,7 @@ Output ONLY the JSON, no additional text.
 ```
 
 Execute agent and save output:
+
 ```bash
 # Agent execution happens via Claude Code agent system
 # Output saved to /tmp/tasks.json
@@ -1176,21 +1205,23 @@ Unless `--commit` or `--preview-only` flag:
 
 ```typescript
 const answer = await AskUserQuestion({
-  questions: [{
-    question: `Commit ${taskCount} tasks to VTM?`,
-    header: "Confirm",
-    multiSelect: false,
-    options: [
-      {
-        label: "Yes, commit tasks",
-        description: "Add tasks to vtm.json"
-      },
-      {
-        label: "No, cancel",
-        description: "Discard tasks"
-      }
-    ]
-  }]
+  questions: [
+    {
+      question: `Commit ${taskCount} tasks to VTM?`,
+      header: "Confirm",
+      multiSelect: false,
+      options: [
+        {
+          label: "Yes, commit tasks",
+          description: "Add tasks to vtm.json",
+        },
+        {
+          label: "No, cancel",
+          description: "Discard tasks",
+        },
+      ],
+    },
+  ],
 })
 
 if (answer !== "Yes, commit tasks") {
@@ -1214,6 +1245,7 @@ vtm next -n 3
 ## Output
 
 The command will:
+
 1. Validate ADR+Spec pairing
 2. Extract tasks with rich context
 3. Analyze dependencies intelligently
@@ -1235,7 +1267,8 @@ The command will:
 - `vtm summary` - Generate VTM summary for agents
 - `vtm ingest` - Ingest validated tasks
 - `/plan:validate` - Validate ADR+Spec pairs
-```
+
+````
 
 ---
 
@@ -1271,7 +1304,7 @@ interface CompletedCapability {
   capabilities: string[]
   completed_at: string
 }
-```
+````
 
 ### Agent Output Schema
 
@@ -1286,9 +1319,9 @@ interface ExtractedTask {
   description: string
   acceptance_criteria: string[]
   dependencies: string[]
-  test_strategy: 'TDD' | 'Unit' | 'Integration' | 'Direct'
+  test_strategy: "TDD" | "Unit" | "Integration" | "Direct"
   test_strategy_rationale: string
-  risk: 'low' | 'medium' | 'high'
+  risk: "low" | "medium" | "high"
   estimated_hours: number
   files: {
     create: string[]
@@ -1405,6 +1438,7 @@ ValidationResult
 #### 1. Schema Validation
 
 **Required Fields:**
+
 - `title` (string, non-empty)
 - `description` (string, non-empty)
 - `acceptance_criteria` (array, min 1 item)
@@ -1413,6 +1447,7 @@ ValidationResult
 - `estimated_hours` (number, > 0)
 
 **Optional Fields:**
+
 - `dependencies` (array of task IDs)
 - `files.create` (array of paths)
 - `files.modify` (array of paths)
@@ -1420,6 +1455,7 @@ ValidationResult
 - `context` (object with adr/spec)
 
 **Type Validation:**
+
 - All strings must be non-empty after trim
 - Arrays must be arrays (not null/undefined)
 - Numbers must be positive
@@ -1428,45 +1464,47 @@ ValidationResult
 #### 2. Dependency Validation
 
 **Rules:**
+
 - All dependency IDs must exist (in VTM or new tasks)
 - Dependencies must be incomplete (pending, in-progress, or blocked)
 - No forward references (TASK-010 cannot depend on TASK-011)
 - Dependencies must use TASK-XXX format
 
 **Algorithm:**
+
 ```typescript
 function validateDependencies(
   task: ExtractedTask,
   index: number,
   allNewTasks: ExtractedTask[],
-  existingVtm: VTM
+  existingVtm: VTM,
 ): ValidationError[] {
   const errors: ValidationError[] = []
 
-  task.dependencies?.forEach(depId => {
+  task.dependencies?.forEach((depId) => {
     // Check existence
-    const existsInVtm = existingVtm.tasks.find(t => t.id === depId)
-    const existsInNew = allNewTasks.find((_, i) =>
-      taskIdMapping.get(i) === depId
+    const existsInVtm = existingVtm.tasks.find((t) => t.id === depId)
+    const existsInNew = allNewTasks.find(
+      (_, i) => taskIdMapping.get(i) === depId,
     )
 
     if (!existsInVtm && !existsInNew) {
       errors.push({
-        type: 'dependency',
+        type: "dependency",
         message: `Dependency ${depId} does not exist`,
         taskIndex: index,
-        field: 'dependencies'
+        field: "dependencies",
       })
       return
     }
 
     // Check not completed
-    if (existsInVtm && existsInVtm.status === 'completed') {
+    if (existsInVtm && existsInVtm.status === "completed") {
       errors.push({
-        type: 'dependency',
+        type: "dependency",
         message: `Cannot depend on completed task ${depId}`,
         taskIndex: index,
-        field: 'dependencies'
+        field: "dependencies",
       })
     }
 
@@ -1474,10 +1512,10 @@ function validateDependencies(
     const assignedId = taskIdMapping.get(index)!
     if (parseTaskId(depId) >= parseTaskId(assignedId)) {
       errors.push({
-        type: 'forward_ref',
+        type: "forward_ref",
         message: `Cannot depend on ${depId} (forward reference)`,
         taskIndex: index,
-        field: 'dependencies'
+        field: "dependencies",
       })
     }
   })
@@ -1494,13 +1532,13 @@ function validateDependencies(
 function detectCircularDeps(
   tasks: ExtractedTask[],
   existingVtm: VTM,
-  taskIdMapping: Map<number, string>
+  taskIdMapping: Map<number, string>,
 ): ValidationError[] {
   // Build full dependency graph
   const graph = new Map<string, string[]>()
 
   // Add existing VTM tasks
-  existingVtm.tasks.forEach(task => {
+  existingVtm.tasks.forEach((task) => {
     graph.set(task.id, task.dependencies)
   })
 
@@ -1542,10 +1580,10 @@ function detectCircularDeps(
       const cycle = dfs(id, [])
       if (cycle) {
         errors.push({
-          type: 'circular',
+          type: "circular",
           taskIndex: index,
-          message: `Circular dependency: ${cycle.join(' → ')}`,
-          details: { cycle }
+          message: `Circular dependency: ${cycle.join(" → ")}`,
+          details: { cycle },
         })
       }
     }
@@ -1558,6 +1596,7 @@ function detectCircularDeps(
 #### 4. Task ID Assignment
 
 **Rules:**
+
 - Find highest existing task ID in VTM
 - Assign sequential IDs starting from next number
 - Preserve order from agent output
@@ -1566,20 +1605,20 @@ function detectCircularDeps(
 ```typescript
 function assignTaskIds(
   tasks: ExtractedTask[],
-  existingVtm: VTM
+  existingVtm: VTM,
 ): Map<number, string> {
   const mapping = new Map<number, string>()
 
   // Find highest ID
   let maxId = 0
-  existingVtm.tasks.forEach(task => {
+  existingVtm.tasks.forEach((task) => {
     const num = parseTaskId(task.id)
     if (num > maxId) maxId = num
   })
 
   // Assign sequential IDs
   tasks.forEach((task, index) => {
-    const id = `TASK-${String(maxId + index + 1).padStart(3, '0')}`
+    const id = `TASK-${String(maxId + index + 1).padStart(3, "0")}`
     mapping.set(index, id)
   })
 
@@ -1587,7 +1626,7 @@ function assignTaskIds(
 }
 
 function parseTaskId(id: string): number {
-  return parseInt(id.replace('TASK-', ''), 10)
+  return parseInt(id.replace("TASK-", ""), 10)
 }
 ```
 
@@ -1600,42 +1639,43 @@ function parseTaskId(id: string): number {
 #### test: src/lib/vtm-summary.test.ts
 
 ```typescript
-describe('VTMSummarizer', () => {
-  describe('generateSummary', () => {
-    it('filters incomplete tasks correctly', async () => {
-      const summarizer = new VTMSummarizer('test-vtm.json')
+describe("VTMSummarizer", () => {
+  describe("generateSummary", () => {
+    it("filters incomplete tasks correctly", async () => {
+      const summarizer = new VTMSummarizer("test-vtm.json")
       const result = await summarizer.generateSummary({
         incomplete: true,
-        json: true
+        json: true,
       })
       const parsed = JSON.parse(result)
 
       expect(parsed.incomplete_tasks).toHaveLength(3)
-      expect(parsed.incomplete_tasks.every(t =>
-        t.status !== 'completed'
-      )).toBe(true)
+      expect(
+        parsed.incomplete_tasks.every((t) => t.status !== "completed"),
+      ).toBe(true)
     })
 
-    it('extracts capabilities from completed tasks', async () => {
-      const summarizer = new VTMSummarizer('test-vtm.json')
+    it("extracts capabilities from completed tasks", async () => {
+      const summarizer = new VTMSummarizer("test-vtm.json")
       const result = await summarizer.generateSummary({ json: true })
       const parsed = JSON.parse(result)
 
       expect(parsed.completed_capabilities).toHaveLength(2)
-      expect(parsed.completed_capabilities[0]).toHaveProperty('capabilities')
-      expect(Array.isArray(parsed.completed_capabilities[0].capabilities))
-        .toBe(true)
+      expect(parsed.completed_capabilities[0]).toHaveProperty("capabilities")
+      expect(Array.isArray(parsed.completed_capabilities[0].capabilities)).toBe(
+        true,
+      )
     })
 
-    it('outputs human-readable format without --json', async () => {
-      const summarizer = new VTMSummarizer('test-vtm.json')
+    it("outputs human-readable format without --json", async () => {
+      const summarizer = new VTMSummarizer("test-vtm.json")
       const result = await summarizer.generateSummary({
-        incomplete: true
+        incomplete: true,
       })
 
-      expect(result).toContain('Incomplete Tasks')
-      expect(result).toContain('Completed Capabilities')
-      expect(result).not.toContain('{') // no JSON
+      expect(result).toContain("Incomplete Tasks")
+      expect(result).toContain("Completed Capabilities")
+      expect(result).not.toContain("{") // no JSON
     })
   })
 })
@@ -1644,223 +1684,250 @@ describe('VTMSummarizer', () => {
 #### test: src/lib/task-validator.test.ts
 
 ```typescript
-describe('TaskValidator', () => {
-  describe('validateTaskSchema', () => {
-    it('rejects tasks with missing required fields', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+describe("TaskValidator", () => {
+  describe("validateTaskSchema", () => {
+    it("rejects tasks with missing required fields", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       const result = await validator.validate([
-        { title: 'Test' } as any // missing description, etc.
+        { title: "Test" } as any, // missing description, etc.
       ])
 
       expect(result.valid).toBe(false)
       expect(result.errors.length).toBeGreaterThan(0)
-      expect(result.errors[0].type).toBe('schema')
+      expect(result.errors[0].type).toBe("schema")
     })
 
-    it('rejects invalid enum values', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{
-        title: 'Test',
-        description: 'Test task',
-        acceptance_criteria: ['AC1'],
-        test_strategy: 'INVALID' as any,
-        risk: 'low',
-        estimated_hours: 2,
-        files: { create: [], modify: [], delete: [] }
-      }])
+    it("rejects invalid enum values", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          title: "Test",
+          description: "Test task",
+          acceptance_criteria: ["AC1"],
+          test_strategy: "INVALID" as any,
+          risk: "low",
+          estimated_hours: 2,
+          files: { create: [], modify: [], delete: [] },
+        },
+      ])
 
       expect(result.valid).toBe(false)
       expect(result.errors).toContainEqual(
         expect.objectContaining({
-          type: 'schema',
-          field: 'test_strategy'
-        })
+          type: "schema",
+          field: "test_strategy",
+        }),
       )
     })
 
-    it('accepts valid tasks', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{
-        title: 'Implement feature X',
-        description: 'Add feature X to the system',
-        acceptance_criteria: ['AC1', 'AC2'],
-        test_strategy: 'TDD',
-        risk: 'medium',
-        estimated_hours: 4,
-        files: {
-          create: ['src/feature-x.ts'],
-          modify: [],
-          delete: []
-        }
-      }])
+    it("accepts valid tasks", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          title: "Implement feature X",
+          description: "Add feature X to the system",
+          acceptance_criteria: ["AC1", "AC2"],
+          test_strategy: "TDD",
+          risk: "medium",
+          estimated_hours: 4,
+          files: {
+            create: ["src/feature-x.ts"],
+            modify: [],
+            delete: [],
+          },
+        },
+      ])
 
       expect(result.valid).toBe(true)
       expect(result.errors).toHaveLength(0)
     })
   })
 
-  describe('validateDependencies', () => {
-    it('rejects non-existent dependencies', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{
-        // ... valid task fields ...
-        dependencies: ['TASK-999']
-      }])
+  describe("validateDependencies", () => {
+    it("rejects non-existent dependencies", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          // ... valid task fields ...
+          dependencies: ["TASK-999"],
+        },
+      ])
 
       expect(result.valid).toBe(false)
       expect(result.errors).toContainEqual(
         expect.objectContaining({
-          type: 'dependency',
-          message: expect.stringContaining('TASK-999')
-        })
+          type: "dependency",
+          message: expect.stringContaining("TASK-999"),
+        }),
       )
     })
 
-    it('rejects dependencies on completed tasks', async () => {
+    it("rejects dependencies on completed tasks", async () => {
       // Assuming TASK-001 is completed in test-vtm.json
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{
-        // ... valid task fields ...
-        dependencies: ['TASK-001']
-      }])
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          // ... valid task fields ...
+          dependencies: ["TASK-001"],
+        },
+      ])
 
       expect(result.valid).toBe(false)
       expect(result.errors).toContainEqual(
         expect.objectContaining({
-          type: 'dependency',
-          message: expect.stringContaining('completed')
-        })
+          type: "dependency",
+          message: expect.stringContaining("completed"),
+        }),
       )
     })
 
-    it('rejects forward references', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+    it("rejects forward references", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       const tasks = [
-        { /* TASK-010 */ dependencies: ['TASK-011'] },
-        { /* TASK-011 */ dependencies: [] }
+        { /* TASK-010 */ dependencies: ["TASK-011"] },
+        { /* TASK-011 */ dependencies: [] },
       ]
       const result = await validator.validate(tasks)
 
       expect(result.valid).toBe(false)
       expect(result.errors).toContainEqual(
         expect.objectContaining({
-          type: 'forward_ref'
-        })
+          type: "forward_ref",
+        }),
       )
     })
 
-    it('accepts valid dependencies', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{
-        // ... valid task fields ...
-        dependencies: ['TASK-003'] // pending task
-      }])
+    it("accepts valid dependencies", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          // ... valid task fields ...
+          dependencies: ["TASK-003"], // pending task
+        },
+      ])
 
       expect(result.valid).toBe(true)
     })
   })
 
-  describe('detectCircularDeps', () => {
-    it('detects simple circular dependency', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+  describe("detectCircularDeps", () => {
+    it("detects simple circular dependency", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       // Artificially create circular dep in test VTM
       const result = await validator.validate([
-        { /* TASK-010 */ dependencies: ['TASK-011'] },
-        { /* TASK-011 */ dependencies: ['TASK-010'] }
+        { /* TASK-010 */ dependencies: ["TASK-011"] },
+        { /* TASK-011 */ dependencies: ["TASK-010"] },
       ])
 
       expect(result.valid).toBe(false)
       expect(result.errors).toContainEqual(
         expect.objectContaining({
-          type: 'circular',
+          type: "circular",
           details: expect.objectContaining({
-            cycle: expect.arrayContaining(['TASK-010', 'TASK-011'])
-          })
-        })
+            cycle: expect.arrayContaining(["TASK-010", "TASK-011"]),
+          }),
+        }),
       )
     })
 
-    it('detects complex circular dependency chain', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+    it("detects complex circular dependency chain", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       const result = await validator.validate([
-        { /* TASK-010 */ dependencies: ['TASK-011'] },
-        { /* TASK-011 */ dependencies: ['TASK-012'] },
-        { /* TASK-012 */ dependencies: ['TASK-010'] }
+        { /* TASK-010 */ dependencies: ["TASK-011"] },
+        { /* TASK-011 */ dependencies: ["TASK-012"] },
+        { /* TASK-012 */ dependencies: ["TASK-010"] },
       ])
 
       expect(result.valid).toBe(false)
       expect(result.errors[0].details.cycle).toEqual([
-        'TASK-010', 'TASK-011', 'TASK-012', 'TASK-010'
+        "TASK-010",
+        "TASK-011",
+        "TASK-012",
+        "TASK-010",
       ])
     })
 
-    it('allows non-circular dependencies', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+    it("allows non-circular dependencies", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       const result = await validator.validate([
         { /* TASK-010 */ dependencies: [] },
-        { /* TASK-011 */ dependencies: ['TASK-010'] },
-        { /* TASK-012 */ dependencies: ['TASK-010', 'TASK-011'] }
+        { /* TASK-011 */ dependencies: ["TASK-010"] },
+        { /* TASK-012 */ dependencies: ["TASK-010", "TASK-011"] },
       ])
 
       expect(result.valid).toBe(true)
     })
   })
 
-  describe('assignTaskIds', () => {
-    it('assigns sequential IDs starting from next', async () => {
-      const validator = new TaskValidator('test-vtm.json')
+  describe("assignTaskIds", () => {
+    it("assigns sequential IDs starting from next", async () => {
+      const validator = new TaskValidator("test-vtm.json")
       // Assume test VTM has tasks up to TASK-005
       const result = await validator.validate([
-        { /* task 1 */ },
-        { /* task 2 */ },
-        { /* task 3 */ }
+        {
+          /* task 1 */
+        },
+        {
+          /* task 2 */
+        },
+        {
+          /* task 3 */
+        },
       ])
 
-      expect(result.taskIdMapping.get(0)).toBe('TASK-006')
-      expect(result.taskIdMapping.get(1)).toBe('TASK-007')
-      expect(result.taskIdMapping.get(2)).toBe('TASK-008')
+      expect(result.taskIdMapping.get(0)).toBe("TASK-006")
+      expect(result.taskIdMapping.get(1)).toBe("TASK-007")
+      expect(result.taskIdMapping.get(2)).toBe("TASK-008")
     })
 
-    it('pads IDs with zeros', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const result = await validator.validate([{ /* task */ }])
+    it("pads IDs with zeros", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const result = await validator.validate([
+        {
+          /* task */
+        },
+      ])
 
       expect(result.taskIdMapping.get(0)).toMatch(/^TASK-\d{3}$/)
     })
   })
 
-  describe('generatePreview', () => {
-    it('shows task summaries', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const tasks = [{
-        title: 'Test task',
-        description: 'Test description',
-        acceptance_criteria: ['AC1'],
-        test_strategy: 'TDD',
-        risk: 'medium',
-        estimated_hours: 3,
-        files: { create: [], modify: [], delete: [] }
-      }]
+  describe("generatePreview", () => {
+    it("shows task summaries", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const tasks = [
+        {
+          title: "Test task",
+          description: "Test description",
+          acceptance_criteria: ["AC1"],
+          test_strategy: "TDD",
+          risk: "medium",
+          estimated_hours: 3,
+          files: { create: [], modify: [], delete: [] },
+        },
+      ]
       const result = await validator.validate(tasks)
       const preview = validator.generatePreview(tasks, result.taskIdMapping)
 
-      expect(preview).toContain('TASK-')
-      expect(preview).toContain('Test task')
-      expect(preview).toContain('3h')
-      expect(preview).toContain('TDD')
+      expect(preview).toContain("TASK-")
+      expect(preview).toContain("Test task")
+      expect(preview).toContain("3h")
+      expect(preview).toContain("TDD")
     })
 
-    it('shows dependencies with status', async () => {
-      const validator = new TaskValidator('test-vtm.json')
-      const tasks = [{
-        // ... valid fields ...
-        dependencies: ['TASK-003'] // pending
-      }]
+    it("shows dependencies with status", async () => {
+      const validator = new TaskValidator("test-vtm.json")
+      const tasks = [
+        {
+          // ... valid fields ...
+          dependencies: ["TASK-003"], // pending
+        },
+      ]
       const result = await validator.validate(tasks)
       const preview = validator.generatePreview(tasks, result.taskIdMapping)
 
-      expect(preview).toContain('TASK-003')
-      expect(preview).toContain('⏳') // pending icon
+      expect(preview).toContain("TASK-003")
+      expect(preview).toContain("⏳") // pending icon
     })
   })
 })
@@ -1871,37 +1938,37 @@ describe('TaskValidator', () => {
 #### test: integration/plan-to-vtm.integration.test.ts
 
 ```typescript
-describe('Plan-to-VTM Integration', () => {
-  it('transforms ADR+Spec to VTM tasks end-to-end', async () => {
+describe("Plan-to-VTM Integration", () => {
+  it("transforms ADR+Spec to VTM tasks end-to-end", async () => {
     // Setup test files
-    await writeFile('test-adr.md', TEST_ADR_CONTENT)
-    await writeFile('test-spec.md', TEST_SPEC_CONTENT)
+    await writeFile("test-adr.md", TEST_ADR_CONTENT)
+    await writeFile("test-spec.md", TEST_SPEC_CONTENT)
 
     // Run /plan:to-vtm (simulated)
     const agent = new TaskExtractionAgent()
     const vtmSummary = await new VTMSummarizer().generateSummary({
       incomplete: true,
-      json: true
+      json: true,
     })
 
     const agentOutput = await agent.extract({
-      adr: { file: 'test-adr.md', content: TEST_ADR_CONTENT },
-      spec: { file: 'test-spec.md', content: TEST_SPEC_CONTENT },
-      vtm_summary: JSON.parse(vtmSummary)
+      adr: { file: "test-adr.md", content: TEST_ADR_CONTENT },
+      spec: { file: "test-spec.md", content: TEST_SPEC_CONTENT },
+      vtm_summary: JSON.parse(vtmSummary),
     })
 
     // Validate
-    const validator = new TaskValidator('test-vtm.json')
+    const validator = new TaskValidator("test-vtm.json")
     const result = await validator.validate(agentOutput.tasks)
     expect(result.valid).toBe(true)
 
     // Ingest
     const tasksWithIds = await validator.assignTaskIds(agentOutput.tasks)
-    const writer = new VTMWriter('test-vtm.json')
+    const writer = new VTMWriter("test-vtm.json")
     await writer.appendTasks(tasksWithIds)
 
     // Verify
-    const reader = new VTMReader('test-vtm.json')
+    const reader = new VTMReader("test-vtm.json")
     const vtm = await reader.load(true)
     expect(vtm.tasks.length).toBeGreaterThan(5)
 
@@ -1910,14 +1977,14 @@ describe('Plan-to-VTM Integration', () => {
     expect(ready.length).toBeGreaterThan(0)
   })
 
-  it('handles complex dependency chains correctly', async () => {
+  it("handles complex dependency chains correctly", async () => {
     // Setup: VTM with incomplete tasks
     // Agent output: tasks with dependencies on incomplete
     // Verify: dependency chains resolve correctly
     // Verify: vtm next shows unblocking work first
   })
 
-  it('rejects circular dependencies', async () => {
+  it("rejects circular dependencies", async () => {
     // Agent output: tasks with circular deps
     // Verify: validation fails
     // Verify: error message shows cycle
@@ -1930,65 +1997,63 @@ describe('Plan-to-VTM Integration', () => {
 #### test: agent/task-extraction.agent.test.ts
 
 ```typescript
-describe('Task Extraction Agent', () => {
-  it('extracts tasks from sample ADR+Spec', async () => {
+describe("Task Extraction Agent", () => {
+  it("extracts tasks from sample ADR+Spec", async () => {
     const output = await runAgent({
       adr: SAMPLE_ADR,
       spec: SAMPLE_SPEC,
-      vtm_summary: SAMPLE_VTM_SUMMARY
+      vtm_summary: SAMPLE_VTM_SUMMARY,
     })
 
     expect(output.tasks).toHaveLength(5)
-    expect(output.tasks[0]).toHaveProperty('title')
-    expect(output.tasks[0]).toHaveProperty('context')
+    expect(output.tasks[0]).toHaveProperty("title")
+    expect(output.tasks[0]).toHaveProperty("context")
   })
 
-  it('includes line references in context', async () => {
+  it("includes line references in context", async () => {
     const output = await runAgent({
       adr: SAMPLE_ADR,
       spec: SAMPLE_SPEC,
-      vtm_summary: SAMPLE_VTM_SUMMARY
+      vtm_summary: SAMPLE_VTM_SUMMARY,
     })
 
     const task = output.tasks[0]
     expect(task.context.adr.relevant_sections).toHaveLength(1)
-    expect(task.context.adr.relevant_sections[0]).toHaveProperty('line_start')
-    expect(task.context.adr.relevant_sections[0]).toHaveProperty('line_end')
+    expect(task.context.adr.relevant_sections[0]).toHaveProperty("line_start")
+    expect(task.context.adr.relevant_sections[0]).toHaveProperty("line_end")
   })
 
-  it('analyzes dependencies intelligently', async () => {
+  it("analyzes dependencies intelligently", async () => {
     const output = await runAgent({
       adr: SAMPLE_ADR,
       spec: SAMPLE_SPEC,
       vtm_summary: {
         incomplete_tasks: [
-          { id: 'TASK-003', title: 'Setup', status: 'pending' },
-          { id: 'TASK-004', title: 'Core', status: 'pending' }
-        ]
-      }
+          { id: "TASK-003", title: "Setup", status: "pending" },
+          { id: "TASK-004", title: "Core", status: "pending" },
+        ],
+      },
     })
 
-    const task = output.tasks.find(t =>
-      t.title.includes('Build on core')
-    )
-    expect(task.dependencies).toContain('TASK-004')
-    expect(task.dependency_reasoning['TASK-004']).toBeTruthy()
+    const task = output.tasks.find((t) => t.title.includes("Build on core"))
+    expect(task.dependencies).toContain("TASK-004")
+    expect(task.dependency_reasoning["TASK-004"]).toBeTruthy()
   })
 
-  it('does not depend on completed tasks', async () => {
+  it("does not depend on completed tasks", async () => {
     const output = await runAgent({
       adr: SAMPLE_ADR,
       spec: SAMPLE_SPEC,
       vtm_summary: {
-        incomplete_tasks: [{ id: 'TASK-005', status: 'pending' }],
+        incomplete_tasks: [{ id: "TASK-005", status: "pending" }],
         completed_capabilities: [
-          { id: 'TASK-001', title: 'Setup', capabilities: ['Setup'] }
-        ]
-      }
+          { id: "TASK-001", title: "Setup", capabilities: ["Setup"] },
+        ],
+      },
     })
 
-    output.tasks.forEach(task => {
-      expect(task.dependencies).not.toContain('TASK-001')
+    output.tasks.forEach((task) => {
+      expect(task.dependencies).not.toContain("TASK-001")
     })
   })
 })
@@ -2227,34 +2292,34 @@ describe('Task Extraction Agent', () => {
 
 ### VTM Summary Errors
 
-| Error | Cause | Message | Exit Code |
-|-------|-------|---------|-----------|
-| VTM not found | vtm.json missing | "VTM file not found at {path}" | 1 |
-| Invalid VTM | Corrupted JSON | "Invalid VTM: {parse error}" | 1 |
-| Write failed | Output file error | "Failed to write to {file}" | 1 |
+| Error         | Cause             | Message                        | Exit Code |
+| ------------- | ----------------- | ------------------------------ | --------- |
+| VTM not found | vtm.json missing  | "VTM file not found at {path}" | 1         |
+| Invalid VTM   | Corrupted JSON    | "Invalid VTM: {parse error}"   | 1         |
+| Write failed  | Output file error | "Failed to write to {file}"    | 1         |
 
 ### VTM Ingest Errors
 
-| Error | Cause | Message | Exit Code |
-|-------|-------|---------|-----------|
-| File not found | Input JSON missing | "Input file not found: {path}" | 1 |
-| Invalid JSON | Malformed JSON | "Invalid JSON: {parse error}" | 1 |
-| Schema validation | Missing/invalid fields | "Validation failed: {errors}" | 1 |
-| Dependency error | Non-existent deps | "Dependency {id} does not exist" | 1 |
-| Circular deps | Cycle detected | "Circular dependency: {cycle}" | 1 |
-| Forward reference | Invalid dep order | "Cannot depend on {id} (forward ref)" | 1 |
-| Write failed | vtm.json write error | "Failed to write VTM: {error}" | 1 |
+| Error             | Cause                  | Message                               | Exit Code |
+| ----------------- | ---------------------- | ------------------------------------- | --------- |
+| File not found    | Input JSON missing     | "Input file not found: {path}"        | 1         |
+| Invalid JSON      | Malformed JSON         | "Invalid JSON: {parse error}"         | 1         |
+| Schema validation | Missing/invalid fields | "Validation failed: {errors}"         | 1         |
+| Dependency error  | Non-existent deps      | "Dependency {id} does not exist"      | 1         |
+| Circular deps     | Cycle detected         | "Circular dependency: {cycle}"        | 1         |
+| Forward reference | Invalid dep order      | "Cannot depend on {id} (forward ref)" | 1         |
+| Write failed      | vtm.json write error   | "Failed to write VTM: {error}"        | 1         |
 
 ### Plan-to-VTM Errors
 
-| Error | Cause | Message | Exit Code |
-|-------|-------|---------|-----------|
-| ADR not found | Missing file | "ADR file not found: {path}" | 1 |
-| Spec not found | Missing file | "Spec file not found: {path}" | 1 |
-| Invalid pairing | No ADR reference | "Spec does not reference ADR" | 0 (warning) |
-| Agent error | Agent failed | "Agent failed: {error}" | 1 |
-| Validation error | Invalid output | "Validation failed: {errors}" | 1 |
-| User cancelled | Declined confirmation | "Cancelled" | 0 |
+| Error            | Cause                 | Message                       | Exit Code   |
+| ---------------- | --------------------- | ----------------------------- | ----------- |
+| ADR not found    | Missing file          | "ADR file not found: {path}"  | 1           |
+| Spec not found   | Missing file          | "Spec file not found: {path}" | 1           |
+| Invalid pairing  | No ADR reference      | "Spec does not reference ADR" | 0 (warning) |
+| Agent error      | Agent failed          | "Agent failed: {error}"       | 1           |
+| Validation error | Invalid output        | "Validation failed: {errors}" | 1           |
+| User cancelled   | Declined confirmation | "Cancelled"                   | 0           |
 
 ### Error Message Format
 
@@ -2298,57 +2363,57 @@ See [Plan Domain Command: Agent Prompt Template](#plan-domain-command) above.
 
 ```json
 {
-  "project": {
-    "name": "VTM CLI",
-    "description": "Token-efficient task management for Claude Code"
-  },
-  "stats": {
-    "total_tasks": 25,
-    "completed": 15,
-    "in_progress": 2,
-    "pending": 8,
-    "blocked": 0
-  },
-  "incomplete_tasks": [
-    {
-      "id": "TASK-016",
-      "title": "Implement VTM summary command",
-      "description": "Create vtm summary command with --incomplete and --json flags...",
-      "acceptance_criteria": [
-        "vtm summary --incomplete filters to non-completed tasks",
-        "vtm summary --json outputs valid JSON",
-        "Token reduction of 80%+ achieved"
-      ],
-      "dependencies": ["TASK-001", "TASK-002"],
-      "test_strategy": "TDD",
-      "risk": "medium",
-      "estimated_hours": 3,
-      "files": {
-        "create": ["src/lib/vtm-summary.ts", "src/lib/vtm-summary.test.ts"],
-        "modify": ["src/index.ts"],
-        "delete": []
-      },
-      "status": "pending"
-    }
-  ],
   "completed_capabilities": [
     {
-      "id": "TASK-001",
-      "title": "Set up project structure",
+      "capabilities": [
+        "TypeScript compilation",
+        "Project structure",
+        "Build system"
+      ],
+      "completed_at": "2025-10-28T11:30:00Z",
       "files_created": [
         "package.json",
         "tsconfig.json",
         "src/index.ts",
         "src/lib/types.ts"
       ],
-      "capabilities": [
-        "TypeScript compilation",
-        "Project structure",
-        "Build system"
-      ],
-      "completed_at": "2025-10-28T11:30:00Z"
+      "id": "TASK-001",
+      "title": "Set up project structure"
     }
-  ]
+  ],
+  "incomplete_tasks": [
+    {
+      "acceptance_criteria": [
+        "vtm summary --incomplete filters to non-completed tasks",
+        "vtm summary --json outputs valid JSON",
+        "Token reduction of 80%+ achieved"
+      ],
+      "dependencies": ["TASK-001", "TASK-002"],
+      "description": "Create vtm summary command with --incomplete and --json flags...",
+      "estimated_hours": 3,
+      "files": {
+        "create": ["src/lib/vtm-summary.ts", "src/lib/vtm-summary.test.ts"],
+        "delete": [],
+        "modify": ["src/index.ts"]
+      },
+      "id": "TASK-016",
+      "risk": "medium",
+      "status": "pending",
+      "test_strategy": "TDD",
+      "title": "Implement VTM summary command"
+    }
+  ],
+  "project": {
+    "description": "Token-efficient task management for Claude Code",
+    "name": "VTM CLI"
+  },
+  "stats": {
+    "blocked": 0,
+    "completed": 15,
+    "in_progress": 2,
+    "pending": 8,
+    "total_tasks": 25
+  }
 }
 ```
 
@@ -2358,44 +2423,26 @@ See [Plan Domain Command: Agent Prompt Template](#plan-domain-command) above.
 {
   "tasks": [
     {
-      "title": "Create VTMSummarizer class",
-      "description": "Implement VTMSummarizer class that generates token-efficient summaries by filtering incomplete tasks and extracting capabilities from completed tasks.",
       "acceptance_criteria": [
         "VTMSummarizer.generateSummary() returns JSON with incomplete_tasks and completed_capabilities",
         "Incomplete tasks include all fields",
         "Completed tasks reduced to capabilities summary",
         "Token reduction of 80%+ achieved"
       ],
-      "dependencies": ["TASK-002"],
-      "dependency_reasoning": {
-        "TASK-002": "Requires VTMReader to load and filter tasks from vtm.json"
-      },
-      "test_strategy": "TDD",
-      "test_strategy_rationale": "Core data transformation logic requires comprehensive unit tests to ensure correct filtering and capability extraction",
-      "risk": "medium",
-      "estimated_hours": 3,
-      "files": {
-        "create": [
-          "src/lib/vtm-summary.ts",
-          "src/lib/vtm-summary.test.ts"
-        ],
-        "modify": [],
-        "delete": []
-      },
       "context": {
         "adr": {
-          "decision": "Use token-efficient summaries to reduce context size for agents",
-          "rationale": "Full VTM context (~10,000 tokens) exceeds typical agent budgets. Filtering to incomplete tasks + capability summaries reduces to ~2,000 tokens.",
           "constraints": [
             "Must preserve all information needed for dependency analysis",
             "Must be parseable by agents (JSON format)",
             "Must maintain traceability to original tasks"
           ],
+          "decision": "Use token-efficient summaries to reduce context size for agents",
+          "rationale": "Full VTM context (~10,000 tokens) exceeds typical agent budgets. Filtering to incomplete tasks + capability summaries reduces to ~2,000 tokens.",
           "relevant_sections": [
             {
-              "section": "Token Efficiency Requirements",
-              "line_start": 42,
               "line_end": 58,
+              "line_start": 42,
+              "section": "Token Efficiency Requirements",
               "summary": "Specifies 80%+ token reduction requirement and JSON output format"
             }
           ]
@@ -2406,19 +2453,13 @@ See [Plan Domain Command: Agent Prompt Template](#plan-domain-command) above.
             "Incomplete tasks include all fields",
             "Completed tasks reduced to capabilities summary"
           ],
-          "test_requirements": [
-            "Unit test filtering logic",
-            "Unit test capability extraction",
-            "Unit test JSON output format",
-            "Integration test with real VTM files"
-          ],
           "code_examples": [
             {
-              "language": "typescript",
               "code": "const summarizer = new VTMSummarizer()\nconst summary = await summarizer.generateSummary({ incomplete: true, json: true })\nconst parsed = JSON.parse(summary)",
-              "line_start": 120,
+              "description": "Usage example from spec",
+              "language": "typescript",
               "line_end": 123,
-              "description": "Usage example from spec"
+              "line_start": 120
             }
           ],
           "constraints": [
@@ -2428,13 +2469,34 @@ See [Plan Domain Command: Agent Prompt Template](#plan-domain-command) above.
           ],
           "relevant_sections": [
             {
-              "section": "VTM Summary Implementation",
+              "line_end": 145,
               "line_start": 85,
-              "line_end": 145
+              "section": "VTM Summary Implementation"
             }
+          ],
+          "test_requirements": [
+            "Unit test filtering logic",
+            "Unit test capability extraction",
+            "Unit test JSON output format",
+            "Integration test with real VTM files"
           ]
         }
-      }
+      },
+      "dependencies": ["TASK-002"],
+      "dependency_reasoning": {
+        "TASK-002": "Requires VTMReader to load and filter tasks from vtm.json"
+      },
+      "description": "Implement VTMSummarizer class that generates token-efficient summaries by filtering incomplete tasks and extracting capabilities from completed tasks.",
+      "estimated_hours": 3,
+      "files": {
+        "create": ["src/lib/vtm-summary.ts", "src/lib/vtm-summary.test.ts"],
+        "delete": [],
+        "modify": []
+      },
+      "risk": "medium",
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Core data transformation logic requires comprehensive unit tests to ensure correct filtering and capability extraction",
+      "title": "Create VTMSummarizer class"
     }
   ]
 }
@@ -2444,9 +2506,9 @@ See [Plan Domain Command: Agent Prompt Template](#plan-domain-command) above.
 
 ## Revision History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0.0 | 2025-10-29 | VTM Core Team | Initial specification |
+| Version | Date       | Author        | Changes               |
+| ------- | ---------- | ------------- | --------------------- |
+| 1.0.0   | 2025-10-29 | VTM Core Team | Initial specification |
 
 ---
 

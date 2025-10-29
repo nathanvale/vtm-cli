@@ -10,13 +10,13 @@
 
 The Evolve Command Family enables safe, non-destructive evolution of components from simple to complex. Five core commands manage the entire lifecycle:
 
-| Command | Purpose | Reversible |
-|---------|---------|-----------|
-| `/evolve:add-skill` | Add auto-discovery to command | Yes |
-| `/evolve:to-plugin` | Package domain into team plugin | Yes |
-| `/evolve:split` | Break monolithic into focused pieces | Yes |
-| `/evolve:remove-skill` | Remove auto-discovery from command | Yes |
-| `/evolve:rollback` | Return to previous version | Yes |
+| Command                | Purpose                              | Reversible |
+| ---------------------- | ------------------------------------ | ---------- |
+| `/evolve:add-skill`    | Add auto-discovery to command        | Yes        |
+| `/evolve:to-plugin`    | Package domain into team plugin      | Yes        |
+| `/evolve:split`        | Break monolithic into focused pieces | Yes        |
+| `/evolve:remove-skill` | Remove auto-discovery from command   | Yes        |
+| `/evolve:rollback`     | Return to previous version           | Yes        |
 
 ---
 
@@ -25,9 +25,11 @@ The Evolve Command Family enables safe, non-destructive evolution of components 
 ### 1. **Specification Files**
 
 #### `.claude/SPEC-lifecycle-layer-evolve.md` (7,500+ lines)
+
 Complete technical specification for all evolve operations.
 
 **Includes:**
+
 - Full command documentation for each of 5 commands
 - Process flows with step-by-step interactions
 - Error handling and validation
@@ -38,6 +40,7 @@ Complete technical specification for all evolve operations.
 - Success criteria and testing strategy
 
 **Key Sections:**
+
 - Core Design Principles (non-breaking, reversible, observable, safe)
 - Command 1: `/evolve:add-skill` (add auto-discovery)
 - Command 2: `/evolve:to-plugin` (package as plugin)
@@ -55,9 +58,11 @@ Complete technical specification for all evolve operations.
 ### 2. **User Guide**
 
 #### `.claude/EVOLVE-GUIDE.md` (3,500+ lines)
+
 Practical user guide with detailed walkthroughs and examples.
 
 **Includes:**
+
 - Quick start for all 5 commands
 - Example 1: PM domain evolution workflow (simple command → plugin)
 - Example 2: Splitting complex domain
@@ -70,6 +75,7 @@ Practical user guide with detailed walkthroughs and examples.
 - FAQ covering common questions
 
 **Key Workflows:**
+
 1. **PM Domain Example** - Real-world evolution from command to plugin
 2. **Split Analysis** - How to analyze and split monolithic domains
 3. **Team Evolution** - Coordinating changes across team
@@ -82,9 +88,11 @@ Practical user guide with detailed walkthroughs and examples.
 ### 3. **Template Library**
 
 #### `.claude/lib/evolve-templates.json` (1,000+ lines)
+
 JSON templates and configuration for skill/plugin generation.
 
 **Contains:**
+
 - `skill_templates`: Generic skill template + domain-specific variants (pm, deploy, test)
 - `plugin_manifest_template`: Complete plugin.yaml structure
 - `plugin_readme_template`: User guide template
@@ -104,9 +112,11 @@ JSON templates and configuration for skill/plugin generation.
 ### 4. **Implementation Code**
 
 #### `.claude/lib/evolve.ts` (800+ lines)
+
 TypeScript implementation of EvolveManager class.
 
 **Key Classes:**
+
 ```typescript
 export class EvolveManager {
   // Public API
@@ -128,6 +138,7 @@ export class EvolveManager {
 ```
 
 **Features:**
+
 - Safe file operations with backups
 - Evolution history tracking
 - Component discovery and analysis
@@ -190,21 +201,25 @@ Success message + undo guidance
 ### Integration Points
 
 **With Registry:**
+
 - All evolutions auto-update `.claude/registry.json`
 - Evolution history recorded in `.claude/history/`
 - Quality scores tracked
 
 **With Quality Gates:**
+
 - Preview shows quality impact
 - Low quality blocks evolution (unless forced)
 - Suggestions for improvement
 
 **With Testing:**
+
 - Post-evolution can run `/test:command`
 - Quality gates check before major evolutions
 - Test results recorded in history
 
 **With Documentation:**
+
 - Migration guides auto-generated
 - Deprecation notices added
 - Team communication templates
@@ -216,20 +231,23 @@ Success message + undo guidance
 ### Example 1: Add Skill for Auto-Discovery
 
 **Code:**
+
 ```typescript
 const evolve = new EvolveManager()
-evolve.addSkill('pm:next', ['next task', 'what should I work on'])
+evolve.addSkill("pm:next", ["next task", "what should I work on"])
 ```
 
 **Result:**
+
 - Creates `.claude/skills/pm-next-discovery/SKILL.md`
 - Adds skill_id to command metadata
 - Records evolution history
 - User can now say "what should I work on?" and Claude suggests `/pm:next`
 
 **Rollback:**
+
 ```typescript
-evolve.removeSkill('pm:next')
+evolve.removeSkill("pm:next")
 ```
 
 ---
@@ -237,12 +255,14 @@ evolve.removeSkill('pm:next')
 ### Example 2: Package as Plugin
 
 **Code:**
+
 ```typescript
 const evolve = new EvolveManager()
-evolve.toPlugin('pm', '1.0.0', 'PM Automation Plugin')
+evolve.toPlugin("pm", "1.0.0", "PM Automation Plugin")
 ```
 
 **Result:**
+
 - Creates `.claude/plugins/pm-automation/` with:
   - `plugin.yaml` (manifest)
   - `README.md` (user guide)
@@ -254,8 +274,9 @@ evolve.toPlugin('pm', '1.0.0', 'PM Automation Plugin')
 - Ready to zip and share with team
 
 **Rollback:**
+
 ```typescript
-evolve.rollback('pm', null, { options: {} })
+evolve.rollback("pm", null, { options: {} })
 // Returns to pre-plugin state
 ```
 
@@ -264,9 +285,10 @@ evolve.rollback('pm', null, { options: {} })
 ### Example 3: Analyze Split Opportunities
 
 **Code:**
+
 ```typescript
 const evolve = new EvolveManager()
-const analysis = evolve.analyzeSplit('pm', 3)
+const analysis = evolve.analyzeSplit("pm", 3)
 
 // Returns SplitAnalysis with:
 // - Current complexity metrics
@@ -277,6 +299,7 @@ const analysis = evolve.analyzeSplit('pm', 3)
 ```
 
 **Usage:**
+
 - Understand current structure
 - Make data-driven split decision
 - Plan migration phases
@@ -287,12 +310,14 @@ const analysis = evolve.analyzeSplit('pm', 3)
 ### Example 4: Remove Skill
 
 **Code:**
+
 ```typescript
 const evolve = new EvolveManager()
-evolve.removeSkill('pm:next')
+evolve.removeSkill("pm:next")
 ```
 
 **Result:**
+
 - Removes `.claude/skills/pm-next-discovery/`
 - Archives to `.archive/`
 - Updates command metadata
@@ -300,8 +325,9 @@ evolve.removeSkill('pm:next')
 - No auto-discovery
 
 **Rollback:**
+
 ```typescript
-evolve.addSkill('pm:next')
+evolve.addSkill("pm:next")
 ```
 
 ---
@@ -309,13 +335,15 @@ evolve.addSkill('pm:next')
 ### Example 5: Rollback Evolution
 
 **Code:**
+
 ```typescript
 const evolve = new EvolveManager()
-evolve.rollback('pm:next', 'v1.0.1')
+evolve.rollback("pm:next", "v1.0.1")
 // Or: evolve.rollback('pm:next') for previous version
 ```
 
 **Result:**
+
 - Shows evolution history
 - Restores to target version
 - Files restored from backup
@@ -347,6 +375,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 ### Testing Strategy
 
 **Unit Tests:** (To be created in test files)
+
 - Command parsing
 - Trigger phrase validation
 - File generation
@@ -354,6 +383,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 - Quality calculation
 
 **Integration Tests:**
+
 - Full add-skill workflow
 - Full to-plugin workflow
 - Split analysis accuracy
@@ -361,6 +391,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 - History tracking
 
 **User Tests:**
+
 - New user can follow guide
 - Generated code is functional
 - Troubleshooting solutions work
@@ -371,30 +402,35 @@ evolve.rollback('pm:next', 'v1.0.1')
 ## Integration Roadmap
 
 ### Phase 1: Foundation (Week 1)
+
 - Create `/evolve:add-skill` command
 - Create `/evolve:remove-skill` command
 - Test skill creation and removal
 - Integrate with registry
 
 ### Phase 2: Packaging (Week 2)
+
 - Create `/evolve:to-plugin` command
 - Generate plugin manifests
 - Create plugin documentation
 - Test plugin creation
 
 ### Phase 3: Analysis (Week 2-3)
+
 - Create `/evolve:split` command
 - Implement split analysis
 - Generate migration guides
 - Test split suggestions
 
 ### Phase 4: Lifecycle (Week 3)
+
 - Create `/evolve:rollback` command
 - Implement history tracking
 - Test rollback functionality
 - Integration tests
 
 ### Phase 5: Polish (Week 4)
+
 - Add auto-discovery skill for evolve commands
 - Update registry
 - Full end-to-end testing
@@ -405,12 +441,14 @@ evolve.rollback('pm:next', 'v1.0.1')
 ## Success Criteria
 
 ### Specification Complete ✅
+
 - [x] All 5 commands fully documented
 - [x] Process flows with interaction examples
 - [x] Error handling matrix
 - [x] Configuration formats
 
 ### User Guide Complete ✅
+
 - [x] Quick start section
 - [x] 5 detailed examples (PM, split, complex, team, quality)
 - [x] Workflow templates
@@ -418,6 +456,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 - [x] FAQ
 
 ### Implementation Complete ✅
+
 - [x] EvolveManager class with all methods
 - [x] Template library (templates.json)
 - [x] Type definitions
@@ -425,6 +464,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 - [x] Evolution history tracking
 
 ### Ready for Integration ✅
+
 - [x] TypeScript implementation
 - [x] Follows project patterns
 - [x] Error handling
@@ -435,19 +475,20 @@ evolve.rollback('pm:next', 'v1.0.1')
 
 ## File References
 
-| File | Location | Purpose | Size |
-|------|----------|---------|------|
-| Specification | `.claude/SPEC-lifecycle-layer-evolve.md` | Technical reference | 7,500+ lines |
-| User Guide | `.claude/EVOLVE-GUIDE.md` | Practical walkthroughs | 3,500+ lines |
-| Implementation | `.claude/lib/evolve.ts` | TypeScript class | 800+ lines |
-| Templates | `.claude/lib/evolve-templates.json` | Configuration | 1,000+ lines |
-| This Index | `.claude/EVOLVE-IMPLEMENTATION-INDEX.md` | Overview | This file |
+| File           | Location                                 | Purpose                | Size         |
+| -------------- | ---------------------------------------- | ---------------------- | ------------ |
+| Specification  | `.claude/SPEC-lifecycle-layer-evolve.md` | Technical reference    | 7,500+ lines |
+| User Guide     | `.claude/EVOLVE-GUIDE.md`                | Practical walkthroughs | 3,500+ lines |
+| Implementation | `.claude/lib/evolve.ts`                  | TypeScript class       | 800+ lines   |
+| Templates      | `.claude/lib/evolve-templates.json`      | Configuration          | 1,000+ lines |
+| This Index     | `.claude/EVOLVE-IMPLEMENTATION-INDEX.md` | Overview               | This file    |
 
 ---
 
 ## Next Steps
 
 ### For Implementation Team
+
 1. Review specification in `SPEC-lifecycle-layer-evolve.md`
 2. Integrate `EvolveManager` class from `evolve.ts`
 3. Create CLI commands using templates
@@ -455,6 +496,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 5. Deploy and monitor
 
 ### For Users
+
 1. Read `EVOLVE-GUIDE.md` for examples
 2. Follow Example 1 to understand workflow
 3. Use commands in your own domain
@@ -462,6 +504,7 @@ evolve.rollback('pm:next', 'v1.0.1')
 5. Provide feedback for improvements
 
 ### For Architects
+
 1. Review architecture overview above
 2. Check integration points with registry
 3. Validate quality gate implementation

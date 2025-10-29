@@ -106,7 +106,7 @@ END: You have your architecture!
 
 ```
                     SLASH     SKILLS    MCP      HOOKS    SUBAGENTS  PLUGINS
-                    COMMANDS           SERVERS           
+                    COMMANDS           SERVERS
 ────────────────────────────────────────────────────────────────────────────
 User-invoked        ✓ YES     Limited   ✗        ✗        ✓ Can       ✓ YES
                               (via cmd)                    trigger    (bundles)
@@ -223,13 +223,13 @@ STARTUP SEQUENCE:
 
 2. User says something
    └─→ Claude checks: Does this match any trigger_phrases?
-       
+
        Example: User says "I want to create a worktree for feature-auth"
-       
+
        Skill has: trigger_phrases: ["create a worktree", "parallel development"]
-       
+
        ✓ MATCH! → Full SKILL.md loads (rich instructions, examples, context)
-       
+
        ✗ NO MATCH → Skill stays lightweight (not loaded)
 
 3. Claude responds
@@ -237,7 +237,7 @@ STARTUP SEQUENCE:
    └─→ Suggests relevant commands
    └─→ Auto-invokes when appropriate
 
-RESULT: Feels like Claude knows your workflows perfectly, but actually 
+RESULT: Feels like Claude knows your workflows perfectly, but actually
        it's intelligent trigger-based discovery.
 ```
 
@@ -293,8 +293,8 @@ Status: Public, indexed, discoverable
 Usage: /plugin install my-task-plugin@community
 Sharing: Global audience, contributions welcome
 
-KEY INSIGHT: Each stage is just organization + metadata. The commands 
-             themselves don't change much. It's about presentation and 
+KEY INSIGHT: Each stage is just organization + metadata. The commands
+             themselves don't change much. It's about presentation and
              distribution.
 ```
 
@@ -338,7 +338,7 @@ DIRECTORY STRUCTURE:
           └── validate-branch.sh    (prevent commits to main)
 
 USAGE PROGRESSION:
-  
+
   Individual: /project:worktree:create feature-auth 3001
   Team: /plugin install git-worktree-manager@company
         (Everyone gets commands + skills + hooks)
@@ -351,14 +351,14 @@ USAGE PROGRESSION:
 
 ## When to Use Each Component: Quick Reference
 
-| Component | For | Start With | Example |
-|-----------|-----|------------|---------|
-| **Commands** | Quick utilities | `.md` file | `worktree-create.md` |
-| **Skills** | Auto-discovery | Add to command | "trigger_phrases" |
-| **MCP** | External systems | `mcp.json` config | Database connection |
-| **Hooks** | Auto-enforcement | `pre-commit/` script | Lint on commit |
-| **Subagents** | Specialists | `.yaml` definition | Validator + Deployer |
-| **Plugins** | Team/sharing | `plugin.yaml` | Packaged workflow |
+| Component     | For              | Start With           | Example              |
+| ------------- | ---------------- | -------------------- | -------------------- |
+| **Commands**  | Quick utilities  | `.md` file           | `worktree-create.md` |
+| **Skills**    | Auto-discovery   | Add to command       | "trigger_phrases"    |
+| **MCP**       | External systems | `mcp.json` config    | Database connection  |
+| **Hooks**     | Auto-enforcement | `pre-commit/` script | Lint on commit       |
+| **Subagents** | Specialists      | `.yaml` definition   | Validator + Deployer |
+| **Plugins**   | Team/sharing     | `plugin.yaml`        | Packaged workflow    |
 
 ---
 
@@ -410,11 +410,11 @@ RESULT: Claude loads fast, rich context only when needed
 
 ## Community Patterns at a Glance
 
-| Developer | Pattern | Repo |
-|-----------|---------|------|
-| **Jeremy Longshore** | 234+ production plugins | `github.com/jeremylongshore/claude-code-plugins-plus` |
-| **Kenny Liao** | Trigger phrase optimization | YouTube: "The Only Claude Skills Guide" |
-| **Leon van Zyl** | Plugin distribution workflow | YouTube: "Plugins Changed My Workflow" |
+| Developer            | Pattern                      | Repo                                                  |
+| -------------------- | ---------------------------- | ----------------------------------------------------- |
+| **Jeremy Longshore** | 234+ production plugins      | `github.com/jeremylongshore/claude-code-plugins-plus` |
+| **Kenny Liao**       | Trigger phrase optimization  | YouTube: "The Only Claude Skills Guide"               |
+| **Leon van Zyl**     | Plugin distribution workflow | YouTube: "Plugins Changed My Workflow"                |
 
 LESSON: If you're building similar workflows, use these patterns. They're proven.
 
@@ -424,7 +424,7 @@ LESSON: If you're building similar workflows, use these patterns. They're proven
 
 Ask yourself:
 
-1. **Is it organized?** 
+1. **Is it organized?**
    - [ ] Commands grouped by domain (git/, testing/, deploy/)
    - [ ] Skills at root with trigger phrases
    - [ ] Each component has clear responsibility

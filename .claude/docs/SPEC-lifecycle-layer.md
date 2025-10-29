@@ -17,7 +17,7 @@ The **Lifecycle Layer (Layer 2)** transforms the Composable Claude Code System f
 
 This layer uses the registry built by `/registry:scan` (Layer 1) to discover components and manage their lifecycle transitions.
 
-**Key Philosophy:** *Components naturally evolve from simple command → skilled command → plugin → multi-domain system without breaking changes.*
+**Key Philosophy:** _Components naturally evolve from simple command → skilled command → plugin → multi-domain system without breaking changes._
 
 ---
 
@@ -26,6 +26,7 @@ This layer uses the registry built by `/registry:scan` (Layer 1) to discover com
 ### Purpose
 
 Engineering workflow operations that:
+
 1. Validate that individual components and their interactions work
 2. Systematically improve components through safe, reversible evolution
 3. Measure quality and track progress
@@ -67,6 +68,7 @@ Plugin (packaged, shareable)
 ```
 
 Each state transition is:
+
 - **Validated**: Tests must pass before transition
 - **Reversible**: Can undo with `/evolve:rollback`
 - **Observable**: Registry updates reflect state
@@ -88,12 +90,12 @@ Validate that a single command component works correctly in isolation before usi
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command-name` | string | Yes | Full command name (e.g., `pm:next`, `testing:unit`) |
-| `--verbose` | flag | No | Show detailed execution logs |
-| `--coverage` | flag | No | Measure code coverage of tests |
-| `--quick` | flag | No | Run fast validation only (skip deep tests) |
+| Parameter      | Type   | Required | Description                                         |
+| -------------- | ------ | -------- | --------------------------------------------------- |
+| `command-name` | string | Yes      | Full command name (e.g., `pm:next`, `testing:unit`) |
+| `--verbose`    | flag   | No       | Show detailed execution logs                        |
+| `--coverage`   | flag   | No       | Measure code coverage of tests                      |
+| `--quick`      | flag   | No       | Run fast validation only (skip deep tests)          |
 
 ### Input Examples
 
@@ -121,6 +123,7 @@ System:
 **Step 2: Extract Metadata**
 
 Parse the command file to identify:
+
 - Command signature and parameters
 - Expected inputs/outputs
 - Example usage
@@ -129,21 +132,15 @@ Parse the command file to identify:
 
 ```json
 {
+  "dependencies": ["pm-notion (mcp)"],
+  "examples": ["/pm:next", "/pm:next pending", "/pm:next in-progress 10"],
   "name": "pm:next",
-  "path": ".claude/commands/pm/next.md",
-  "signature": "pm:next [filter] [limit]",
   "parameters": {
     "filter": "optional: status filter (pending|in-progress|blocked)",
     "limit": "optional: max results (default: 5)"
   },
-  "examples": [
-    "/pm:next",
-    "/pm:next pending",
-    "/pm:next in-progress 10"
-  ],
-  "dependencies": [
-    "pm-notion (mcp)"
-  ]
+  "path": ".claude/commands/pm/next.md",
+  "signature": "pm:next [filter] [limit]"
 }
 ```
 
@@ -154,6 +151,7 @@ Parse the command file to identify:
 Every command must pass 4 test categories:
 
 #### **Test 1: Syntax Validation**
+
 - Command signature matches parameter expectations
 - Parameters are properly documented
 - Examples are valid syntax
@@ -172,6 +170,7 @@ Test: Syntax Validation (pm:next)
 #### **Test 2: Execution Test**
 
 Execute the command with example inputs and verify:
+
 - Command executes without errors
 - Output format matches documented spec
 - Error handling works (invalid args produce error, not crash)
@@ -197,6 +196,7 @@ Output:
 #### **Test 3: Integration Dependencies**
 
 Verify command can find and access its dependencies:
+
 - External systems (MCP) are configured and accessible
 - Required environment variables are set
 - Dependent commands exist and are callable
@@ -218,6 +218,7 @@ Test: Dependencies (pm:next)
 #### **Test 4: Error Handling**
 
 Test error scenarios:
+
 - Invalid parameters produce helpful errors
 - Missing dependencies show useful error message
 - Timeout behavior is graceful
@@ -247,6 +248,7 @@ Test: Error Handling (pm:next)
 ### Test Report Output
 
 **Console Output:**
+
 ```
 ────────────────────────────────────────────────────
 Test Report: pm:next
@@ -352,6 +354,7 @@ Save to: `.claude/test-results/{command-id}.json`
 ### Integration with MCC
 
 This command uses:
+
 - **Registry**: Finds command in component registry
 - **Metadata**: Reads command's documented interface
 - **Structure**: Expects `.claude/commands/{namespace}/{command}.md`
@@ -443,13 +446,13 @@ Test that two or more components interact correctly. Ensures skills, commands, a
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `component-a` | string | Yes | First component (command, skill, MCP) |
-| `component-b` | string | Yes | Second component to test interaction |
-| `--scenario` | string | No | Named interaction scenario (default: basic) |
-| `--stress` | flag | No | Run stress test (high volume interaction) |
-| `--verbose` | flag | No | Show detailed interaction logs |
+| Parameter     | Type   | Required | Description                                 |
+| ------------- | ------ | -------- | ------------------------------------------- |
+| `component-a` | string | Yes      | First component (command, skill, MCP)       |
+| `component-b` | string | Yes      | Second component to test interaction        |
+| `--scenario`  | string | No       | Named interaction scenario (default: basic) |
+| `--stress`    | flag   | No       | Run stress test (high volume interaction)   |
+| `--verbose`   | flag   | No       | Show detailed interaction logs              |
 
 ### Input Examples
 
@@ -478,6 +481,7 @@ System:
 **Step 2: Extract Component Definitions**
 
 Identify:
+
 - Component types (command, skill, MCP)
 - How they interact (skill triggers command)
 - Data flow (outputs of A → inputs of B)
@@ -487,21 +491,21 @@ Identify:
 {
   "component_a": {
     "id": "pm:next",
-    "type": "command",
     "outputs": ["tasks array"],
-    "performance": {"avg_time_ms": 245}
+    "performance": { "avg_time_ms": 245 },
+    "type": "command"
   },
   "component_b": {
     "id": "pm-expert",
-    "type": "skill",
-    "trigger_phrases": ["what should I work on"],
     "invokes": ["pm:next", "pm:review"],
+    "trigger_phrases": ["what should I work on"],
+    "type": "skill",
     "type": "skill"
   },
   "interaction": {
-    "type": "trigger",
+    "data_flow": "skill invokes command, passes output to user",
     "direction": "skill → command",
-    "data_flow": "skill invokes command, passes output to user"
+    "type": "trigger"
   }
 }
 ```
@@ -513,6 +517,7 @@ Identify:
 #### **Scenario 1: Basic Interaction**
 
 Does B successfully use A?
+
 - B can discover/invoke A
 - Data flows correctly
 - Outputs compatible
@@ -537,6 +542,7 @@ Step 6: Skill formats and presents to user
 #### **Scenario 2: Data Compatibility**
 
 Do outputs of A match inputs of B?
+
 - Type checking (both expect JSON, strings, etc.)
 - Required fields present
 - Format validation
@@ -569,6 +575,7 @@ pm-expert expects:
 #### **Scenario 3: Error Propagation**
 
 If A fails, does B handle it gracefully?
+
 - Error caught, not silent failure
 - User sees helpful error message
 - No cascading failures
@@ -597,6 +604,7 @@ Step 2: pm-expert receives error
 #### **Scenario 4: Performance Under Load**
 
 Do A and B maintain acceptable performance when heavily used?
+
 - Response time stays within limits
 - No memory leaks
 - No resource exhaustion
@@ -624,6 +632,7 @@ Variance: 14ms (acceptable, <20% variance)
 #### **Scenario 5: Concurrent Usage**
 
 Do A and B work correctly when invoked simultaneously?
+
 - No race conditions
 - No resource conflicts
 - Order independence (doesn't matter which runs first)
@@ -695,10 +704,6 @@ Save to: `.claude/test-results/integration-{a}-{b}.json`
 
 ```json
 {
-  "test_id": "integration-pm:next-pm-expert",
-  "test_date": "2025-10-29T15:00:00Z",
-  "status": "passed",
-
   "components": {
     "a": {
       "id": "pm:next",
@@ -712,59 +717,63 @@ Save to: `.claude/test-results/integration-{a}-{b}.json`
     }
   },
 
-  "scenarios": [
-    {
-      "name": "Basic Interaction",
-      "status": "passed",
-      "duration_ms": 425,
-      "details": "Skill successfully invokes command"
-    },
-    {
-      "name": "Data Compatibility",
-      "status": "passed",
-      "duration_ms": 150,
-      "details": "Output format matches expected input"
-    },
-    {
-      "name": "Error Propagation",
-      "status": "passed",
-      "duration_ms": 200,
-      "details": "Errors handled gracefully"
-    },
-    {
-      "name": "Performance Under Load",
-      "status": "passed",
-      "duration_ms": 248000,
-      "metrics": {
-        "iterations": 1000,
-        "avg_ms": 248,
-        "max_ms": 312,
-        "min_ms": 203
-      }
-    },
-    {
-      "name": "Concurrent Usage",
-      "status": "passed",
-      "duration_ms": 450,
-      "metrics": {
-        "concurrent_requests": 10,
-        "all_successful": true,
-        "no_race_conditions": true
-      }
-    }
-  ],
-
   "overall": {
+    "ready_for_production": true,
     "scenarios_passed": 5,
     "scenarios_total": 5,
-    "total_duration_ms": 249225,
-    "ready_for_production": true
+    "total_duration_ms": 249225
   },
 
   "recommendations": [
     "Consider caching task results (would reduce avg from 248ms to ~100ms)",
     "Add request ID tracking for debugging concurrent calls"
-  ]
+  ],
+  "scenarios": [
+    {
+      "details": "Skill successfully invokes command",
+      "duration_ms": 425,
+      "name": "Basic Interaction",
+      "status": "passed"
+    },
+    {
+      "details": "Output format matches expected input",
+      "duration_ms": 150,
+      "name": "Data Compatibility",
+      "status": "passed"
+    },
+    {
+      "details": "Errors handled gracefully",
+      "duration_ms": 200,
+      "name": "Error Propagation",
+      "status": "passed"
+    },
+    {
+      "duration_ms": 248000,
+      "metrics": {
+        "avg_ms": 248,
+        "iterations": 1000,
+        "max_ms": 312,
+        "min_ms": 203
+      },
+      "name": "Performance Under Load",
+      "status": "passed"
+    },
+    {
+      "duration_ms": 450,
+      "metrics": {
+        "all_successful": true,
+        "concurrent_requests": 10,
+        "no_race_conditions": true
+      },
+      "name": "Concurrent Usage",
+      "status": "passed"
+    }
+  ],
+
+  "status": "passed",
+
+  "test_date": "2025-10-29T15:00:00Z",
+  "test_id": "integration-pm:next-pm-expert"
 }
 ```
 
@@ -885,11 +894,11 @@ Enhance a command with automatic discovery via trigger phrases. Transforms a man
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command-id` | string | Yes | Command to enhance (e.g., `pm:next`) |
-| `--triggers` | string | No | Comma-separated trigger phrases |
-| `--description` | string | No | Custom skill description |
+| Parameter       | Type   | Required | Description                          |
+| --------------- | ------ | -------- | ------------------------------------ |
+| `command-id`    | string | Yes      | Command to enhance (e.g., `pm:next`) |
+| `--triggers`    | string | No       | Comma-separated trigger phrases      |
+| `--description` | string | No       | Custom skill description             |
 
 ### Input Examples
 
@@ -920,6 +929,7 @@ Date: 2025-10-29T14:50:00Z
 **Step 2: Extract Command Metadata**
 
 From the command file, extract:
+
 - Command name and description
 - Parameters (what inputs it takes)
 - Use cases (when it should be suggested)
@@ -929,6 +939,7 @@ From the command file, extract:
 {
   "command_id": "pm:next",
   "description": "Get the next PM task to work on",
+  "documentation": "Get next PM task with optional filtering...",
   "parameters": {
     "filter": "optional: status filter",
     "limit": "optional: max results"
@@ -937,8 +948,7 @@ From the command file, extract:
     "User asking what to work on",
     "Beginning a work session",
     "After completing a task"
-  ],
-  "documentation": "Get next PM task with optional filtering..."
+  ]
 }
 ```
 
@@ -1010,6 +1020,7 @@ Automatically suggests getting your next PM task when you need direction.
 ## When Claude Uses This
 
 When you mention things like:
+
 - "What should I work on?" → Suggests `/pm:next`
 - "What's next?" → Suggests `/pm:next`
 - "Next task" → Suggests `/pm:next`
@@ -1042,19 +1053,17 @@ The skill is now part of the system. Update the registry entry for the command:
 
 ```json
 {
+  "can_revert": true,
+  "evolution_path": ["command (v1.0.0) → skilled (v1.1.0)"],
   "id": "pm:next",
-  "type": "command",
-  "status": "skilled",
   "skill_available": {
+    "auto_discovery_enabled": true,
     "name": "pm-next-skill",
     "path": ".claude/skills/pm-next-skill/SKILL.md",
-    "trigger_phrases": 7,
-    "auto_discovery_enabled": true
+    "trigger_phrases": 7
   },
-  "evolution_path": [
-    "command (v1.0.0) → skilled (v1.1.0)"
-  ],
-  "can_revert": true
+  "status": "skilled",
+  "type": "command"
 }
 ```
 
@@ -1200,11 +1209,11 @@ Package a domain's components (commands, skills, MCP, hooks) into a distributabl
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `domain` | string | Yes | Domain to package (e.g., `pm`, `testing`) |
-| `--version` | string | No | Set version (default: auto-increment) |
-| `--publish` | flag | No | Publish to registry (requires auth) |
+| Parameter   | Type   | Required | Description                               |
+| ----------- | ------ | -------- | ----------------------------------------- |
+| `domain`    | string | Yes      | Domain to package (e.g., `pm`, `testing`) |
+| `--version` | string | No       | Set version (default: auto-increment)     |
+| `--publish` | flag   | No       | Publish to registry (requires auth)       |
 
 ### Input Examples
 
@@ -1249,31 +1258,31 @@ Collect information about the plugin:
 
 ```json
 {
-  "domain": "pm",
-  "name": "PM Automation Plugin",
-  "version": "1.0.0",
-  "description": "Complete project management domain with task tracking, auto-discovery, and Notion integration",
-
   "components": {
     "commands": ["pm:next", "pm:review", "pm:context", "pm:list"],
-    "skills": ["pm-expert"],
-    "mcp_servers": ["pm-notion"],
+    "count": 8,
     "hooks": ["pm-validate"],
-    "count": 8
+    "mcp_servers": ["pm-notion"],
+    "skills": ["pm-expert"]
   },
 
+  "description": "Complete project management domain with task tracking, auto-discovery, and Notion integration",
+
+  "domain": "pm",
   "metadata": {
     "author": "user",
     "created_at": "2025-10-29T15:15:00Z",
-    "tags": ["project-management", "pm", "task-tracking", "workflow"],
-    "team_sharing": true,
-    "team_members": ["user1", "user2"],
     "quality": {
-      "test_coverage": "100%",
+      "documentation": "complete",
       "security_reviewed": false,
-      "documentation": "complete"
-    }
-  }
+      "test_coverage": "100%"
+    },
+    "tags": ["project-management", "pm", "task-tracking", "workflow"],
+    "team_members": ["user1", "user2"],
+    "team_sharing": true
+  },
+  "name": "PM Automation Plugin",
+  "version": "1.0.0"
 }
 ```
 
@@ -1483,26 +1492,26 @@ Checksum: sha256:a1b2c3d4e5f6...
 
 ```json
 {
-  "id": "pm-automation",
-  "type": "plugin",
-  "version": "1.0.0",
-  "status": "packaged",
   "components_count": 8,
-  "quality": {
-    "test_coverage": "100%",
-    "tested": true,
-    "documented": true
-  },
   "distribution": {
-    "packaged": true,
-    "package_path": ".claude/plugins/pm-automation/dist/pm-automation-1.0.0.zip",
     "installable": true,
-    "publishable": true,
-    "publish_status": "ready (not published)"
+    "package_path": ".claude/plugins/pm-automation/dist/pm-automation-1.0.0.zip",
+    "packaged": true,
+    "publish_status": "ready (not published)",
+    "publishable": true
   },
   "evolution_path": [
     "scaffold pm → test commands → add skill → package plugin (v1.0.0)"
-  ]
+  ],
+  "id": "pm-automation",
+  "quality": {
+    "documented": true,
+    "test_coverage": "100%",
+    "tested": true
+  },
+  "status": "packaged",
+  "type": "plugin",
+  "version": "1.0.0"
 }
 ```
 
@@ -1663,10 +1672,10 @@ Break a monolithic component into smaller, composable pieces. Reverse of composi
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `component-id` | string | Yes | Component to split |
-| `--parts` | string | No | Parts to extract (default: auto-suggest) |
+| Parameter      | Type   | Required | Description                              |
+| -------------- | ------ | -------- | ---------------------------------------- |
+| `component-id` | string | Yes      | Component to split                       |
+| `--parts`      | string | No       | Parts to extract (default: auto-suggest) |
 
 ### Input Examples
 
@@ -1787,10 +1796,12 @@ Step 4: Refactor pm:next
 # .claude/commands/pm/fetch-tasks.md
 
 ---
+
 name: pm:fetch-tasks
 description: Fetch all tasks from Notion database
 version: 1.0.0
 requires: pm-notion (mcp)
+
 ---
 
 ## Fetch PM Tasks
@@ -1800,7 +1811,7 @@ Get all project management tasks from Notion.
 Usage: /pm:fetch-tasks [format]
 
 Parameters:
-  format (optional): json, csv, text (default: json)
+format (optional): json, csv, text (default: json)
 
 Returns: Array of task objects
 
@@ -1815,15 +1826,18 @@ Connects to Notion database and returns all tasks.
 # .claude/commands/pm/next.md (refactored)
 
 ---
+
 name: pm:next
 description: Get the next PM task to work on
 version: 2.0.0 (refactored)
 requires: pm:fetch-tasks, pm:filter-tasks, pm:sort-tasks
+
 ---
 
 ## Get Next PM Task
 
 Orchestrates:
+
 1. pm:fetch-tasks - Get all tasks
 2. pm:filter-tasks - Filter by status
 3. pm:sort-tasks - Sort by priority
@@ -1853,19 +1867,19 @@ Migrating skills...
 
 ```json
 {
+  "can_revert": true,
   "id": "pm:next",
-  "version": "2.0.0",
-  "status": "refactored",
-  "type": "orchestrator",
   "now_calls": ["pm:fetch-tasks", "pm:filter-tasks", "pm:sort-tasks"],
   "split_history": [
     {
       "date": "2025-10-29",
-      "version": "1.0.0 → 2.0.0",
-      "extracted": ["pm:fetch-tasks", "pm:filter-tasks", "pm:sort-tasks"]
+      "extracted": ["pm:fetch-tasks", "pm:filter-tasks", "pm:sort-tasks"],
+      "version": "1.0.0 → 2.0.0"
     }
   ],
-  "can_revert": true
+  "status": "refactored",
+  "type": "orchestrator",
+  "version": "2.0.0"
 }
 ```
 
@@ -1929,9 +1943,9 @@ Reverse of `/evolve:add-skill`. Remove auto-discovery from a skilled command, re
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `command-id` | string | Yes | Command with skill to remove |
+| Parameter    | Type   | Required | Description                  |
+| ------------ | ------ | -------- | ---------------------------- |
+| `command-id` | string | Yes      | Command with skill to remove |
 
 ### Input Examples
 
@@ -1985,19 +1999,17 @@ Testing pm:next without skill...
 
 ```json
 {
+  "can_restore": true,
+  "evolution_path": ["command → skilled → command (v1.0.0) [reverted]"],
   "id": "pm:next",
-  "type": "command",
-  "status": "command",
   "skill_available": {
+    "auto_discovery_enabled": false,
     "name": "pm-next-skill",
     "path": ".claude/skills/.archived/pm-next-skill/",
-    "status": "archived",
-    "auto_discovery_enabled": false
+    "status": "archived"
   },
-  "evolution_path": [
-    "command → skilled → command (v1.0.0) [reverted]"
-  ],
-  "can_restore": true
+  "status": "command",
+  "type": "command"
 }
 ```
 
@@ -2051,11 +2063,11 @@ Undo an evolution operation. Revert a component to a previous version, including
 
 ### Parameters
 
-| Parameter | Type | Required | Description |
-|-----------|------|----------|-------------|
-| `component-id` | string | Yes | Component to rollback (e.g., `pm:next`) |
-| `version` | string | Yes | Target version (e.g., `v1.0.0`, `before-split`, `previous`) |
-| `--confirm` | flag | No | Skip confirmation (default: ask) |
+| Parameter      | Type   | Required | Description                                                 |
+| -------------- | ------ | -------- | ----------------------------------------------------------- |
+| `component-id` | string | Yes      | Component to rollback (e.g., `pm:next`)                     |
+| `version`      | string | Yes      | Target version (e.g., `v1.0.0`, `before-split`, `previous`) |
+| `--confirm`    | flag   | No       | Skip confirmation (default: ask)                            |
 
 ### Input Examples
 
@@ -2301,51 +2313,50 @@ Save to: `.claude/test-results/{command-id}.json`
 ```json
 {
   "command_id": "pm:next",
-  "test_date": "2025-10-29T14:50:00Z",
-  "status": "passed",
-  "duration_ms": 1875,
-
-  "tests": [
-    {
-      "name": "Syntax Validation",
-      "status": "passed",
-      "duration_ms": 250
-    },
-    {
-      "name": "Execution",
-      "status": "passed",
-      "duration_ms": 245,
-      "output": "..."
-    },
-    {
-      "name": "Integration Dependencies",
-      "status": "passed",
-      "duration_ms": 1200
-    },
-    {
-      "name": "Error Handling",
-      "status": "passed",
-      "duration_ms": 180
-    }
-  ],
-
-  "summary": {
-    "total_tests": 4,
-    "passed": 4,
-    "failed": 0,
-    "skipped": 0
-  },
-
   "coverage": {
-    "percentage": 89,
     "paths_tested": 15,
-    "paths_total": 17
+    "paths_total": 17,
+    "percentage": 89
   },
+
+  "duration_ms": 1875,
 
   "recommendations": [
     "Add retry logic for API",
     "Document timeout",
     "Add example"
+  ],
+  "status": "passed",
+  "summary": {
+    "failed": 0,
+    "passed": 4,
+    "skipped": 0,
+    "total_tests": 4
+  },
+
+  "test_date": "2025-10-29T14:50:00Z",
+  "tests": [
+    {
+      "duration_ms": 250,
+      "name": "Syntax Validation",
+      "status": "passed"
+    },
+    {
+      "duration_ms": 245,
+      "name": "Execution",
+      "output": "...",
+      "status": "passed"
+    },
+    {
+      "duration_ms": 1200,
+      "name": "Integration Dependencies",
+      "status": "passed"
+    },
+    {
+      "duration_ms": 180,
+      "name": "Error Handling",
+      "status": "passed"
+    }
   ]
 }
 ```
@@ -2356,44 +2367,44 @@ Saved in registry entry for each component:
 
 ```json
 {
-  "id": "pm:next",
   "evolution_history": [
     {
-      "version": "1.0.0",
+      "changes": "Initial command created",
       "date": "2025-10-29T14:40:00Z",
-      "type": "scaffold",
       "status": "command",
-      "changes": "Initial command created"
+      "type": "scaffold",
+      "version": "1.0.0"
     },
     {
-      "version": "1.1.0",
-      "date": "2025-10-29T14:55:00Z",
-      "type": "evolve:add-skill",
-      "status": "skilled",
       "changes": "Added auto-discovery skill",
+      "date": "2025-10-29T14:55:00Z",
+      "reverse_command": "/evolve:remove-skill pm:next",
       "reversible": true,
-      "reverse_command": "/evolve:remove-skill pm:next"
+      "status": "skilled",
+      "type": "evolve:add-skill",
+      "version": "1.1.0"
     },
     {
-      "version": "2.0.0",
-      "date": "2025-10-29T15:15:00Z",
-      "type": "evolve:split",
-      "status": "orchestrator",
       "changes": "Split into fetch/filter/sort + orchestrator",
+      "date": "2025-10-29T15:15:00Z",
       "extracted": ["pm:fetch-tasks", "pm:filter-tasks", "pm:sort-tasks"],
+      "reverse_command": "/evolve:rollback pm:next v1.1.0",
       "reversible": true,
-      "reverse_command": "/evolve:rollback pm:next v1.1.0"
+      "status": "orchestrator",
+      "type": "evolve:split",
+      "version": "2.0.0"
     },
     {
-      "version": "2.1.0",
-      "date": "2025-10-29T15:30:00Z",
-      "type": "evolve:to-plugin",
-      "status": "packaged",
       "changes": "Packaged with domain into plugin",
+      "date": "2025-10-29T15:30:00Z",
       "plugin": "pm-automation",
-      "reversible": true
+      "reversible": true,
+      "status": "packaged",
+      "type": "evolve:to-plugin",
+      "version": "2.1.0"
     }
-  ]
+  ],
+  "id": "pm:next"
 }
 ```
 
@@ -2404,6 +2415,7 @@ Saved in registry entry for each component:
 ### Command Tested
 
 ✅ A command is "tested" when:
+
 - Syntax validation passes
 - Execution succeeds with examples
 - All dependencies are satisfied
@@ -2414,6 +2426,7 @@ Saved in registry entry for each component:
 ### Integration Verified
 
 ✅ Integration is "verified" when:
+
 - Basic interaction works
 - Data flows correctly
 - Error propagation handled
@@ -2424,6 +2437,7 @@ Saved in registry entry for each component:
 ### Component Ready
 
 ✅ Component is "ready" when:
+
 - Tested OR Integration verified
 - No unresolved dependencies
 - Documentation complete
@@ -2480,37 +2494,41 @@ The system builds its own testing capability using Layer 1 primitives!
 
 ## Error Handling
 
-| Scenario | Error | Fix |
-|----------|-------|-----|
-| Command not tested | "pm:next must be tested before skill" | Run `/test:command pm:next` |
-| Missing dependency | "Dependency pm-notion not configured" | Set env vars, configure MCP |
-| Integration failed | "Scenario basic-interaction failed" | Debug with `--verbose` flag |
-| Skill not found | "No skill found for pm:next" | Run `/evolve:add-skill pm:next` |
-| Version not found | "Version v1.0.0 not in history" | Check `/registry:scan pm:next` |
-| Rollback has orphans | "pm:fetch-tasks still referenced" | Delete dependents first |
-| Split creates conflict | "pm:filter-tasks already exists" | Use different name |
+| Scenario               | Error                                 | Fix                             |
+| ---------------------- | ------------------------------------- | ------------------------------- |
+| Command not tested     | "pm:next must be tested before skill" | Run `/test:command pm:next`     |
+| Missing dependency     | "Dependency pm-notion not configured" | Set env vars, configure MCP     |
+| Integration failed     | "Scenario basic-interaction failed"   | Debug with `--verbose` flag     |
+| Skill not found        | "No skill found for pm:next"          | Run `/evolve:add-skill pm:next` |
+| Version not found      | "Version v1.0.0 not in history"       | Check `/registry:scan pm:next`  |
+| Rollback has orphans   | "pm:fetch-tasks still referenced"     | Delete dependents first         |
+| Split creates conflict | "pm:filter-tasks already exists"      | Use different name              |
 
 ---
 
 ## Implementation Roadmap
 
 ### Phase 2a (Weeks 3-4): Core Testing
+
 - Build `/test:command` with 4 test scenarios
 - Build `/test:integration` with 5 integration scenarios
 - Test against Layer 1 commands
 
 ### Phase 2b (Weeks 5-6): Safe Evolution
+
 - Build `/evolve:add-skill` with skill creation
 - Build `/evolve:to-plugin` with packaging
 - Build `/evolve:remove-skill` and `/evolve:rollback`
 
 ### Phase 2c (Weeks 7-8): Self-Extension
+
 - Use MCC to scaffold "Lifecycle" domain
 - Implement testing/testing domain
 - Verify all 7 commands work
 - Create integration between all Layer 2 commands
 
 ### Phase 2d (Week 9): Documentation
+
 - Generate examples for each command
 - Create troubleshooting guide
 - Record video walkthroughs

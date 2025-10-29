@@ -95,13 +95,13 @@ export {DOMAIN_SERVICE_DB_ID}="your-database-id"
 
 All commands are available immediately:
 
-| Command | Purpose | When to Use |
-|---------|---------|------------|
-| `/{domain}:next` | Get next item | Starting new work |
-| `/{domain}:context` | Get item details | Need full context before starting |
-| `/{domain}:list` | List all items | Overview of what needs doing |
-| `/{domain}:update` | Update item status | Mark as in-progress, done, etc. |
-| `/{domain}:create` | Create new item | Add task to queue |
+| Command             | Purpose            | When to Use                       |
+| ------------------- | ------------------ | --------------------------------- |
+| `/{domain}:next`    | Get next item      | Starting new work                 |
+| `/{domain}:context` | Get item details   | Need full context before starting |
+| `/{domain}:list`    | List all items     | Overview of what needs doing      |
+| `/{domain}:update`  | Update item status | Mark as in-progress, done, etc.   |
+| `/{domain}:create`  | Create new item    | Add task to queue                 |
 
 ### Auto-Discovery Skill
 
@@ -228,7 +228,7 @@ Edit `.claude/skills/{domain}-expert/SKILL.md`:
 
 ```yaml
 trigger_phrases:
-  - "what should I work on"    # Your custom phrases
+  - "what should I work on" # Your custom phrases
   - "next item"
   - "show my queue"
 ```
@@ -269,12 +269,12 @@ Edit `.claude/mcp-servers/{domain}-{system}/mcp.json`:
 
 ```json
 {
-  "connection": {
-    "service": "different-service",
-    "endpoint": "https://api.different.com/v1"
-  },
   "configuration": {
     "api_key": "${DIFFERENT_SERVICE_API_KEY}"
+  },
+  "connection": {
+    "endpoint": "https://api.different.com/v1",
+    "service": "different-service"
   }
 }
 ```
@@ -284,6 +284,7 @@ Edit `.claude/mcp-servers/{domain}-{system}/mcp.json`:
 ### Share with Team
 
 1. Update `plugin.yaml`:
+
    ```yaml
    metadata:
      sharing:
@@ -294,6 +295,7 @@ Edit `.claude/mcp-servers/{domain}-{system}/mcp.json`:
    ```
 
 2. Share the plugin:
+
    ```bash
    /share:plugin {domain}-automation
    ```

@@ -22,6 +22,7 @@
 ### The Problem We Solved
 
 Previously, creating VTM tasks from planning documents (ADRs + Specs) was:
+
 - Manual and error-prone
 - Required copy-pasting and reformatting
 - No automatic ID assignment
@@ -68,12 +69,14 @@ All working and tested:
 ### ✅ Plan-to-VTM Bridge Commands (2 new commands)
 
 **1. `vtm summary`** - Token-efficient VTM context for AI agents
+
 - Filters to incomplete tasks only (80% token reduction)
 - Outputs JSON with task summaries
 - Used by extraction agent
 - **13 tests passing**
 
 **2. `vtm ingest`** - Validate and ingest tasks into VTM
+
 - Automatic ID assignment (TASK-XXX)
 - Dependency resolution (indices → IDs)
 - Multi-layer validation
@@ -84,6 +87,7 @@ All working and tested:
 ### ✅ Claude Code Integration
 
 **3. `/plan:to-vtm`** - End-to-end workflow slash command
+
 - Reads ADR and Spec documents
 - Generates VTM summary
 - Launches AI agent for extraction
@@ -134,6 +138,7 @@ All working and tested:
 **Total Tests:** 115+ (all passing, 3 skipped)
 
 **Breakdown:**
+
 - vtm-summary: 13 tests ✅
 - task-validator: 39 tests ✅
 - task-ingest-helper: 18 tests ✅
@@ -141,6 +146,7 @@ All working and tested:
 - Existing VTM tests: 24 tests ✅
 
 **Test Quality:**
+
 - TDD approach throughout
 - Wallaby.js for real-time testing
 - Comprehensive edge case coverage
@@ -282,12 +288,14 @@ vtm complete TASK-004       # Done
 ### 5. Token Efficiency ✅
 
 **vtm summary** reduces context by 80%:
+
 - Only includes incomplete tasks
 - Omits completed task details
 - Provides capability summary instead
 - Perfect for AI agent context
 
 **Example:**
+
 - Full VTM: 10,000 tokens
 - vtm summary: 2,000 tokens
 - 80% reduction ✅
@@ -295,6 +303,7 @@ vtm complete TASK-004       # Done
 ### 6. Multi-Layer Validation ✅
 
 Validates before ingestion:
+
 1. JSON schema validation
 2. Required fields check
 3. Dependency existence (string IDs)
@@ -311,11 +320,13 @@ Validates before ingestion:
 ### Why Agent-Based Extraction?
 
 **Considered:**
+
 1. Regex parsers (brittle, format-dependent)
 2. Template-based (inflexible)
 3. AI agent (semantic understanding) ✅
 
 **Chose AI agent because:**
+
 - Handles format variations
 - Understands semantic relationships
 - Can adapt to different ADR/Spec styles
@@ -326,11 +337,13 @@ Validates before ingestion:
 **Problem:** When extracting multiple tasks, they don't have IDs yet
 
 **Solution:** Reference by position in batch
+
 ```json
 "dependencies": [0, 1]  // Task 0, Task 1
 ```
 
 **Benefits:**
+
 - Agent doesn't need to guess IDs
 - Simple for agent to understand
 - Automatically resolved during ingestion
@@ -338,6 +351,7 @@ Validates before ingestion:
 ### Why Two-Step Workflow (Transform + Ingest)?
 
 **Agent outputs wrapper:**
+
 ```json
 {
   "adr_source": "...",
@@ -347,11 +361,13 @@ Validates before ingestion:
 ```
 
 **VTM ingest expects array:**
+
 ```json
 [task1, task2, ...]
 ```
 
 **Solution:** Transformation step distributes wrapper fields
+
 - Clean separation of concerns
 - Agent focuses on extraction
 - Transformation is simple mapping
@@ -364,6 +380,7 @@ Validates before ingestion:
 ### Original: Manual Task Creation
 
 User had to:
+
 1. Read ADR and Spec
 2. Manually write tasks in vtm.json
 3. Figure out IDs
@@ -377,6 +394,7 @@ User had to:
 ### Now: Automated Pipeline
 
 System does:
+
 1. Read ADR and Spec
 2. Extract tasks with AI
 3. Assign IDs automatically
@@ -428,6 +446,7 @@ Measured during end-to-end test:
 **Total End-to-End:** ~8 seconds
 
 **Comparison:**
+
 - Manual task creation: 1-2 hours
 - Plan-to-VTM: 8 seconds
 - **Speedup:** 450-900x faster
@@ -505,6 +524,7 @@ Measured during end-to-end test:
 ### Production Readiness: HIGH ✅
 
 **Code Quality:**
+
 - ✅ 115+ tests passing
 - ✅ TDD throughout
 - ✅ Zero regressions
@@ -512,6 +532,7 @@ Measured during end-to-end test:
 - ✅ Comprehensive error handling
 
 **Documentation:**
+
 - ✅ User docs (README.md)
 - ✅ Developer docs (CLAUDE.md)
 - ✅ Architecture (ADR-046)
@@ -519,12 +540,14 @@ Measured during end-to-end test:
 - ✅ Test reports
 
 **Validation:**
+
 - ✅ End-to-end test passed
 - ✅ Manual testing successful
 - ✅ Edge cases covered
 - ✅ Error scenarios tested
 
 **Usability:**
+
 - ✅ Clear workflow
 - ✅ Intuitive commands
 - ✅ Helpful previews
@@ -533,16 +556,19 @@ Measured during end-to-end test:
 ### What's Ready to Ship
 
 **Core VTM CLI:** Ready ✅
+
 - All 7 commands work
 - Comprehensive testing
 - Production-quality code
 
 **Plan-to-VTM Bridge:** Ready ✅
+
 - Complete end-to-end workflow
 - Validated with real ADR+Spec
 - Documentation complete
 
 **Integration:** Ready ✅
+
 - Claude Code slash command
 - Manual workflow option
 - Works with existing VTM files
@@ -554,12 +580,14 @@ Measured during end-to-end test:
 ### vs. Linear/Jira/Asana
 
 **Traditional PM tools:**
+
 - Manual task entry
 - No dependency automation
 - No AI assistance
 - No traceability to decisions
 
 **VTM CLI:**
+
 - ✅ AI-powered extraction
 - ✅ Automatic dependencies
 - ✅ Full traceability (ADR → Tasks)
@@ -568,12 +596,14 @@ Measured during end-to-end test:
 ### vs. GitHub Issues/Projects
 
 **GitHub:**
+
 - Manual issue creation
 - Limited dependency support
 - No AI integration
 - Web-based (context switching)
 
 **VTM CLI:**
+
 - ✅ AI extraction from docs
 - ✅ First-class dependencies
 - ✅ Built for AI workflows
@@ -582,6 +612,7 @@ Measured during end-to-end test:
 ### Unique Value Proposition
 
 **VTM CLI is the only tool that:**
+
 1. Transforms planning docs → executable tasks automatically
 2. Achieves 99% token reduction for AI workflows
 3. Provides surgical access to task context
@@ -619,11 +650,13 @@ Measured during end-to-end test:
 ### What Users Can Do:
 
 **Traditional Workflow:**
+
 ```bash
 vtm next → vtm context → implement → vtm complete
 ```
 
 **Plan-to-VTM Workflow (New):**
+
 ```bash
 /plan:to-vtm adr.md spec.md → review → implement → vtm complete
 ```
@@ -645,6 +678,7 @@ vtm next → vtm context → implement → vtm complete
 ### 1. AI-Native Design
 
 Not bolted on - built from the ground up for AI-assisted development:
+
 - Token-efficient context generation
 - Surgical access to task information
 - Agent-based extraction
@@ -653,6 +687,7 @@ Not bolted on - built from the ground up for AI-assisted development:
 ### 2. Test Strategy as First-Class Concept
 
 Every task has an explicit test strategy:
+
 - TDD (high-risk, tests first)
 - Unit (medium-risk, tests after)
 - Integration (cross-component)
@@ -663,6 +698,7 @@ Every task has an explicit test strategy:
 ### 3. Dependency-First Thinking
 
 Dependencies aren't an afterthought:
+
 - Automatic dependency resolution
 - Blocking relationships
 - Ready task detection
@@ -673,6 +709,7 @@ Dependencies aren't an afterthought:
 ### 4. Traceability Built In
 
 Tasks link back to source decisions:
+
 - ADR references (why this decision?)
 - Spec references (how to implement?)
 - Line numbers (exact location)

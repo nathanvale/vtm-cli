@@ -12,13 +12,13 @@ Design a domain in 5 questions → Get a design spec → Run `/scaffold:domain` 
 
 ## The 5 Questions
 
-| # | Question | Input | Example |
-|---|----------|-------|---------|
-| 1 | Core operations? | Comma-separated | `next, review, context, list` |
-| 2 | Auto-discovery? | yes/no | `yes` |
-| 3 | External systems? | yes/no/maybe | `yes` |
-| 4 | Automation hooks? | yes/no | `no` |
-| 5 | Sharing scope? | personal/team/community | `personal` |
+| #   | Question          | Input                   | Example                       |
+| --- | ----------------- | ----------------------- | ----------------------------- |
+| 1   | Core operations?  | Comma-separated         | `next, review, context, list` |
+| 2   | Auto-discovery?   | yes/no                  | `yes`                         |
+| 3   | External systems? | yes/no/maybe            | `yes`                         |
+| 4   | Automation hooks? | yes/no                  | `no`                          |
+| 5   | Sharing scope?    | personal/team/community | `personal`                    |
 
 ## Output
 
@@ -29,6 +29,7 @@ Design a domain in 5 questions → Get a design spec → Run `/scaffold:domain` 
 ## Quick Examples
 
 ### PM Domain (Personal)
+
 ```bash
 /design:domain pm
 
@@ -40,6 +41,7 @@ Q5: personal
 ```
 
 ### DevOps Domain (Team)
+
 ```bash
 /design:domain devops "Infrastructure"
 
@@ -51,6 +53,7 @@ Q5: team
 ```
 
 ### Testing Domain (Solo)
+
 ```bash
 /design:domain test
 
@@ -64,17 +67,20 @@ Q5: personal
 ## Validation Rules
 
 ✅ **Domain Name:**
+
 - Lowercase only
 - Alphanumeric + hyphens
 - 2-50 characters
 - Examples: `pm`, `task-manager`, `devops`, `test-utils`
 
 ✅ **Operations:**
+
 - At least 1 required
 - Comma-separated
 - Becomes: `/{domain}:{operation}`
 
 ✅ **Sharing Scope:**
+
 - `personal` = local only
 - `team` = shared with team (provide emails)
 - `community` = public registry
@@ -90,6 +96,7 @@ This generates all the command files and templates.
 ## Common Patterns
 
 ### Task Management
+
 ```
 Operations: next, context, list, update, complete
 Auto-discovery: yes
@@ -99,6 +106,7 @@ Sharing: team
 ```
 
 ### DevOps/Infrastructure
+
 ```
 Operations: deploy, status, logs, rollback
 Auto-discovery: yes
@@ -108,6 +116,7 @@ Sharing: team
 ```
 
 ### Local Development
+
 ```
 Operations: setup, test, build, clean
 Auto-discovery: no
@@ -118,12 +127,12 @@ Sharing: personal
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| "Invalid domain name" | Use lowercase, alphanumeric + hyphens only |
-| "Domain exists" | Delete: `rm .claude/designs/{domain}.json` |
-| "No operations" | Enter at least one operation (e.g., "next") |
-| "Invalid scope" | Use: personal, team, or community |
+| Issue                 | Solution                                    |
+| --------------------- | ------------------------------------------- |
+| "Invalid domain name" | Use lowercase, alphanumeric + hyphens only  |
+| "Domain exists"       | Delete: `rm .claude/designs/{domain}.json`  |
+| "No operations"       | Enter at least one operation (e.g., "next") |
+| "Invalid scope"       | Use: personal, team, or community           |
 
 ## Key Files
 
@@ -176,6 +185,7 @@ Next: /scaffold:domain {domain}
 ## Tips
 
 ✨ **Best Practices:**
+
 1. Keep operations focused and specific
 2. Enable auto-discovery for better UX
 3. Plan external systems upfront
@@ -183,11 +193,13 @@ Next: /scaffold:domain {domain}
 5. Use team sharing if building with others
 
 🚀 **Get Started:**
+
 ```bash
 /design:domain my-domain
 ```
 
 📖 **Learn More:**
+
 ```bash
 cat .claude/commands/README-DESIGN-DOMAIN.md
 ```

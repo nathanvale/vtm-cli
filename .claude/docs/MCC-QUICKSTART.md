@@ -46,6 +46,7 @@ This starts an interactive wizard. Answer 5 questions:
 This generates all the files from your design.
 
 **Output:** Complete plugin structure:
+
 ```
 .claude/
 ├── commands/pm/          # 4 command templates
@@ -61,13 +62,14 @@ This generates all the files from your design.
 
 This shows everything you've created and checks health.
 
-**Output:** 
+**Output:**
+
 ```
 ✅ Component Inventory
    • 4 commands: /pm:next, /pm:review, /pm:context, /pm:list
    • 1 skill: pm-expert
    • 1 plugin: pm-automation
-   
+
 ⚠️ Quality Issues
    • 4 components need testing
    • 1 skill triggers need verification
@@ -227,11 +229,13 @@ echo "Filtering: $FILTER, Limit: $LIMIT"
 ```
 
 When users run:
+
 ```bash
 /pm:next pending 10
 ```
 
 Your command receives:
+
 ```bash
 ARGUMENTS[0]="pending"
 ARGUMENTS[1]="10"
@@ -278,6 +282,7 @@ echo "Next, run: /pm:context to see details"
 ### Group Related Operations
 
 If commands are similar, create them in the same domain:
+
 - Testing domain: test, mock, assert, verify
 - Deploy domain: build, package, deploy, rollback
 
@@ -316,6 +321,7 @@ Team members get the domain immediately!
 ### Command doesn't exist
 
 Check file location:
+
 ```bash
 ls -la .claude/commands/design-domain.md
 ```
@@ -323,6 +329,7 @@ ls -la .claude/commands/design-domain.md
 ### Design shows "Invalid domain name"
 
 Domain names must:
+
 - Start with a letter
 - Use only lowercase letters, numbers, hyphens
 - No spaces or special characters
@@ -333,6 +340,7 @@ Domain names must:
 ### Scaffold creates empty directory
 
 Check the design file exists:
+
 ```bash
 cat .claude/designs/pm.json
 ```
@@ -340,6 +348,7 @@ cat .claude/designs/pm.json
 ### Registry shows "No components found"
 
 Make sure you've run scaffold:
+
 ```bash
 /scaffold:domain pm
 
@@ -363,6 +372,7 @@ See: `.claude/lib/MCC-INTEGRATION.md` for advanced usage.
 ### View the Spec
 
 Complete specification (everything you can do):
+
 ```bash
 cat .claude/SPEC-minimum-composable-core.md
 ```
@@ -370,6 +380,7 @@ cat .claude/SPEC-minimum-composable-core.md
 ### View Integration Guide
 
 Deep dive into how everything works:
+
 ```bash
 cat .claude/lib/MCC-INTEGRATION.md
 ```
@@ -377,6 +388,7 @@ cat .claude/lib/MCC-INTEGRATION.md
 ### Check Your Design
 
 Always know what you designed:
+
 ```bash
 cat .claude/designs/{domain}.json | jq .
 ```
