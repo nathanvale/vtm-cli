@@ -1,11 +1,11 @@
 {
   "project": "vtm-cli",
   "stats": {
-    "blocked": 0,
+    "total_tasks": 37,
     "completed": 29,
     "in_progress": 0,
-    "pending": 0,
-    "total_tasks": 29
+    "pending": 8,
+    "blocked": 0
   },
   "tasks": [
     {
@@ -23,8 +23,12 @@
       "description": "Relocate decision-engine.ts from .claude/lib/ to src/lib/ so it gets compiled by TypeScript build process. This will make it available as a proper library module in the VTM CLI distribution.",
       "estimated_hours": 0.25,
       "files": {
-        "create": ["src/lib/decision-engine.ts"],
-        "delete": [".claude/lib/decision-engine.ts"],
+        "create": [
+          "src/lib/decision-engine.ts"
+        ],
+        "delete": [
+          ".claude/lib/decision-engine.ts"
+        ],
         "modify": []
       },
       "id": "TASK-001",
@@ -51,12 +55,18 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:58:28.934Z",
-      "dependencies": ["TASK-001"],
+      "dependencies": [
+        "TASK-001"
+      ],
       "description": "Relocate architecture-patterns.json from .claude/lib/ to src/lib/data/ to keep pattern definitions with the library code. Create data directory if it doesn't exist.",
       "estimated_hours": 0.25,
       "files": {
-        "create": ["src/lib/data/architecture-patterns.json"],
-        "delete": [".claude/lib/architecture-patterns.json"],
+        "create": [
+          "src/lib/data/architecture-patterns.json"
+        ],
+        "delete": [
+          ".claude/lib/architecture-patterns.json"
+        ],
         "modify": []
       },
       "id": "TASK-002",
@@ -83,7 +93,9 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:00:38.626Z",
-      "dependencies": ["TASK-001"],
+      "dependencies": [
+        "TASK-001"
+      ],
       "description": "Create test file structure and setup for DecisionEngine tests. Configure test runner, create test fixtures with sample patterns, and establish test data directories.",
       "estimated_hours": 0.5,
       "files": {
@@ -119,13 +131,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:02:29.332Z",
-      "dependencies": ["TASK-003"],
+      "dependencies": [
+        "TASK-003"
+      ],
       "description": "Write failing tests for DecisionEngine pattern loading functionality. Test should verify loading patterns from file path, fallback to defaults when file missing, and proper error handling for invalid JSON.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+        "modify": [
+          "src/lib/__tests__/decision-engine.test.ts"
+        ]
       },
       "id": "TASK-004",
       "risk": "low",
@@ -152,13 +168,18 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:06:36.663Z",
-      "dependencies": ["TASK-002", "TASK-004"],
+      "dependencies": [
+        "TASK-002",
+        "TASK-004"
+      ],
       "description": "Update the default patternsPath in DecisionEngine constructor to reference src/lib/data/. Implement pattern loading to make tests pass. Ensure path resolution works for both development and installed scenarios.",
       "estimated_hours": 1,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/decision-engine.ts"]
+        "modify": [
+          "src/lib/decision-engine.ts"
+        ]
       },
       "id": "TASK-005",
       "risk": "medium",
@@ -185,13 +206,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:12:14.683Z",
-      "dependencies": ["TASK-005"],
+      "dependencies": [
+        "TASK-005"
+      ],
       "description": "Write failing tests for DecisionEngine pattern matching algorithm. Test keyword extraction, pattern scoring, confidence calculation, and pattern ranking.",
       "estimated_hours": 0.75,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+        "modify": [
+          "src/lib/__tests__/decision-engine.test.ts"
+        ]
       },
       "id": "TASK-006",
       "risk": "low",
@@ -218,13 +243,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:16:29.048Z",
-      "dependencies": ["TASK-006"],
+      "dependencies": [
+        "TASK-006"
+      ],
       "description": "Implement or refactor pattern matching methods in DecisionEngine to make all tests pass. Focus on minimal implementation that satisfies test requirements.",
       "estimated_hours": 1.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/decision-engine.ts"]
+        "modify": [
+          "src/lib/decision-engine.ts"
+        ]
       },
       "id": "TASK-007",
       "risk": "medium",
@@ -251,13 +280,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:19:01.621Z",
-      "dependencies": ["TASK-007"],
+      "dependencies": [
+        "TASK-007"
+      ],
       "description": "Write failing tests for DecisionEngine.recommendArchitecture() method. Test domain name suggestion, command generation, skill suggestions, MCP recommendations, and full recommendation output.",
       "estimated_hours": 1,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+        "modify": [
+          "src/lib/__tests__/decision-engine.test.ts"
+        ]
       },
       "id": "TASK-008",
       "risk": "low",
@@ -284,13 +317,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T13:22:24.976Z",
-      "dependencies": ["TASK-008"],
+      "dependencies": [
+        "TASK-008"
+      ],
       "description": "Implement or refactor recommendArchitecture() and related methods to make all tests pass. Ensure proper integration between pattern matching and recommendation generation.",
       "estimated_hours": 2,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/decision-engine.ts"]
+        "modify": [
+          "src/lib/decision-engine.ts"
+        ]
       },
       "id": "TASK-009",
       "risk": "medium",
@@ -317,7 +354,9 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:31:45.812Z",
-      "dependencies": ["TASK-009"],
+      "dependencies": [
+        "TASK-009"
+      ],
       "description": "Write failing tests for DecisionEngine.analyzeDomain() method. Test scanning domain structure, identifying strengths, detecting issues, and generating refactoring recommendations.",
       "estimated_hours": 1,
       "files": {
@@ -326,7 +365,9 @@
           "src/lib/__tests__/fixtures/mock-domain/command2.md"
         ],
         "delete": [],
-        "modify": ["src/lib/__tests__/decision-engine.test.ts"]
+        "modify": [
+          "src/lib/__tests__/decision-engine.test.ts"
+        ]
       },
       "id": "TASK-010",
       "risk": "low",
@@ -353,13 +394,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:36:14.143Z",
-      "dependencies": ["TASK-010"],
+      "dependencies": [
+        "TASK-010"
+      ],
       "description": "Implement or refactor analyzeDomain() and related methods to make all tests pass. Focus on file scanning, metrics calculation, and issue detection logic.",
       "estimated_hours": 2,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/decision-engine.ts"]
+        "modify": [
+          "src/lib/decision-engine.ts"
+        ]
       },
       "id": "TASK-011",
       "risk": "medium",
@@ -386,13 +431,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:47:32.531Z",
-      "dependencies": ["TASK-011"],
+      "dependencies": [
+        "TASK-011"
+      ],
       "description": "Refactor DecisionEngine implementation to improve code quality while keeping all tests green. Extract helper functions, reduce duplication, improve naming, and add code comments.",
       "estimated_hours": 1.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/decision-engine.ts"]
+        "modify": [
+          "src/lib/decision-engine.ts"
+        ]
       },
       "id": "TASK-012",
       "risk": "low",
@@ -419,13 +468,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:58:52.592Z",
-      "dependencies": ["TASK-012"],
+      "dependencies": [
+        "TASK-012"
+      ],
       "description": "Add a new 'vtm analyze <domain>' command to the CLI that wraps the DecisionEngine functionality. This exposes architecture analysis as a first-class VTM CLI feature. Now that DecisionEngine is tested, we can safely integrate it.",
       "estimated_hours": 1.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/index.ts"]
+        "modify": [
+          "src/index.ts"
+        ]
       },
       "id": "TASK-013",
       "risk": "low",
@@ -451,13 +504,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:24:32.784Z",
-      "dependencies": ["TASK-002"],
+      "dependencies": [
+        "TASK-002"
+      ],
       "description": "Update package.json files array to ensure architecture-patterns.json is included in the npm package distribution. Verify that the file is accessible after npm install.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["package.json"]
+        "modify": [
+          "package.json"
+        ]
       },
       "id": "TASK-014",
       "risk": "medium",
@@ -483,13 +540,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T19:05:45.072Z",
-      "dependencies": ["TASK-013"],
+      "dependencies": [
+        "TASK-013"
+      ],
       "description": "Refactor the /decide-architecture slash command to call 'vtm analyze' instead of directly requiring the decision-engine module. This simplifies the command and ensures consistent behavior.",
       "estimated_hours": 1,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/commands/decide-architecture.md"]
+        "modify": [
+          ".claude/commands/decide-architecture.md"
+        ]
       },
       "id": "TASK-015",
       "risk": "low",
@@ -515,13 +576,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T18:54:27.255Z",
-      "dependencies": ["TASK-012"],
+      "dependencies": [
+        "TASK-012"
+      ],
       "description": "Export DecisionEngine class from src/lib/index.ts to make it available for programmatic use. This allows other tools to import and use the decision engine as a library.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["src/lib/index.ts"]
+        "modify": [
+          "src/lib/index.ts"
+        ]
       },
       "id": "TASK-016",
       "risk": "low",
@@ -547,13 +612,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T19:04:13.816Z",
-      "dependencies": ["TASK-013"],
+      "dependencies": [
+        "TASK-013"
+      ],
       "description": "Add the new 'vtm analyze' command to .claude/registry.json so it's properly indexed and discoverable by the component registry system.",
       "estimated_hours": 0.25,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/registry.json"]
+        "modify": [
+          ".claude/registry.json"
+        ]
       },
       "id": "TASK-017",
       "risk": "low",
@@ -580,7 +649,11 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T19:09:30.286Z",
-      "dependencies": ["TASK-013", "TASK-014", "TASK-016"],
+      "dependencies": [
+        "TASK-013",
+        "TASK-014",
+        "TASK-016"
+      ],
       "description": "Perform comprehensive end-to-end testing of the refactored decision engine by analyzing the 'vtm' and 'plan' domains. Verify all functionality works correctly after the migration and TDD implementation.",
       "estimated_hours": 0.75,
       "files": {
@@ -613,13 +686,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T19:12:02.190Z",
-      "dependencies": ["TASK-018"],
+      "dependencies": [
+        "TASK-018"
+      ],
       "description": "Update the project documentation in CLAUDE.md to reflect the new location of decision-engine.ts, document the vtm analyze command, and describe the TDD test coverage.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["CLAUDE.md"]
+        "modify": [
+          "CLAUDE.md"
+        ]
       },
       "id": "TASK-019",
       "risk": "low",
@@ -655,7 +732,9 @@
           "src/lib/__tests__/vtm-session.test.ts"
         ],
         "delete": [],
-        "modify": [".gitignore"]
+        "modify": [
+          ".gitignore"
+        ]
       },
       "id": "TASK-020",
       "risk": "medium",
@@ -682,11 +761,15 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:18:59.166Z",
-      "dependencies": ["TASK-020"],
+      "dependencies": [
+        "TASK-020"
+      ],
       "description": "Create new /vtm:work command that combines context display and task starting into one step. Automatically sets the task as current and shows context, eliminating the need for separate /vtm:context and /vtm:start calls.",
       "estimated_hours": 1.5,
       "files": {
-        "create": [".claude/commands/vtm/work.md"],
+        "create": [
+          ".claude/commands/vtm/work.md"
+        ],
         "delete": [],
         "modify": []
       },
@@ -716,11 +799,15 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:26:26.116Z",
-      "dependencies": ["TASK-020"],
+      "dependencies": [
+        "TASK-020"
+      ],
       "description": "Create new /vtm:done command that completes the current task without requiring task ID. If a task ID is provided, it completes that specific task. After completion, shows next available tasks automatically.",
       "estimated_hours": 1,
       "files": {
-        "create": [".claude/commands/vtm/done.md"],
+        "create": [
+          ".claude/commands/vtm/done.md"
+        ],
         "delete": [],
         "modify": []
       },
@@ -749,13 +836,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:34:54.043Z",
-      "dependencies": ["TASK-020"],
+      "dependencies": [
+        "TASK-020"
+      ],
       "description": "Update /vtm:start to detect when user hasn't viewed context yet and provide helpful guidance. Check if user is starting a task they're already working on (duplicate start).",
       "estimated_hours": 0.75,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/commands/vtm/start.md"]
+        "modify": [
+          ".claude/commands/vtm/start.md"
+        ]
       },
       "id": "TASK-023",
       "risk": "low",
@@ -783,13 +874,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:38:22.476Z",
-      "dependencies": ["TASK-020"],
+      "dependencies": [
+        "TASK-020"
+      ],
       "description": "Update /vtm:complete to detect common mistakes like completing a task that was never started, or completing a different task than the current one. Provide helpful guidance.",
       "estimated_hours": 1,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/commands/vtm/complete.md"]
+        "modify": [
+          ".claude/commands/vtm/complete.md"
+        ]
       },
       "id": "TASK-024",
       "risk": "low",
@@ -816,13 +911,17 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:41:10.838Z",
-      "dependencies": ["TASK-020"],
+      "dependencies": [
+        "TASK-020"
+      ],
       "description": "Update /vtm:context to suggest using /vtm:work if the user wants to start working immediately. Show current task status if it's already started.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/commands/vtm/context.md"]
+        "modify": [
+          ".claude/commands/vtm/context.md"
+        ]
       },
       "id": "TASK-025",
       "risk": "low",
@@ -849,13 +948,18 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:43:54.654Z",
-      "dependencies": ["TASK-020", "TASK-021"],
+      "dependencies": [
+        "TASK-020",
+        "TASK-021"
+      ],
       "description": "Update /vtm:next output to guide users on the new workflow commands. Suggest /vtm:work instead of separate context + start steps.",
       "estimated_hours": 0.5,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/commands/vtm/next.md"]
+        "modify": [
+          ".claude/commands/vtm/next.md"
+        ]
       },
       "id": "TASK-026",
       "risk": "low",
@@ -895,7 +999,9 @@
       "files": {
         "create": [],
         "delete": [],
-        "modify": ["CLAUDE.md"]
+        "modify": [
+          "CLAUDE.md"
+        ]
       },
       "id": "TASK-027",
       "risk": "low",
@@ -922,13 +1028,18 @@
       "blocks": [],
       "commits": [],
       "completed_at": "2025-10-29T12:48:42.175Z",
-      "dependencies": ["TASK-021", "TASK-022"],
+      "dependencies": [
+        "TASK-021",
+        "TASK-022"
+      ],
       "description": "Add the new /vtm:work and /vtm:done commands to .claude/registry.json for proper indexing and discoverability.",
       "estimated_hours": 0.25,
       "files": {
         "create": [],
         "delete": [],
-        "modify": [".claude/registry.json"]
+        "modify": [
+          ".claude/registry.json"
+        ]
       },
       "id": "TASK-028",
       "risk": "low",
@@ -981,6 +1092,284 @@
       "validation": {
         "ac_verified": [],
         "tests_pass": false
+      }
+    },
+    {
+      "id": "TASK-030",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Add VTMSession CLI Commands (vtm session get|set|clear)",
+      "description": "Implement three CLI subcommands under 'vtm session' to expose VTMSession functionality directly through the main CLI, replacing the Node.js helper script pattern with proper Commander.js commands.",
+      "acceptance_criteria": [
+        "vtm session get returns current task ID with exit 0, or exits with code 1 if no task set",
+        "vtm session set <id> sets current task ID and creates/updates .vtm-session file",
+        "vtm session clear removes current task and deletes .vtm-session file",
+        "All commands handle errors gracefully (invalid paths, permissions, malformed JSON)",
+        "Commands appear in vtm --help output under session subcommand",
+        "VTMSession is exported from src/lib/index.ts for library usage"
+      ],
+      "dependencies": [],
+      "blocks": [],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-031",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Update /vtm:work to Set Session After Task Start",
+      "description": "Fix the incomplete session integration in /vtm:work command by adding session state tracking after successfully starting a task. This completes the streamlined workflow promise.",
+      "acceptance_criteria": [
+        "/vtm:work TASK-003 sets session state after vtm start succeeds",
+        "Session is NOT set if vtm start fails",
+        "Workflow completes successfully: /vtm:work → implement → /vtm:done",
+        "vtm session get returns TASK-003 after /vtm:work TASK-003"
+      ],
+      "dependencies": [
+        "TASK-030"
+      ],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-032",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Update /vtm:done to Use vtm session CLI Commands",
+      "description": "Replace Node.js helper script calls in /vtm:done with new vtm session CLI commands for getting and clearing session state.",
+      "acceptance_criteria": [
+        "node session.mjs get replaced with vtm session get",
+        "node session.mjs clear replaced with vtm session clear",
+        "/vtm:done completes current task from session state",
+        "/vtm:done clears session after successful completion",
+        "Error handling unchanged (same behavior as before)"
+      ],
+      "dependencies": [
+        "TASK-030"
+      ],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-033",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Update /vtm:start to Use vtm session CLI Commands",
+      "description": "Replace Node.js helper script calls in /vtm:start smart hints logic with vtm session CLI commands.",
+      "acceptance_criteria": [
+        "node session.mjs get replaced with vtm session get in smart hints",
+        "Smart hint 'already working on this task' still triggers correctly",
+        "Smart hint 'consider using /vtm:work' still triggers correctly",
+        "--force flag still bypasses hints"
+      ],
+      "dependencies": [
+        "TASK-030"
+      ],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-034",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Update /vtm:context to Use vtm session CLI Commands",
+      "description": "Replace Node.js helper script calls in /vtm:context current task indicator logic with vtm session CLI commands.",
+      "acceptance_criteria": [
+        "node session.mjs get replaced with vtm session get",
+        "Current task indicator '📌 This is your current task' still displays",
+        "Smart hint 'Consider using /vtm:work' still triggers for pending tasks"
+      ],
+      "dependencies": [
+        "TASK-030"
+      ],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-035",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Remove session.mjs Helper Script",
+      "description": "Delete the .claude/commands/helpers/session.mjs Node.js helper script now that all slash commands use vtm session CLI commands.",
+      "acceptance_criteria": [
+        ".claude/commands/helpers/session.mjs file removed",
+        "No remaining references to session.mjs in codebase",
+        "All slash commands still work correctly",
+        "grep -r 'session.mjs' returns no results"
+      ],
+      "dependencies": [
+        "TASK-031",
+        "TASK-032",
+        "TASK-033",
+        "TASK-034"
+      ],
+      "blocks": [],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-036",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "Update CLAUDE.md Documentation for Session CLI Commands",
+      "description": "Update CLAUDE.md to document the new vtm session CLI commands and remove references to the old helper script pattern.",
+      "acceptance_criteria": [
+        "Section 'Session State Tracking' updated with CLI commands",
+        "Usage examples show vtm session get|set|clear",
+        "Note about 'integration pending' removed",
+        "Build & Development Commands section includes session examples",
+        "No references to session.mjs helper remain"
+      ],
+      "dependencies": [
+        "TASK-035"
+      ],
+      "blocks": [],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-037",
+      "adr_source": "docs/adr/ADR-048-session-cli-integration.md",
+      "spec_source": "docs/specs/spec-session-cli-integration.md",
+      "title": "End-to-End Testing of Session CLI Integration",
+      "description": "Comprehensive end-to-end testing of the complete session CLI integration including manual CLI commands, streamlined workflow, and smart hints.",
+      "acceptance_criteria": [
+        "Manual CLI: vtm session get|set|clear work correctly",
+        "Streamlined workflow: /vtm:work → implement → /vtm:done works without task IDs",
+        "Smart hints: All hints in /vtm:start, /vtm:complete, /vtm:context trigger correctly",
+        "Session persistence: .vtm-session file operations work correctly",
+        "Error handling: Invalid task IDs and missing sessions handled gracefully",
+        "Help output: vtm --help shows session subcommand"
+      ],
+      "dependencies": [
+        "TASK-036"
+      ],
+      "blocks": [],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "",
+      "estimated_hours": 0,
+      "risk": "medium",
+      "files": {
+        "create": [],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
       }
     }
   ],
