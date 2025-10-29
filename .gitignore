@@ -5,3 +5,11 @@ dist/
 *.tmp
 .env
 .env.local
+
+# Lock files for other package managers
+package-lock.json
+yarn.lock
+
+logs
+.vault-id
+

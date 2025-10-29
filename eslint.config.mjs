@@ -22,7 +22,7 @@ export default tseslint.config(
     rules: {
       'no-console': ['warn', { allow: ['info', 'warn', 'error'] }],
       'no-implicit-coercion': 'error',
-      'eqeqeq': ['error', 'always', { null: 'ignore' }],
+      eqeqeq: ['error', 'always', { null: 'ignore' }],
       'no-throw-literal': 'error',
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
@@ -46,6 +46,18 @@ export default tseslint.config(
 
   {
     name: 'project/ignores',
-    ignores: ['dist/**', 'coverage/**', '.claude/**'],
+    ignores: [
+      'dist/**',
+      'coverage/**',
+      '.claude/commands/**',
+      '.claude/designs/**',
+      '.claude/docs/**',
+      '.claude/hooks/**',
+      '.claude/skills/**',
+      '.claude/templates/**',
+      '.claude/*.json',
+      '.claude/*.md',
+      // Note: .claude/lib/*.ts files are intentionally NOT ignored for quality checks
+    ],
   },
 )

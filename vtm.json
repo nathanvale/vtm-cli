@@ -1,0 +1,284 @@
+{
+  "version": "2.0.0",
+  "project": {
+    "name": "VTM CLI",
+    "description": "Virtual Task Manager for AI-assisted development"
+  },
+  "stats": {
+    "total_tasks": 7,
+    "completed": 1,
+    "in_progress": 1,
+    "pending": 5,
+    "blocked": 0
+  },
+  "tasks": [
+    {
+      "id": "TASK-001",
+      "adr_source": "adr/ADR-001-vtm-architecture.md",
+      "spec_source": "specs/spec-vtm-core.md",
+      "title": "Set up VTM project structure",
+      "description": "Initialize project with TypeScript, testing framework, and build tooling",
+      "acceptance_criteria": [
+        "TypeScript configured with strict mode",
+        "Vitest test framework installed",
+        "Build scripts in package.json",
+        "Project compiles without errors"
+      ],
+      "dependencies": [],
+      "blocks": [
+        "TASK-002",
+        "TASK-003"
+      ],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Setup task, verified by successful build",
+      "estimated_hours": 2,
+      "risk": "low",
+      "files": {
+        "create": [
+          "tsconfig.json",
+          "package.json",
+          "src/"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "completed",
+      "started_at": "2025-10-28T10:00:00Z",
+      "completed_at": "2025-10-28T11:30:00Z",
+      "commits": [
+        "abc123"
+      ],
+      "validation": {
+        "tests_pass": true,
+        "ac_verified": [
+          "TypeScript configured with strict mode",
+          "Build scripts in package.json"
+        ]
+      }
+    },
+    {
+      "id": "TASK-002",
+      "adr_source": "adr/ADR-002-vtm-reader.md",
+      "spec_source": "specs/spec-vtm-reader.md",
+      "title": "Implement VTMReader class",
+      "description": "Create VTMReader for loading and parsing vtm.json files with caching",
+      "acceptance_criteria": [
+        "Can load vtm.json from disk",
+        "Validates JSON schema",
+        "Caches loaded VTM in memory",
+        "Provides getTask() method",
+        "All tests pass"
+      ],
+      "dependencies": [
+        "TASK-001"
+      ],
+      "blocks": [],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Core data access layer, high-risk file operations",
+      "estimated_hours": 4,
+      "risk": "high",
+      "files": {
+        "create": [
+          "src/lib/vtm-reader.ts",
+          "test/vtm-reader.test.ts"
+        ],
+        "modify": [
+          "src/lib/types.ts"
+        ],
+        "delete": []
+      },
+      "status": "in-progress",
+      "started_at": "2025-10-28T12:00:00Z",
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-003",
+      "adr_source": "adr/ADR-003-vtm-writer.md",
+      "spec_source": "specs/spec-vtm-writer.md",
+      "title": "Implement VTMWriter class",
+      "description": "Create VTMWriter for atomic writes to vtm.json with stats recalculation",
+      "acceptance_criteria": [
+        "Atomic writes using temp file + rename",
+        "Automatic stats recalculation",
+        "updateTask() method for task updates",
+        "Crash-safe file operations",
+        "All tests pass"
+      ],
+      "dependencies": [
+        "TASK-001"
+      ],
+      "blocks": [],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "Critical data integrity, must prevent corruption",
+      "estimated_hours": 5,
+      "risk": "high",
+      "files": {
+        "create": [
+          "src/lib/vtm-writer.ts",
+          "test/vtm-writer.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-004",
+      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
+      "spec_source": "test-data/specs/spec-profile-api.md",
+      "title": "Create Profile Data Model",
+      "description": "Define TypeScript types and interfaces for user profile data structure including UserProfile, UserProfilePreferences, and UserStatistics. Export default profile constant for initialization.",
+      "acceptance_criteria": [
+        "UserProfile interface defined with all required fields",
+        "Type exports available from src/lib/types.ts",
+        "JSDoc comments documenting each field",
+        "Default profile constant defined"
+      ],
+      "dependencies": [],
+      "blocks": [],
+      "test_strategy": "Direct",
+      "test_strategy_rationale": "Type definitions only require TypeScript compilation validation",
+      "estimated_hours": 1,
+      "risk": "low",
+      "files": {
+        "create": [],
+        "modify": [
+          "src/lib/types.ts"
+        ],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-005",
+      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
+      "spec_source": "test-data/specs/spec-profile-api.md",
+      "title": "Implement Profile Storage Manager",
+      "description": "Create ProfileStorage class to handle reading and writing profile.json with atomic operations",
+      "acceptance_criteria": [
+        "Can create profile directory if missing",
+        "Can initialize default profile",
+        "Atomic writes using temp file + rename",
+        "Validates profile schema on read",
+        "Returns default profile if file missing/corrupted"
+      ],
+      "dependencies": [
+        "TASK-004"
+      ],
+      "blocks": [],
+      "test_strategy": "TDD",
+      "test_strategy_rationale": "High-risk file operations require TDD approach",
+      "estimated_hours": 4,
+      "risk": "high",
+      "files": {
+        "create": [
+          "src/lib/profile-storage.ts",
+          "test/profile-storage.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-006",
+      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
+      "spec_source": "test-data/specs/spec-profile-api.md",
+      "title": "Create Profile API Facade",
+      "description": "Implement ProfileManager class providing high-level API for profile operations",
+      "acceptance_criteria": [
+        "Provides getProfile(), updateProfile(), resetProfile() methods",
+        "Caches profile in memory after first load",
+        "Type-safe updates using Partial<UserProfile>",
+        "Singleton pattern for consistent state"
+      ],
+      "dependencies": [
+        "TASK-005"
+      ],
+      "blocks": [],
+      "test_strategy": "Unit",
+      "test_strategy_rationale": "Medium-risk business logic with clear inputs/outputs",
+      "estimated_hours": 3,
+      "risk": "medium",
+      "files": {
+        "create": [
+          "src/lib/profile.ts",
+          "test/profile.test.ts"
+        ],
+        "modify": [],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    },
+    {
+      "id": "TASK-007",
+      "adr_source": "test-data/adr/ADR-TEST-profile-api.md",
+      "spec_source": "test-data/specs/spec-profile-api.md",
+      "title": "Add CLI Commands",
+      "description": "Add vtm profile commands to CLI including view, set, and reset subcommands",
+      "acceptance_criteria": [
+        "vtm profile view displays current profile",
+        "vtm profile set <key> <value> updates preference",
+        "vtm profile reset restores defaults",
+        "Colored output using chalk",
+        "Error handling for invalid keys/values"
+      ],
+      "dependencies": [
+        "TASK-006"
+      ],
+      "blocks": [],
+      "test_strategy": "Integration",
+      "test_strategy_rationale": "CLI integration testing validates end-to-end workflow",
+      "estimated_hours": 2,
+      "risk": "low",
+      "files": {
+        "create": [],
+        "modify": [
+          "src/index.ts"
+        ],
+        "delete": []
+      },
+      "status": "pending",
+      "started_at": null,
+      "completed_at": null,
+      "commits": [],
+      "validation": {
+        "tests_pass": false,
+        "ac_verified": []
+      }
+    }
+  ]
+}

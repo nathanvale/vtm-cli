@@ -1,0 +1,470 @@
+{
+  "name": "{domain}-{system}",
+  "type": "mcp",
+  "description": "{SYSTEM_NAME} integration for {DOMAIN} domain",
+  "version": "1.0.0",
+
+  "metadata": {
+    "created_at": "{CREATION_TIMESTAMP}",
+    "author": "{AUTHOR}",
+    "status": "stub",
+    "tags": ["{domain}", "{system}", "integration"],
+    "documentation": "See README.md for setup instructions"
+  },
+
+  "connection": {
+    "type": "{connection_type}",
+    "service": "{system}",
+    "protocol": "https",
+    "auth_type": "{AUTH_TYPE}",
+    "notes": "CUSTOMIZE: Update auth_type based on service"
+  },
+
+  "configuration": {
+    "endpoint": "https://{SERVICE_ENDPOINT}/v1",
+    "timeout_seconds": 30,
+    "retry_attempts": 3,
+    "retry_delay_ms": 1000,
+
+    "required_env_vars": [
+      "{DOMAIN_SERVICE_API_KEY}",
+      "{DOMAIN_SERVICE_DB_ID}"
+    ],
+
+    "optional_env_vars": [
+      "{DOMAIN_SERVICE_CUSTOM_FIELD}"
+    ],
+
+    "credentials": {
+      "api_key": "${DOMAIN_SERVICE_API_KEY}",
+      "database_id": "${DOMAIN_SERVICE_DB_ID}",
+      "workspace_id": "${DOMAIN_SERVICE_WORKSPACE_ID}",
+      "custom_field": "${DOMAIN_SERVICE_CUSTOM_FIELD}"
+    },
+
+    "notes": "CUSTOMIZE: Keep only the environment variables you need"
+  },
+
+  "operations": {
+    "description": "Available operations for this MCP server",
+
+    "read": {
+      "description": "Read-only operations (safe to call frequently)",
+      "queries": [
+        {
+          "name": "list_items",
+          "description": "List all items from {system}",
+          "parameters": {
+            "filter": "optional filter criteria",
+            "limit": "max results (default: 100)",
+            "offset": "pagination offset"
+          },
+          "example": {
+            "filter": "status:active",
+            "limit": 10
+          }
+        },
+        {
+          "name": "get_item_details",
+          "description": "Get detailed information about specific item",
+          "parameters": {
+            "item_id": "required - unique identifier",
+            "include_metadata": "optional - include full metadata"
+          },
+          "example": {
+            "item_id": "item-123"
+          }
+        },
+        {
+          "name": "search_items",
+          "description": "Search items by query",
+          "parameters": {
+            "query": "search query string",
+            "fields": "fields to search in",
+            "limit": "max results"
+          },
+          "example": {
+            "query": "active tasks",
+            "fields": "title,description",
+            "limit": 20
+          }
+        }
+      ]
+    },
+
+    "write": {
+      "description": "Write operations (use with caution)",
+      "mutations": [
+        {
+          "name": "create_item",
+          "description": "Create new item in {system}",
+          "parameters": {
+            "title": "required - item title",
+            "description": "optional - item description",
+            "metadata": "optional - custom fields"
+          },
+          "example": {
+            "title": "New item",
+            "description": "Description of item"
+          }
+        },
+        {
+          "name": "update_item",
+          "description": "Update existing item",
+          "parameters": {
+            "item_id": "required - item to update",
+            "changes": "fields to update"
+          },
+          "example": {
+            "item_id": "item-123",
+            "changes": {
+              "status": "in-progress",
+              "assigned_to": "user@example.com"
+            }
+          }
+        },
+        {
+          "name": "delete_item",
+          "description": "Delete item (use cautiously)",
+          "parameters": {
+            "item_id": "required - item to delete",
+            "archive_instead": "optional - archive instead of delete"
+          },
+          "example": {
+            "item_id": "item-123",
+            "archive_instead": true
+          }
+        }
+      ]
+    }
+  },
+
+  "data_models": {
+    "Item": {
+      "fields": {
+        "id": "string - unique identifier",
+        "title": "string - display name",
+        "description": "string - detailed description",
+        "status": "enum - pending|in-progress|completed|blocked",
+        "created_at": "timestamp - creation time",
+        "updated_at": "timestamp - last update time",
+        "metadata": "object - custom fields"
+      },
+      "example": {
+        "id": "item-123",
+        "title": "Complete setup",
+        "description": "Configure the MCP server",
+        "status": "in-progress",
+        "created_at": "2025-10-29T10:00:00Z",
+        "updated_at": "2025-10-29T14:30:00Z"
+      }
+    }
+  },
+
+  "authentication": {
+    "method": "{AUTH_TYPE}",
+    "description": "How to authenticate with the service",
+
+    "bearer_token": {
+      "header": "Authorization: Bearer {token}",
+      "where_to_get": "https://developers.{service}.com/tokens",
+      "scope": "Required scopes: read, write",
+      "expires": "Token expiration policy"
+    },
+
+    "api_key": {
+      "header": "X-API-Key: {key}",
+      "where_to_get": "https://dashboard.{service}.com/api-keys",
+      "scope": "Key permissions",
+      "expires": "Key validity period"
+    },
+
+    "oauth": {
+      "client_id": "${DOMAIN_SERVICE_CLIENT_ID}",
+      "client_secret": "${DOMAIN_SERVICE_CLIENT_SECRET}",
+      "auth_url": "https://{service}.com/oauth/authorize",
+      "token_url": "https://{service}.com/oauth/token",
+      "scopes": ["read", "write", "delete"]
+    }
+  },
+
+  "setup": {
+    "description": "How to configure this MCP server",
+
+    "prerequisites": [
+      "Account on {SYSTEM_NAME}",
+      "API credentials (see authentication section)",
+      "Environment variables configured"
+    ],
+
+    "required_env_vars": [
+      {
+        "name": "{DOMAIN_SERVICE_API_KEY}",
+        "description": "API key for {system}",
+        "where_to_get": "https://developers.{service}.com/tokens",
+        "example": "sk_live_abc123def456"
+      },
+      {
+        "name": "{DOMAIN_SERVICE_DB_ID}",
+        "description": "Database or workspace ID",
+        "where_to_get": "From {system} dashboard or API",
+        "example": "db_abc123"
+      }
+    ],
+
+    "optional_env_vars": [
+      {
+        "name": "{DOMAIN_SERVICE_CUSTOM_FIELD}",
+        "description": "Optional custom configuration",
+        "default": "value",
+        "example": "custom_value"
+      }
+    ],
+
+    "installation_steps": [
+      "1. Get API credentials from {SYSTEM_NAME}",
+      "2. Set environment variables: export {DOMAIN_SERVICE_API_KEY}=...",
+      "3. Test connection: /{domain}:test-connection",
+      "4. Verify in registry: /registry:scan {domain}",
+      "5. Configure related commands"
+    ],
+
+    "test_connection": {
+      "command": "/{domain}:test-connection",
+      "what_it_does": "Verifies credentials and connectivity",
+      "success_response": "Connected to {system} successfully"
+    }
+  },
+
+  "error_handling": {
+    "connection_errors": {
+      "cause": "Cannot connect to {system}",
+      "solution": "Check internet connection, verify API endpoint, check credentials"
+    },
+    "authentication_errors": {
+      "cause": "Invalid or expired credentials",
+      "solution": "Verify API key, check token expiration, refresh credentials"
+    },
+    "rate_limiting": {
+      "cause": "Too many requests",
+      "solution": "Implement exponential backoff (see retry configuration)"
+    },
+    "data_not_found": {
+      "cause": "Item doesn't exist or was deleted",
+      "solution": "Check item ID, verify in {system} dashboard"
+    }
+  },
+
+  "security": {
+    "considerations": [
+      "Never commit API keys to version control",
+      "Use environment variables for all credentials",
+      "Rotate API keys regularly",
+      "Use minimal required permissions",
+      "Audit access logs in {system} dashboard"
+    ],
+
+    "best_practices": [
+      "Keep credentials in .env (not .env.example)",
+      "Use read-only tokens when possible",
+      "Implement request signing if available",
+      "Monitor rate limits and quota usage",
+      "Implement retry logic with exponential backoff"
+    ],
+
+    "scope_recommendations": [
+      "read - for list and get operations",
+      "write - for create and update operations",
+      "delete - only if needed, limit to admin"
+    ]
+  },
+
+  "limitations": {
+    "rate_limits": "Check {system} documentation for current limits",
+    "batch_size": "Maximum items per request (usually 100-1000)",
+    "field_limits": "Text field character limits, file size limits",
+    "concurrent_requests": "Maximum simultaneous connections",
+    "api_version": "Current API version: v1"
+  },
+
+  "customization": {
+    "description": "How to adapt this MCP for your needs",
+
+    "common_modifications": [
+      {
+        "name": "Change connection type",
+        "description": "If {system} supports different protocols (REST, GraphQL, WebSocket)",
+        "example": "Update 'connection.type' to 'graphql'"
+      },
+      {
+        "name": "Add custom operations",
+        "description": "Define additional queries or mutations specific to your use case",
+        "example": "Add webhook operations if {system} supports them"
+      },
+      {
+        "name": "Modify data models",
+        "description": "Add custom fields or change field names to match your schema",
+        "example": "Add 'priority', 'team_id', 'due_date' fields"
+      },
+      {
+        "name": "Add filtering options",
+        "description": "Extend filter capabilities based on your data",
+        "example": "Add 'team', 'project', 'priority' filters"
+      }
+    ]
+  },
+
+  "examples": {
+    "list_items": {
+      "request": {
+        "operation": "list_items",
+        "parameters": {
+          "filter": "status:pending",
+          "limit": 5
+        }
+      },
+      "response": {
+        "items": [
+          {
+            "id": "item-1",
+            "title": "First item",
+            "status": "pending"
+          }
+        ],
+        "total": 1,
+        "next_offset": null
+      }
+    },
+
+    "create_item": {
+      "request": {
+        "operation": "create_item",
+        "parameters": {
+          "title": "New task",
+          "description": "Task description"
+        }
+      },
+      "response": {
+        "id": "item-123",
+        "title": "New task",
+        "created_at": "2025-10-29T14:30:00Z"
+      }
+    }
+  },
+
+  "testing": {
+    "how_to_test": [
+      "1. Set up environment variables",
+      "2. Run: /test:mcp {domain}-{system}",
+      "3. Test each operation manually",
+      "4. Verify in /registry:scan"
+    ],
+
+    "test_cases": [
+      "List items with default filter",
+      "List items with custom filter",
+      "Get details on specific item",
+      "Create new item",
+      "Update existing item",
+      "Search items",
+      "Handle connection errors",
+      "Handle authentication errors"
+    ]
+  },
+
+  "integration": {
+    "related_commands": [
+      "/{domain}:next - Uses this MCP to get next item",
+      "/{domain}:context - Uses this MCP to get details",
+      "/{domain}:list - Uses this MCP to list items",
+      "/{domain}:update - Uses this MCP to update items"
+    ],
+
+    "related_skills": [
+      "{domain}-expert - References these operations"
+    ],
+
+    "related_hooks": [
+      "pre-commit - May reference items from this MCP"
+    ]
+  },
+
+  "documentation": {
+    "service_docs": "https://docs.{service}.com/api",
+    "api_reference": "https://api.{service}.com/docs",
+    "authentication_guide": "https://developers.{service}.com/authentication",
+    "webhook_docs": "https://docs.{service}.com/webhooks",
+    "rate_limits": "https://docs.{service}.com/rate-limits"
+  },
+
+  "troubleshooting": {
+    "connection_refused": {
+      "symptoms": "Cannot connect to API endpoint",
+      "checks": [
+        "Verify API endpoint is correct",
+        "Check internet connection",
+        "Verify firewall rules allow outbound HTTPS",
+        "Check service status page"
+      ]
+    },
+
+    "authentication_failed": {
+      "symptoms": "401 Unauthorized or invalid credentials",
+      "checks": [
+        "Verify API key is correct",
+        "Check API key hasn't expired",
+        "Verify key has required permissions",
+        "Try regenerating the key"
+      ]
+    },
+
+    "rate_limit_exceeded": {
+      "symptoms": "429 Too Many Requests",
+      "checks": [
+        "Check current request rate",
+        "Implement exponential backoff",
+        "Check rate limit documentation",
+        "Consider caching results"
+      ]
+    },
+
+    "data_not_found": {
+      "symptoms": "404 Not Found or empty results",
+      "checks": [
+        "Verify item ID is correct",
+        "Check item exists in {system}",
+        "Verify filter syntax",
+        "Check for permission issues"
+      ]
+    }
+  },
+
+  "roadmap": {
+    "implemented": [
+      "Basic CRUD operations",
+      "API authentication",
+      "Error handling"
+    ],
+
+    "todo": [
+      "Webhook support (if service provides)",
+      "Batch operations",
+      "Caching for frequently accessed data",
+      "Advanced search and filtering",
+      "Custom field mappings"
+    ]
+  },
+
+  "version_history": {
+    "1.0.0": "Initial stub created by scaffold"
+  },
+
+  "next_steps": [
+    "1. CUSTOMIZE: Replace placeholders ({DOMAIN}, {SYSTEM}, etc.)",
+    "2. SETUP: Get API credentials and set environment variables",
+    "3. IMPLEMENT: Replace stub operations with actual API calls",
+    "4. TEST: Run test suite and verify all operations",
+    "5. INTEGRATE: Link to commands and skills in {domain} namespace",
+    "6. SHARE: Add to plugin if using team sharing"
+  ]
+}

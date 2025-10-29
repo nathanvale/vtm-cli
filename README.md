@@ -1,261 +1,235 @@
-# VTM CLI - Virtual Task Manager
+# VTM CLI
 
-> Token-efficient task management for Claude Code projects
+Virtual Task Manager for AI-assisted development with Claude Code.
 
-## 🎯 What is VTM?
+## Overview
 
-VTM (Virtual Task Manager) is a CLI tool designed to manage development tasks efficiently when working with Claude Code. It solves the problem of token bloat by providing surgical access to your task manifest instead of loading everything into context.
+VTM CLI is a token-efficient task management tool that solves token bloat by providing surgical access to task manifests instead of loading everything into context, achieving **99% token reduction**.
 
-### Key Benefits
-- **99% token reduction** - Load only what you need
-- **TDD-first workflow** - Test strategies built into every task
-- **Dependency tracking** - Never start tasks out of order
-- **Progress visibility** - Always know what's next
-- **Claude-optimized** - Designed for AI-assisted development
+### Key Features
 
-## 📦 Installation
+- **Token Efficient**: Minimal context generation for AI workflows
+- **Dependency Management**: Automatic dependency resolution and blocking
+- **Plan-to-VTM Bridge**: Transform ADR+Spec documents into executable tasks using AI
+- **TDD Support**: Built-in test strategy tracking (TDD, Unit, Integration, Direct)
+- **Atomic Operations**: Crash-safe file operations with automatic stats recalculation
+- **Rich Context**: Optional traceability to source ADRs and specifications
 
-### Quick Start
-\`\`\`bash
-# Clone or extract this package
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/yourusername/vtm-cli.git
 cd vtm-cli
 
 # Install dependencies
 npm install
 
-# Build TypeScript
+# Build the project
 npm run build
 
-# Link globally (optional)
+# Link globally for CLI usage
 npm link
+```
 
-# Verify installation
-vtm --version
-\`\`\`
+## Quick Start
 
-### Development Mode
-\`\`\`bash
-# Run without building
-npm run dev -- next
+### Traditional Workflow
 
-# Watch mode
-npm run dev
-\`\`\`
+```bash
+# Initialize a new VTM project
+vtm init
 
-## 🚀 Usage
-
-### Initialize Your Project
-
-1. **Create your VTM structure**:
-\`\`\`bash
-mkdir my-project
-cd my-project
-mkdir -p adr specs
-\`\`\`
-
-2. **Copy example files**:
-\`\`\`bash
-cp ../vtm-cli/examples/vtm-example.json ./vtm.json
-\`\`\`
-
-3. **Start using VTM**:
-\`\`\`bash
+# View available tasks
 vtm next
-\`\`\`
+
+# Get task context for Claude Code
+vtm context TASK-001
+
+# Start working on a task
+vtm start TASK-001
+
+# Mark task as complete
+vtm complete TASK-001
+
+# View project stats
+vtm stats
+```
+
+### Plan-to-VTM Workflow (Recommended)
+
+Transform planning documents into executable VTM tasks:
+
+```bash
+# 1. Write your planning documents
+#    - ADR (Architectural Decision Record)
+#    - Spec (Technical Specification)
+
+# 2. Generate VTM tasks from documents
+/plan:to-vtm adr/ADR-042-auth.md specs/spec-auth.md
+
+# 3. Work on generated tasks
+vtm next                    # See ready tasks
+vtm context TASK-004        # Get task context
+# → Implement with TDD in Claude Code
+vtm complete TASK-004       # Mark done
+```
+
+## Commands
 
 ### Core Commands
 
-#### \`vtm next\` - See What's Ready
-Shows tasks with all dependencies met:
-\`\`\`bash
-vtm next
+| Command | Description |
+|---------|-------------|
+| `vtm next [-n <count>]` | Show next available tasks |
+| `vtm context <task-id>` | Generate minimal context for Claude |
+| `vtm task <task-id>` | Show detailed task information |
+| `vtm start <task-id>` | Mark task as in-progress |
+| `vtm complete <task-id>` | Mark task as completed |
+| `vtm stats` | Show project statistics |
+| `vtm list [--status <status>]` | List all tasks with optional filtering |
 
-📋 Ready Tasks (3):
+### Plan-to-VTM Bridge Commands
 
-TASK-003 [3h] │ Implement VTMWriter with atomic writes
-  Risk: high │ Test: TDD
-  Deps: ✅ TASK-001
-  From: adr-001-task-manager.md
+| Command | Description |
+|---------|-------------|
+| `vtm summary [--incomplete] [--json]` | Generate VTM summary for AI agents |
+| `vtm ingest <file> [--preview] [--commit]` | Validate and ingest tasks into VTM |
+| `/plan:to-vtm <adr> <spec>` | Transform ADR+Spec into VTM tasks (Claude Code) |
 
-TASK-004 [2h] │ Implement ContextBuilder
-  Risk: low │ Test: Unit
-  Deps: ✅ TASK-002
-  From: adr-001-task-manager.md
-\`\`\`
+## Plan-to-VTM Bridge
 
-**Token cost**: ~500 tokens (vs 50,000+ for full manifest)
+The Plan-to-VTM bridge uses AI to transform planning documents into executable tasks with automatic dependency resolution.
 
-#### \`vtm context <id>\` - Get Context for Claude
-Generates minimal context package:
-\`\`\`bash
-vtm context TASK-003
+### Architecture
 
-# Task Context: TASK-003
+```
+ADR + Spec Documents
+    ↓
+AI Agent (Claude) extracts tasks
+    ↓
+Automatic ID assignment
+    ↓
+Dependency resolution (indices → TASK-XXX)
+    ↓
+Multi-layer validation
+    ↓
+Tasks added to vtm.json
+```
 
-## Task Details
-**Title**: Implement VTMWriter with atomic writes
-**Status**: pending
-**Test Strategy**: TDD
-**Risk**: high
-**Estimated**: 3h
+### Features
 
-## Acceptance Criteria
-- AC1: updateTask() modifies single task without corruption
-- AC2: Atomic write prevents partial writes on crash
-- AC3: Stats automatically recalculated on update
-- AC4: Invalid updates rejected with clear errors
+- **Automatic ID Assignment**: Sequential TASK-XXX IDs starting after highest existing ID
+- **Dependency Resolution**: Converts index-based dependencies to task IDs
+- **Token Efficiency**: 80% reduction using incomplete tasks filter
+- **Rich Context**: Links tasks to source documents with line numbers
+- **Preview Mode**: Review before committing
+- **Validation**: Multi-layer checks (schema, dependencies, circular deps)
 
-## Dependencies (1 completed)
-✅ TASK-001: Set up project structure
-   Files created: package.json, tsconfig.json, src/index.ts
+### Usage
 
-## Files to Create
-- src/lib/vtm-writer.ts
-- src/lib/vtm-writer.test.ts
+#### Option 1: Claude Code Slash Command (Recommended)
 
-...
-\`\`\`
+```bash
+/plan:to-vtm adr/ADR-042-authentication.md specs/spec-auth-implementation.md
+```
 
-**Token cost**: ~2,000 tokens
+The command will:
+1. Read your ADR and Spec documents
+2. Generate VTM summary for agent context
+3. Launch AI agent to extract tasks
+4. Show preview with dependency chains
+5. Ask for confirmation
+6. Ingest tasks into vtm.json
 
-**Options**:
-- \`--compact\` - Ultra-minimal format (~500 tokens)
-- \`--clipboard\` - Copy directly to clipboard
+#### Option 2: Manual Workflow
 
-#### \`vtm start <id>\` - Begin Task
-Mark task as in-progress:
-\`\`\`bash
-vtm start TASK-003
+```bash
+# 1. Generate VTM summary
+vtm summary --incomplete --json > context.json
 
-✅ Task TASK-003 marked as in-progress
-📅 Started at: 2025-10-29T...
+# 2. Use AI agent to extract tasks from ADR+Spec
+#    (Use context.json for existing task context)
+#    Save output to tasks.json
 
-Next steps:
-1. vtm context TASK-003
-2. Copy to Claude Code
-3. Run TDD cycle
-4. vtm complete TASK-003
-\`\`\`
+# 3. Preview extracted tasks
+vtm ingest tasks.json --preview
 
-#### \`vtm complete <id>\` - Finish Task
-Mark task completed with metadata:
-\`\`\`bash
-vtm complete TASK-003 \\
-  --commits "a1b2c3d,e4f5g6h" \\
-  --files-created "src/lib/vtm-writer.ts,src/lib/vtm-writer.test.ts" \\
-  --tests-pass
+# 4. Commit to VTM
+vtm ingest tasks.json --commit
+```
 
-✅ Task TASK-003 marked as completed
-📅 Completed at: 2025-10-29T...
+### Task Format
 
-📊 Updated Stats:
-   Completed: 3/5
-   Progress: 60.0%
+Tasks support two dependency formats:
 
-🚀 New tasks available:
-   TASK-005: Implement CLI commands
-\`\`\`
+**Index-based** (for batch ingestion):
+```json
+{
+  "title": "Implement Profile Storage",
+  "dependencies": [0, 1],
+  "test_strategy": "TDD",
+  "risk": "high",
+  ...
+}
+```
 
-#### \`vtm stats\` - Project Overview
-See progress across all ADRs:
-\`\`\`bash
-vtm stats
+**ID-based** (for existing tasks):
+```json
+{
+  "title": "Add CLI Commands",
+  "dependencies": ["TASK-004", "TASK-005"],
+  "test_strategy": "Integration",
+  "risk": "low",
+  ...
+}
+```
 
-📊 Project Statistics
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Total Tasks:      5
-Completed:        2 (40.0%)
-In Progress:      0
-Pending:          3
+**Mixed dependencies** are supported:
+```json
+"dependencies": [0, "TASK-002"]
+```
 
-📈 Progress by ADR:
-adr-001-task-manager.md    ████░░░░░░░░ 40% (2/5)
+## Test Strategies
 
-🎯 Current Status:
-Ready to Start:   2
-\`\`\`
+VTM supports four test strategies:
 
-#### \`vtm list\` - Filter Tasks
-List tasks with filters:
-\`\`\`bash
-# All pending tasks
-vtm list --status pending
+| Strategy | When to Use | Example |
+|----------|-------------|---------|
+| `TDD` | High-risk core logic, security features | Authentication, data validation |
+| `Unit` | Medium-risk pure functions | Utilities, helpers, calculations |
+| `Integration` | Cross-component behavior | API endpoints, database operations |
+| `Direct` | Setup, configuration, docs | tsconfig.json, README updates |
 
-# All tasks from specific ADR
-vtm list --adr adr-001
+## Project Structure
 
-# Get task details as JSON
-vtm task TASK-003 --json
-\`\`\`
+```
+vtm-cli/
+├── src/
+│   ├── index.ts                    # CLI entry point
+│   └── lib/
+│       ├── types.ts                # Core data models
+│       ├── vtm-reader.ts           # Read operations
+│       ├── vtm-writer.ts           # Write operations (atomic)
+│       ├── context-builder.ts      # Context generation for AI
+│       ├── task-ingest-helper.ts   # ID assignment & dependency resolution
+│       ├── task-validator-ingest.ts # Validation for ingested tasks
+│       └── vtm-summary.ts          # Token-efficient summaries
+├── test/                           # Comprehensive test suite (115+ tests)
+├── .claude/
+│   ├── commands/
+│   │   └── plan/
+│   │       └── to-vtm.md          # Plan-to-VTM slash command
+│   ├── docs/                       # Architecture & design docs
+│   └── settings.json              # Claude Code configuration
+├── examples/
+│   └── vtm-example.json           # Example VTM file
+└── vtm.json                       # Your project's VTM file
+```
 
-## 🔄 Typical Workflow
+## VTM File Format
 
-### 1. Plan Phase (One-time)
-\`\`\`bash
-# Write your ADRs and specs
-vim adr/adr-001-feature.md
-vim specs/spec-feature.md
-
-# Generate VTM from ADRs (using Claude)
-# [Copy PROMPT 1 from documentation]
-# Paste ADR content to Claude → generates vtm.json
-\`\`\`
-
-### 2. Execute Phase (Iterative)
-\`\`\`bash
-# See what's ready
-vtm next
-
-# Pick a task
-vtm start TASK-003
-
-# Get context for Claude
-vtm context TASK-003 > task-context.md
-
-# Work with Claude Code using TDD
-# [Copy PROMPT 2 from documentation]
-# Paste task context → Claude implements with tests
-
-# Mark complete
-vtm complete TASK-003 --commits "abc123" --tests-pass
-
-# Repeat
-vtm next
-\`\`\`
-
-### 3. Evolve Phase (As Needed)
-\`\`\`bash
-# Add new feature
-vim adr/adr-002-new-feature.md
-vim specs/spec-new-feature.md
-
-# Generate new tasks (using Claude)
-# [Copy PROMPT 3 from documentation]
-# Claude generates new tasks → append to vtm.json
-
-# Continue execution phase
-vtm next
-\`\`\`
-
-## 📁 Project Structure
-
-\`\`\`
-my-project/
-├── adr/                      # Architecture Decision Records
-│   ├── adr-001-feature-a.md
-│   └── adr-002-feature-b.md
-├── specs/                    # Technical Specifications
-│   ├── spec-feature-a.md
-│   └── spec-feature-b.md
-├── vtm.json                  # Task manifest (generated)
-└── src/                      # Your actual code
-    └── ...
-\`\`\`
-
-## 🎨 VTM JSON Schema
-
-### Minimal Example
-\`\`\`json
+```json
 {
   "version": "2.0.0",
   "project": {
@@ -263,32 +237,32 @@ my-project/
     "description": "Project description"
   },
   "stats": {
-    "total_tasks": 5,
-    "completed": 2,
-    "in_progress": 0,
-    "pending": 3,
+    "total_tasks": 10,
+    "completed": 3,
+    "in_progress": 1,
+    "pending": 6,
     "blocked": 0
   },
   "tasks": [
     {
       "id": "TASK-001",
-      "adr_source": "adr-001.md",
-      "spec_source": "spec-001.md",
+      "adr_source": "adr/ADR-001-architecture.md",
+      "spec_source": "specs/spec-core.md",
       "title": "Task title",
       "description": "Detailed description",
       "acceptance_criteria": [
-        "AC1: Specific, testable criterion",
-        "AC2: Another criterion"
+        "Criterion 1",
+        "Criterion 2"
       ],
       "dependencies": [],
-      "blocks": ["TASK-002"],
+      "blocks": [],
       "test_strategy": "TDD",
-      "test_strategy_rationale": "Why this strategy",
-      "estimated_hours": 3,
-      "risk": "medium",
+      "test_strategy_rationale": "High-risk feature requiring comprehensive testing",
+      "estimated_hours": 8,
+      "risk": "high",
       "files": {
-        "create": ["src/file.ts"],
-        "modify": [],
+        "create": ["src/new-file.ts"],
+        "modify": ["src/existing.ts"],
         "delete": []
       },
       "status": "pending",
@@ -302,107 +276,167 @@ my-project/
     }
   ]
 }
-\`\`\`
+```
 
-## 🔧 Advanced Usage
+## Development
 
-### Custom VTM Location
-\`\`\`bash
-# Use different VTM file
-export VTM_PATH="./custom-vtm.json"
-vtm next
-\`\`\`
+```bash
+# Install dependencies
+npm install
 
-### Scripting
-\`\`\`bash
-# Get JSON output for scripts
-vtm task TASK-001 --json | jq '.acceptance_criteria'
-
-# Check if tasks are ready
-if [ \$(vtm next --number 1 | wc -l) -gt 0 ]; then
-  echo "Tasks available!"
-fi
-\`\`\`
-
-### Integration with Git
-\`\`\`bash
-# Commit after each task
-vtm complete TASK-003 --commits \$(git rev-parse HEAD) --tests-pass
-git add .
-git commit -m "feat(TASK-003): implement atomic writes"
-\`\`\`
-
-## 📊 Token Efficiency Comparison
-
-| Action | Without VTM | With VTM | Savings |
-|--------|-------------|----------|---------|
-| View next tasks | 50,000 tokens | 500 tokens | **99%** |
-| Get task context | 50,000 tokens | 2,000 tokens | **96%** |
-| Update task | 50,000 tokens | 100 tokens | **99.8%** |
-| View stats | 50,000 tokens | 300 tokens | **99.4%** |
-
-For a project with 200 tasks, VTM saves **~95,000 tokens per interaction**.
-
-## 🐛 Troubleshooting
-
-### "VTM file not found"
-\`\`\`bash
-# Make sure you're in the project directory
-cd my-project
-
-# Check if vtm.json exists
-ls -la vtm.json
-
-# Copy example if needed
-cp /path/to/vtm-cli/examples/vtm-example.json ./vtm.json
-\`\`\`
-
-### "Task not found"
-\`\`\`bash
-# List all tasks to find correct ID
-vtm list
-
-# Check specific ADR tasks
-vtm list --adr adr-001
-\`\`\`
-
-### Command not found: vtm
-\`\`\`bash
-# Make sure it's linked
-cd vtm-cli
+# Build TypeScript
 npm run build
+
+# Run tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+
+# Development mode with watch
+npm run dev
+
+# Lint
+npm run lint
+
+# Link globally
 npm link
+```
 
-# Or use npx
-npx vtm next
+## Testing
 
-# Or use npm script
-npm run start -- next
-\`\`\`
+The project uses Vitest with comprehensive test coverage:
 
-## 📚 Documentation
+- **115+ tests** across all modules
+- **TDD approach** for critical components
+- **Integration tests** for CLI commands
+- **Wallaby.js** support for real-time TDD
 
-- **ADR Template**: See \`examples/adr/\`
-- **Spec Template**: See \`examples/specs/\`
-- **Full VTM Example**: See \`examples/vtm-example.json\`
+```bash
+# Run all tests
+npm test
 
-## 🤝 Contributing
+# Run specific test file
+npm test -- test/vtm-ingest.test.ts
 
-This is a reference implementation. Feel free to:
-- Add new commands (\`src/index.ts\`)
-- Extend data model (\`src/lib/types.ts\`)
-- Improve context generation (\`src/lib/context-builder.ts\`)
-- Add tests
+# Run with coverage
+npm run test:coverage
+```
 
-## 📝 License
+## Integration with Claude Code
+
+VTM CLI is designed to work seamlessly with Claude Code:
+
+### Traditional Prompts
+
+Located in `/prompts/`:
+1. **Generate VTM**: Convert ADRs/specs → vtm.json
+2. **Execute Task**: TDD implementation of single task
+3. **Add Feature**: Append new tasks to existing VTM
+
+### Claude Code Slash Commands
+
+- `/plan:to-vtm <adr> <spec>`: Transform planning documents into tasks
+- More commands available in `.claude/commands/`
+
+## Best Practices
+
+### Writing ADRs
+
+- Document architectural decisions
+- Include rationale and constraints
+- Reference implementation requirements
+- Link to relevant specs
+
+### Writing Specifications
+
+- Break down into discrete tasks
+- Define clear acceptance criteria
+- Specify test requirements
+- Include code examples
+- Document file operations
+
+### Task Management
+
+- Keep tasks focused (2-8 hours)
+- Use appropriate test strategies
+- Define clear dependencies
+- Document risks and rationale
+
+## Token Efficiency
+
+VTM CLI achieves 99% token reduction through:
+
+- **Surgical Context**: Only load task-specific information
+- **Summary Mode**: 80% reduction for AI agents (incomplete tasks only)
+- **Compact Context**: Ultra-minimal mode (~500 tokens)
+- **Dependency Filtering**: Skip completed/irrelevant tasks
+
+## Examples
+
+See `examples/` directory for:
+- `vtm-example.json`: Sample VTM file
+- `adr/`: Example ADR documents
+- `specs/`: Example specification documents
+
+## Troubleshooting
+
+### Command not found
+
+```bash
+# Re-link globally
+npm link
+```
+
+### VTM file not found
+
+```bash
+# Initialize new VTM
+vtm init
+```
+
+### Validation errors during ingestion
+
+```bash
+# Check validation errors
+vtm ingest tasks.json --dry-run
+
+# View detailed preview
+vtm ingest tasks.json --preview
+```
+
+### Circular dependency detected
+
+Check task dependencies - ensure no cycles exist in the dependency graph.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Write tests (TDD approach)
+4. Implement feature
+5. Run tests and linting
+6. Submit pull request
+
+## License
 
 MIT
 
-## 🎯 Next Steps
+## Links
 
-1. **Try the example**: \`cd examples && vtm next\`
-2. **Create your first ADR**: Use the template in \`examples/adr/\`
-3. **Generate tasks**: Use Claude with PROMPT 1
-4. **Start building**: \`vtm next && vtm context <id>\`
+- [GitHub Repository](https://github.com/yourusername/vtm-cli)
+- [Documentation](.claude/docs/)
+- [Issue Tracker](https://github.com/yourusername/vtm-cli/issues)
+- [Changelog](CHANGELOG.md)
 
-Happy coding with Claude! 🚀
+## Acknowledgments
+
+Built with:
+- [TypeScript](https://www.typescriptlang.org/)
+- [Commander.js](https://github.com/tj/commander.js/)
+- [Vitest](https://vitest.dev/)
+- [Chalk](https://github.com/chalk/chalk)
+- [Claude Code](https://claude.ai/code)

@@ -1,0 +1,47 @@
+name: vtm-automation
+version: 1.0.0
+description: Virtual Task Manager - Token-efficient task management for AI-assisted development
+
+components:
+  commands:
+    - path: ../../commands/vtm/
+      namespace: vtm
+      count: 7
+
+  skills:
+    - name: vtm-expert
+      path: ../../skills/vtm-expert/SKILL.md
+      enabled: true
+
+  mcp_servers: []
+
+  hooks:
+    - enabled: true
+      path: ../../hooks/vtm/
+
+metadata:
+  author: user
+  created_at: "2025-10-29T00:00:00Z"
+  domain_name: vtm
+  sharing_scope: personal
+  team_members: []
+
+  tags:
+    - vtm
+    - automation
+    - workflow
+    - task-management
+    - tdd
+    - token-efficient
+
+  quality:
+    test_status: untested
+    documentation_complete: true
+
+  dependencies:
+    - vtm-cli (npm package)
+    - jq (for hook validation)
+
+marketplace:
+  published: false
+  registry: internal

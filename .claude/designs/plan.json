@@ -1,0 +1,140 @@
+{
+  "name": "plan",
+  "description": "Research, documentation, and design planning domain",
+  "version": "1.0.0",
+  "created_at": "2025-10-29T07:30:00Z",
+  "design": {
+    "operations": [
+      {
+        "name": "thinking-partner",
+        "description": "Interactive thinking/planning session with research (uses Firecrawl, Tavily, Context7)",
+        "manual_invocation": "/plan:thinking-partner",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "create-adr",
+        "description": "Create architectural decision record",
+        "manual_invocation": "/plan:create-adr",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "create-spec",
+        "description": "Create technical specification",
+        "manual_invocation": "/plan:create-spec",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "to-vtm",
+        "description": "Transform ADR+Spec pair into VTM tasks with intelligent dependency analysis",
+        "manual_invocation": "/plan:to-vtm",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "list-adrs",
+        "description": "List all architectural decision records",
+        "manual_invocation": "/plan:list-adrs",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "list-specs",
+        "description": "List all technical specifications",
+        "manual_invocation": "/plan:list-specs",
+        "triggers_auto_discovery": true
+      }
+    ],
+    "auto_discovery": {
+      "enabled": true,
+      "type": "skill",
+      "suggested_triggers": [
+        "let's think about",
+        "help me plan",
+        "research options for",
+        "what's the best approach",
+        "create an adr",
+        "write a spec",
+        "document this decision",
+        "add to vtm",
+        "convert spec to tasks",
+        "show adrs",
+        "list specs"
+      ]
+    },
+    "external_integration": {
+      "needed": true,
+      "type": "mcp",
+      "systems": [
+        {
+          "name": "firecrawl",
+          "type": "web-research",
+          "purpose": "Deep dive research on GitHub pages, technical forums, documentation"
+        },
+        {
+          "name": "tavily",
+          "type": "web-search",
+          "purpose": "General web search for research"
+        },
+        {
+          "name": "context7",
+          "type": "library-docs",
+          "purpose": "Official library documentation and code examples"
+        },
+        {
+          "name": "filesystem",
+          "type": "storage",
+          "purpose": "Read/write ADRs, specs, research notes"
+        }
+      ]
+    },
+    "automation": {
+      "enabled": true,
+      "hooks": [
+        {
+          "event": "pre-commit",
+          "action": "plan_validate_spec_adr_refs",
+          "description": "Validate that specs reference their ADRs before commit"
+        },
+        {
+          "event": "pre-to-vtm",
+          "action": "plan_validate_pair",
+          "description": "Verify ADR+Spec pair is complete and valid before transformation"
+        }
+      ]
+    },
+    "sharing": {
+      "scope": "personal",
+      "team_members": [],
+      "published": false
+    },
+    "recommendations": {
+      "start_with": [
+        "Create command: /plan:thinking-partner (interactive research + brainstorming)",
+        "Create command: /plan:create-adr (document decisions)",
+        "Create command: /plan:create-spec (technical specifications)",
+        "Create command: /plan:to-vtm (bridge to VTM with agent-based extraction)",
+        "Create command: /plan:list-adrs (view all ADRs)",
+        "Create command: /plan:list-specs (view all specs)",
+        "Add skill: plan-expert with trigger phrases for auto-discovery",
+        "Create MCP stubs for: Firecrawl, Tavily, Context7, filesystem",
+        "Add hook scripts: pre-commit validation, pre-to-vtm validation",
+        "Create README.md for domain documentation"
+      ],
+      "next_steps": [
+        "Run: /scaffold:domain plan",
+        "Customize /plan:to-vtm command with agent prompt for intelligent extraction",
+        "Integrate with VTM CLI commands (vtm summary, vtm ingest)",
+        "Test thinking-partner workflow with real research scenarios",
+        "Test to-vtm with sample ADR+Spec pairs",
+        "Document thinking-partner → create-adr → create-spec → to-vtm workflow"
+      ],
+      "architecture_notes": [
+        "KEY: /plan:to-vtm is the bridge between Plan and VTM domains",
+        "Uses agent-based extraction (not parsers) for flexibility",
+        "Leverages VTM CLI extensions (vtm summary, vtm ingest)",
+        "Agent performs intelligent dependency analysis against incomplete VTM tasks",
+        "Preview-first workflow for safety (user confirms before adding tasks)",
+        "Token-efficient: only passes incomplete tasks + completed capabilities summary",
+        "Composable: Plan → VTM → Review (future) domain flow"
+      ]
+    }
+  }
+}

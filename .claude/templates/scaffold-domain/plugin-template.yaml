@@ -1,0 +1,442 @@
+# Plugin Manifest Template
+# Location: .claude/plugins/{domain}-automation/plugin.yaml
+#
+# CUSTOMIZE: Replace all {PLACEHOLDERS} with actual values
+# See README.md and CUSTOMIZATION.md for detailed guidance
+
+name: {domain}-automation
+version: 1.0.0
+description: |
+  Complete {DOMAIN} domain plugin with commands, skills, and integrations.
+
+  Provides full {DOMAIN} workflow automation including:
+  - Slash commands for {DOMAIN} operations
+  - Auto-discovery skill with smart command suggestions
+  - {SYSTEM} integration via MCP
+  - Pre-commit validation hooks
+  - Team sharing and collaboration
+
+type: domain-plugin
+status: beta
+
+metadata:
+  author: "{AUTHOR}"
+  email: "{AUTHOR_EMAIL}"
+  created_at: "{CREATION_TIMESTAMP}"
+  updated_at: "{CREATION_TIMESTAMP}"
+  namespace: "{domain}"
+  category: "workflow"
+
+  # Who can use this plugin
+  sharing:
+    scope: "personal"  # personal | team | community
+    visibility: "private"  # private | internal | public
+    team_members:
+      - "{user1@example.com}"
+      - "{user2@example.com}"
+    team_name: "{TEAM_NAME}"
+
+  # SEO and discoverability
+  tags:
+    - "{domain}"
+    - "workflow"
+    - "productivity"
+    - "automation"
+
+  # Where to get help
+  support:
+    documentation: "README.md"
+    issues: "{GITHUB_REPO}/issues"
+    discussion: "{SLACK_CHANNEL_NAME}"
+    author: "{AUTHOR_CONTACT}"
+
+  # Configuration hints
+  configuration:
+    complexity: "intermediate"
+    setup_time_minutes: 15
+    customization_effort: "moderate"
+
+# Component References
+# CUSTOMIZE: Update paths to match your actual file locations
+
+components:
+  commands:
+    - name: "{domain} commands"
+      type: "command-namespace"
+      namespace: "{domain}"
+      path: "../../commands/{domain}/"
+
+      commands:
+        - name: "next"
+          file: "next.md"
+          description: "Get next {DOMAIN} item"
+          triggers_skill: true
+
+        - name: "context"
+          file: "context.md"
+          description: "Get detailed context on item"
+          triggers_skill: true
+
+        - name: "list"
+          file: "list.md"
+          description: "List all {DOMAIN} items"
+          triggers_skill: true
+
+        - name: "update"
+          file: "update.md"
+          description: "Update {DOMAIN} item status"
+          triggers_skill: false
+
+        - name: "create"
+          file: "create.md"
+          description: "Create new {DOMAIN} item"
+          triggers_skill: false
+
+      # CUSTOMIZE: Add more commands as needed
+      # - name: "review"
+      #   file: "review.md"
+      #   description: "Review {DOMAIN} progress"
+
+  skills:
+    - name: "{domain}-expert"
+      type: "skill"
+      path: "../../skills/{domain}-expert/SKILL.md"
+      description: "{DOMAIN} domain expert with auto-discovery"
+
+      trigger_phrases:
+        - "next {domain}"
+        - "what should I work on"
+        - "{domain} status"
+        - "show my {domain} items"
+
+      # Which commands this skill references
+      commands:
+        - /{domain}:next
+        - /{domain}:context
+        - /{domain}:list
+
+  mcp_servers:
+    - name: "{domain}-{system}"
+      type: "mcp"
+      path: "../../mcp-servers/{domain}-{system}/"
+      file: "mcp.json"
+      description: "{SYSTEM} integration for {DOMAIN}"
+
+      # How to configure this MCP
+      configuration:
+        required: true
+        environment_vars:
+          - name: "{DOMAIN_SERVICE_API_KEY}"
+            description: "API key for {system}"
+            where_to_get: "https://developers.{service}.com/tokens"
+
+          - name: "{DOMAIN_SERVICE_DB_ID}"
+            description: "Database or workspace ID"
+            where_to_get: "From {system} dashboard"
+
+        setup_instructions: |
+          1. Get credentials from {SYSTEM_NAME}
+          2. Set environment variables
+          3. Run: /{domain}:test-connection
+          4. Verify: /registry:scan {domain}
+
+      # Which commands use this MCP
+      commands_using:
+        - /{domain}:next
+        - /{domain}:context
+        - /{domain}:list
+        - /{domain}:update
+
+  hooks:
+    - name: "pre-commit"
+      type: "hook"
+      event: "pre-commit"
+      path: "../../hooks/pre-commit/"
+      file: "{domain}-validate.sh"
+      description: "Validate {DOMAIN} task reference in commits"
+
+      configuration:
+        enabled: true
+        blocking: true  # Prevents commit if validation fails
+        customizable: true
+
+      what_it_does: |
+        - Ensures every commit references a {DOMAIN} task ID
+        - Validates task format: {DOMAIN}-123
+        - Checks task exists and is accessible
+        - Warns about debug code in staged files
+
+      customize: |
+        Edit the script to add your validation rules:
+        1. Change task ID pattern if needed
+        2. Add custom format checks
+        3. Add domain-specific rules
+        4. Adjust strictness (warning vs error)
+
+    # CUSTOMIZE: Add more hooks if needed
+    # - name: "post-commit"
+    #   type: "hook"
+    #   event: "post-commit"
+    #   path: "../../hooks/post-commit/"
+    #   file: "{domain}-auto-actions.sh"
+
+  agents:
+    # CUSTOMIZE: If you create agents, link them here
+    # - name: "{domain}-automation-agent"
+    #   type: "agent"
+    #   path: "../../agents/{domain}-automation/"
+
+  configurations:
+    - name: "default-config"
+      type: "env-example"
+      path: ".env.example"
+      description: "Example environment variables"
+
+# Quality Metadata
+quality:
+  # Development status
+  status: "beta"  # alpha | beta | stable
+  stability: "experimental"  # experimental | stable | production
+
+  # What's been tested
+  testing:
+    unit_tests: false
+    integration_tests: false
+    user_tested: false
+    test_status: "untested"
+
+  # Security review
+  security:
+    reviewed: false
+    review_date: null
+    security_status: "pending_review"
+
+  # Documentation
+  documentation:
+    complete: false
+    readme: true
+    api_docs: false
+    examples: true
+    troubleshooting: true
+
+  # Code quality
+  code_quality:
+    linted: false
+    formatted: true
+    type_checked: false
+    documented: true
+
+# Dependencies and Relationships
+dependencies:
+  # External systems required
+  external:
+    - name: "{SYSTEM_NAME}"
+      type: "service"
+      required: true
+      description: "Source of {DOMAIN} data"
+
+  # Other Claude Code plugins
+  plugins:
+    - "{other-domain}-plugin"  # If this plugin depends on another
+
+  # Required tools
+  tools:
+    - "bash"
+    - "Read"
+    - "Write"
+
+# Version and Changelog
+version_history:
+  "1.0.0":
+    date: "{CREATION_TIMESTAMP}"
+    changes:
+      - "Initial plugin scaffolded"
+      - "Added basic commands: next, context, list"
+      - "Added auto-discovery skill"
+      - "Added MCP stub for {system}"
+      - "Added pre-commit validation hook"
+
+# Feature Flags (for gradual rollout)
+features:
+  auto_discovery:
+    enabled: true
+    description: "Automatically suggest commands based on context"
+
+  mcp_integration:
+    enabled: true
+    description: "Connect to external {system} service"
+    requires_setup: true
+
+  pre_commit_validation:
+    enabled: true
+    description: "Validate commits before they're made"
+
+  team_sharing:
+    enabled: true
+    description: "Share plugin with team members"
+
+  webhook_support:
+    enabled: false
+    description: "Receive webhooks from {system}"
+    planned: "v1.1.0"
+
+  advanced_filtering:
+    enabled: false
+    description: "Advanced search and filtering"
+    planned: "v1.2.0"
+
+# Integration Points
+integrations:
+  works_with:
+    - name: "other-skill"
+      description: "Cross-domain workflow support"
+
+    - name: "git"
+      description: "Git integration via pre-commit hooks"
+
+    - name: "{SYSTEM_NAME}"
+      description: "External service via MCP"
+
+  before_this_runs:
+    - /previous:command
+    - @dependency-check
+
+  after_this_completes:
+    - /next:command
+    - @post-action
+
+# Roadmap and Future
+roadmap:
+  completed:
+    - "Basic command structure"
+    - "Auto-discovery skill"
+    - "MCP stub for integration"
+
+  in_progress:
+    - "Full MCP implementation"
+    - "Advanced filtering"
+
+  planned:
+    - "Team collaboration features"
+    - "Analytics and reporting"
+    - "Advanced automation"
+
+# Marketplace and Publishing
+marketplace:
+  published: false
+  registry: "internal"  # internal | github | community
+
+  when_publishing:
+    required_before_publish:
+      - "Security review passed"
+      - "Documentation complete"
+      - "Integration tests passing"
+      - "At least 1 user testing confirmation"
+
+    submission_checklist:
+      - "README.md complete"
+      - "All examples working"
+      - "Security review done"
+      - "No hardcoded secrets"
+
+# Performance and Limits
+performance:
+  estimated_setup_time: "15 minutes"
+  estimated_customization_time: "30 minutes"
+  performance_impact: "minimal"
+
+  rate_limits:
+    commands_per_minute: "unlimited"
+    api_calls_per_minute: "depends on {system}"
+    concurrent_operations: 5
+
+# Error Handling and Recovery
+error_handling:
+  on_command_failure:
+    action: "log and suggest troubleshooting"
+    notification: true
+
+  on_mcp_connection_failure:
+    action: "degrade gracefully, show error"
+    retry_attempts: 3
+    retry_delay_seconds: 5
+
+  on_hook_failure:
+    action: "block commit with clear error message"
+    allow_override: true
+
+# Customization Guidance
+customization:
+  easy_modifications:
+    - "Change trigger phrases in skill"
+    - "Update command descriptions"
+    - "Modify validation rules in hooks"
+    - "Add new filter options"
+
+  moderate_modifications:
+    - "Add new commands"
+    - "Change data source (MCP)"
+    - "Add new hooks"
+    - "Customize output formatting"
+
+  advanced_modifications:
+    - "Complete rewrite of MCP operations"
+    - "Create new agent workflows"
+    - "Add team collaboration features"
+    - "Integrate with new external systems"
+
+# Testing Recommendations
+testing:
+  manual_tests:
+    - "Run each command manually"
+    - "Test with sample data"
+    - "Verify error handling"
+    - "Check output formatting"
+
+  integration_tests:
+    - "Test skill auto-discovery"
+    - "Test MCP connection"
+    - "Test hook blocking"
+    - "Test cross-domain workflows"
+
+  edge_cases:
+    - "Empty data results"
+    - "Invalid inputs"
+    - "MCP connection failure"
+    - "Missing environment variables"
+
+# Support and Communication
+support:
+  author_contact: "{AUTHOR_EMAIL}"
+  team_contact: "{TEAM_SLACK_CHANNEL}"
+  documentation: "README.md, CUSTOMIZATION.md"
+
+  getting_help:
+    - "Read README.md for quick start"
+    - "Check CUSTOMIZATION.md for modifications"
+    - "Review examples/ directory for usage"
+    - "Contact author for issues"
+
+# License and Attribution
+license: "MIT"  # CUSTOMIZE: Change if different
+copyright: "Copyright {YEAR} {AUTHOR}"
+
+# Next Steps for User
+next_steps:
+  immediate:
+    - "Read README.md"
+    - "Customize trigger phrases"
+    - "Set up environment variables"
+    - "Test commands manually"
+
+  short_term:
+    - "Add more commands"
+    - "Connect to MCP system"
+    - "Test in real workflow"
+    - "Customize hooks"
+
+  long_term:
+    - "Add team members"
+    - "Create advanced workflows"
+    - "Set up automation"
+    - "Publish to team registry"
