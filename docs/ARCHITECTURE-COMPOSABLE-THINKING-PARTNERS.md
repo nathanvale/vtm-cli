@@ -350,36 +350,64 @@ The command uses JSON to:
 
 ---
 
-### Stage 3: Tech Spec (Separate Path)
+### Stage 3: Spec Implementation Thinking Partner
 
-**Purpose:** Create technical specifications independently
+**Purpose:** Research HOW to technically implement architectural decisions from ADRs
 
-**Key Principle:** Tech specs are **not generated from ADRs**. They're **independent specifications** that reference the decisions but add implementation detail.
+**Key Principle:** Specs ARE dependent on ADRs, but answer a different question:
+- ADRs answer: "WHAT decision did we make and WHY?"
+- Specs answer: "HOW do we implement this decision technically?"
 
 **Workflow:**
 ```
-PRD completed
+ADR-001: "Use OAuth2 with OIDC" (decision made)
   ↓
-ADRs created
+/helpers:thinking-partner:spec-implementation adr/ADR-001.md
+  ↓ [Research: libraries, patterns, code examples, best practices]
   ↓
-/plan:create-spec auth-system
+Output: Implementation plan with 3-5 options evaluated
   ↓
-[Separate thinking-partner for specs (optional)]
-/helpers:thinking-partner:spec-requirements prd/auth-system.md
+/plan:create-spec oauth2-implementation --from spec-impl.json
   ↓
-[Outputs: detailed requirements, acceptance criteria, test cases]
-  ↓
-/plan:generate-spec auth-system --from spec-output.json
-  ↓
-Spec completed
+Spec created with implementation details, linked to ADR-001
 ```
 
-**Why separate path?**
-- ADRs answer "what's the architecture?"
-- Specs answer "how do we implement this?"
-- Different audiences (architects vs developers)
-- Specs don't depend on ADR decisions
-- Can be created in parallel with ADRs
+**What this thinking partner does:**
+1. Reads architectural decision from ADR
+2. Researches implementation approaches (web + docs + code)
+3. Evaluates options:
+   - Integration effort
+   - Maintenance burden
+   - Test coverage
+   - Performance impact
+   - Security posture
+   - Scalability
+   - Team expertise
+   - Cost
+4. Recommends best approach
+5. Provides implementation outline:
+   - Technology stack
+   - File structure
+   - Code examples
+   - Configuration templates
+   - Integration points
+   - Testing strategy
+
+**Strong Traceability:**
+```yaml
+# Spec frontmatter
+related_adr: adr/ADR-001-oauth2-selection.md
+based_on_implementation_research: spec-impl-oauth2.json
+```
+
+This creates clear link: ADR → Implementation Research → Spec
+
+**Why linked to ADRs (not separate)?**
+- Specs implement specific ADR decisions
+- Different question than ADRs, but same topic
+- Code examples apply to the chosen approach
+- Testing strategies assume specific implementation
+- Can be created once ADR is finalized
 
 ---
 
@@ -406,7 +434,8 @@ User has idea
 ```
 User researches
   ↓
-/helpers:thinking-partner:prd-ideation
+/helpers:thinking-partner:prd-ideation "complex feature description"
+  ↓ [research-backed scaffold]
   ↓
 /plan:create-prd complex-feature --from ideation.json
   ↓
@@ -421,10 +450,20 @@ User refines PRD with additional research
   ↓
 User reviews, discusses ADRs
   ↓
-/plan:create-spec complex-feature
+For each ADR (parallel):
   ↓
-[Spec references all ADRs but focuses on implementation]
+  /helpers:thinking-partner:spec-implementation adr/ADR-1.md
+  ↓ [research: implementation libraries, patterns, examples]
+  ↓
+  /plan:create-spec adr-1-implementation --from spec-impl.json
+  ↓ [Spec linked to ADR-1]
 ```
+
+**Result:**
+- 7 focused ADRs (one per decision)
+- 7 implementation specs (one per ADR)
+- Full traceability: PRD → ADR → Spec → VTM tasks
+
 
 ### Example 3: Reuse Thinking Partner Output
 ```

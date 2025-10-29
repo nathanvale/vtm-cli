@@ -26,7 +26,7 @@ Commands were linear (forced order), outputs weren't reusable, thinking was hidd
 
 ---
 
-## New Architecture: Three Thinking Partners
+## New Architecture: Four Thinking Partners
 
 ### 1. PRD Ideation Thinking Partner
 **Command:** `/helpers:thinking-partner:prd-ideation "your feature idea"`
@@ -84,22 +84,36 @@ Commands were linear (forced order), outputs weren't reusable, thinking was hidd
 
 ---
 
-### 3. Tech Spec (Separate Path)
-**Approach:** Independent workflow, not dependent on ADRs
+### 3. Spec Implementation Thinking Partner
+**Command:** `/helpers:thinking-partner:spec-implementation adr/ADR-001.md`
 
-**Why separate?**
-- ADRs answer "what's the architecture?"
-- Specs answer "how do we implement?"
-- Different audiences (architects vs developers)
-- Can create in parallel with ADRs
+**What it does:**
+- Reads architectural decision from ADR
+- Researches implementation approaches (libraries, patterns, examples)
+- Evaluates options (integration effort, maintenance, performance, etc.)
+- Recommends best approach
+- Provides implementation outline with code examples
+- **Outputs:** Detailed implementation plan as JSON
 
-**Workflow:**
+**Value:**
+- ✅ Bridges gap between architecture and implementation
+- ✅ Researches concrete technical approaches
+- ✅ Compares libraries and frameworks
+- ✅ Provides code patterns and examples
+- ✅ Creates strong ADR ↔ Spec traceability
+
+**Integration:**
+```bash
+/helpers:thinking-partner:spec-implementation adr/ADR-001.md
+  ↓ outputs: spec-impl-oauth2.json
+  ↓
+/plan:create-spec oauth2-implementation --from spec-impl-oauth2.json
+  ↓ creates: Spec linked to ADR-001 (with implementation details)
 ```
-PRD completed
-  ↓ (can fork here)
-  ├→ ADR generation path
-  └→ Spec creation path (independent)
-```
+
+**Key Insight:** Specs DEPEND on ADRs but answer different question:
+- ADRs: "WHAT decision and WHY?"
+- Specs: "HOW to technically implement?"
 
 ---
 
