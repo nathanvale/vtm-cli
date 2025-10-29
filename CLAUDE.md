@@ -53,6 +53,11 @@ pnpm validate       # Run full validation (lint + build + test)
 # Analyze domain architecture
 vtm analyze <domain-name>
 vtm analyze <domain-name> --suggest-refactoring
+
+# Manage session state
+vtm session get              # Get current task ID
+vtm session set TASK-030     # Set current task
+vtm session clear            # Clear current task
 ```
 
 ## Architecture
@@ -462,7 +467,42 @@ VTM tracks your current task via the `VTMSession` class:
 }
 ```
 
-**Note:** Session state integration with vtm CLI commands is pending. Currently used by Claude Code slash commands for smart hints.
+**CLI Commands:**
+
+Session state can be managed directly using CLI commands:
+
+```bash
+vtm session get           # Get current task ID (exit 0 if set, exit 1 if empty)
+vtm session set TASK-003  # Set current task ID
+vtm session clear         # Clear current task and remove session file
+```
+
+**Usage Examples:**
+
+```bash
+# Set current task when starting work
+vtm session set TASK-003
+
+# Check current task
+vtm session get
+# Output: TASK-003
+
+# Use in bash conditionals
+if vtm session get > /dev/null; then
+  echo "You have a current task: $(vtm session get)"
+fi
+
+# Clear session after completing work
+vtm session clear
+```
+
+**Integration with Slash Commands:**
+
+The slash commands automatically manage session state:
+
+- `/vtm:work TASK-003` - Sets session when task starts
+- `/vtm:done` - Clears session when task completes
+- `/vtm:start`, `/vtm:context` - Use session for smart hints
 
 ### Traditional Workflow (Step-by-Step)
 

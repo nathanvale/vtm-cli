@@ -87,7 +87,7 @@ if [[ -z "$FORCE_FLAG" ]]; then
         fi
     else
         # Check if this task is already the current task
-        CURRENT_TASK=$(cat .vtm-session 2>/dev/null | grep -o '"currentTask":"[^"]*"' | cut -d'"' -f4)
+        CURRENT_TASK=$(vtm session get 2>/dev/null)
         if [[ "$CURRENT_TASK" == "$TASK_ID" ]]; then
             echo "⚠️  Warning: $TASK_ID is already your current task"
             echo ""

@@ -1,0 +1,183 @@
+# VTM CLI: Composable Thinking Partners Architecture
+# Complete File Structure Overview
+
+## Architecture Documentation
+docs/
+├── ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md (MAIN - Start here!)
+│   └─ Overview of improved architecture
+│   └─ Design principles and rationale
+│   └─ Comparison with original design
+│   └─ Implementation roadmap
+│
+├── IMPROVED-ARCHITECTURE-SUMMARY.md (Executive Summary)
+│   └─ What was improved and why
+│   └─ Three thinking partners overview
+│   └─ New workflow comparison
+│   └─ Quick reference guide
+│
+└── ARCHITECTURE-FILES-OVERVIEW.txt (This file)
+    └─ File structure and reading guide
+
+## Original Design (Still Valid)
+prd/
+└── prd-plan-workflow.md
+    └─ High-level requirements and goals
+    └─ Technical decisions for original design
+    └─ Functional requirements
+    └─ Implementation guidance
+
+adr/
+└── ADR-001-plan-domain-prd-workflow.md
+    └─ Architectural decisions for original design
+    └─ Context and rationale
+    └─ Alternatives considered
+    └─ Consequences
+
+specs/
+├── spec-plan-workflow.md
+│   └─ Implementation requirements for original design
+│   └─ Performance and quality targets
+│   └─ Test plan
+│   └─ Acceptance criteria
+│
+├── spec-helpers-thinking-partner-prd-ideation.md (NEW)
+│   └─ PRD Ideation thinking partner command
+│   └─ Research phase details (web, docs, code)
+│   └─ Analysis and synthesis phases
+│   └─ JSON output schema
+│   └─ Integration with /plan:create-prd
+│
+└── spec-helpers-thinking-partner-adr-decomposition.md (NEW)
+    └─ ADR Decomposition thinking partner command
+    └─ PRD analysis and decision extraction
+    └─ Dependency detection
+    └─ ADR planning and ordering
+    └─ JSON output schema
+    └─ Integration with /plan:generate-adrs
+
+## Reading Guide
+
+### For Understanding the New Architecture
+1. START: IMPROVED-ARCHITECTURE-SUMMARY.md (5-10 min read)
+   - Quick overview of improvements
+   - Before/after workflow comparison
+   
+2. THEN: ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md (20-30 min read)
+   - Deep dive into design principles
+   - Detailed architecture
+   - Design decisions with rationale
+
+3. OPTIONALLY: Review Thinking Partner Specs
+   - spec-helpers-thinking-partner-prd-ideation.md
+   - spec-helpers-thinking-partner-adr-decomposition.md
+
+### For Implementation Planning
+1. Read: ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md
+2. Read: Implementation Roadmap section
+3. Create VTM tasks from Phase 1-5
+4. Estimate effort and sequence
+
+### For Understanding Original Design
+1. Read: prd/prd-plan-workflow.md (what to build)
+2. Read: adr/ADR-001-plan-domain-prd-workflow.md (why)
+3. Read: specs/spec-plan-workflow.md (how)
+
+### For Complete Context
+1. IMPROVED-ARCHITECTURE-SUMMARY.md
+2. ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md
+3. spec-helpers-thinking-partner-prd-ideation.md
+4. spec-helpers-thinking-partner-adr-decomposition.md
+5. prd/prd-plan-workflow.md
+6. adr/ADR-001-plan-domain-prd-workflow.md
+7. specs/spec-plan-workflow.md
+
+## Key Concepts
+
+### Three Thinking Partners
+1. **PRD Ideation** - Researches problem space, guides PRD creation
+   - Inputs: Feature idea (informal)
+   - Outputs: Research-backed PRD scaffold (JSON)
+   - Command: /helpers:thinking-partner:prd-ideation
+
+2. **ADR Decomposition** - Breaks down PRD into distinct decisions
+   - Inputs: Completed PRD
+   - Outputs: Decomposition plan (JSON)
+   - Command: /helpers:thinking-partner:adr-decomposition
+
+3. **Tech Spec** - Creates specifications independently
+   - Separate path from ADRs
+   - Focused on implementation details
+   - Not dependent on ADR decisions
+
+### Key Improvements
+- ✅ Eliminates blank page syndrome (ideation thinking partner)
+- ✅ Enables granular ADRs (decomposition thinking partner)
+- ✅ Composable design (thinking partners are reusable)
+- ✅ Explicit thinking (outputs are JSON artifacts, not hidden)
+- ✅ Human-controlled (AI assists, humans decide)
+
+### Original Design Problems Solved
+1. Blank page syndrome → PRD Ideation partner provides scaffold
+2. Monolithic ADRs → ADR Decomposition partner breaks into granular ADRs
+3. No composability → Thinking partners are independent, reusable
+4. Hidden thinking → JSON outputs make thinking explicit
+
+## File Creation Timeline
+
+1. docs/ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md (design complete)
+2. docs/IMPROVED-ARCHITECTURE-SUMMARY.md (executive summary)
+3. specs/spec-helpers-thinking-partner-prd-ideation.md (prd ideation spec)
+4. specs/spec-helpers-thinking-partner-adr-decomposition.md (adr decomposition spec)
+5. docs/ARCHITECTURE-FILES-OVERVIEW.txt (this file)
+
+## Next Steps
+
+### Option A: Understand & Review
+[ ] Read IMPROVED-ARCHITECTURE-SUMMARY.md (5-10 min)
+[ ] Read ARCHITECTURE-COMPOSABLE-THINKING-PARTNERS.md (20-30 min)
+[ ] Review thinking partner specs (15-20 min each)
+[ ] Provide feedback on design
+
+### Option B: Plan Implementation
+[ ] Create VTM tasks from architecture
+[ ] Phase 1: Infrastructure (estimate hours)
+[ ] Phase 2: PRD Ideation partner (estimate hours)
+[ ] Phase 3: ADR Decomposition partner (estimate hours)
+[ ] Phase 4: Full integration (estimate hours)
+[ ] Phase 5: Polish & feedback (estimate hours)
+
+### Option C: Prototype
+[ ] Build PRD Ideation as proof-of-concept
+[ ] Test with sample feature idea
+[ ] Validate output quality and usefulness
+[ ] Iterate on prompts and JSON schema
+[ ] Gather real user feedback
+
+## Questions & Feedback
+
+Areas to review and provide feedback:
+
+**Architecture Design:**
+- [ ] Does the composable thinking partner model work?
+- [ ] Are the three thinking partners the right breakdown?
+- [ ] Is the separation of concerns clear?
+
+**PRD Ideation Partner:**
+- [ ] Is research approach (web + docs + code) right?
+- [ ] Is JSON scaffold useful for PRD creation?
+- [ ] How to handle topics with no clear best practice?
+
+**ADR Decomposition Partner:**
+- [ ] Is "one decision per ADR" the right strategy?
+- [ ] How to handle tightly coupled decisions?
+- [ ] Is dependency detection approach sound?
+
+**Implementation:**
+- [ ] Which thinking partner to build first?
+- [ ] Should they be separate domain or helpers?
+- [ ] How to gather user feedback on quality?
+
+---
+
+Created: 2025-10-30
+Status: Architecture design complete, ready for review

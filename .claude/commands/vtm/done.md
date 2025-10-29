@@ -36,10 +36,6 @@ Complete a task and automatically show the next available tasks. If no task ID i
 ```bash
 #!/bin/bash
 
-# Get the helper script path
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-SESSION_HELPER="$SCRIPT_DIR/../helpers/session.mjs"
-
 # Parse arguments
 TASK_ID="${ARGUMENTS[0]}"
 
@@ -60,7 +56,7 @@ fi
 # Determine which task to complete
 if [[ -z "$TASK_ID" ]]; then
     # No task ID provided, get from session
-    TASK_ID=$(node "$SESSION_HELPER" get 2>/dev/null)
+    TASK_ID=$(vtm session get 2>/dev/null)
 
     if [[ -z "$TASK_ID" ]]; then
         echo "❌ Error: No current task in session"
@@ -96,7 +92,7 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Clear current task from session
-node "$SESSION_HELPER" clear 2>/dev/null
+vtm session clear > /dev/null 2>&1
 
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"

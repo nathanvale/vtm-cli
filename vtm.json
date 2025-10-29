@@ -2,9 +2,9 @@
   "project": "vtm-cli",
   "stats": {
     "total_tasks": 37,
-    "completed": 29,
+    "completed": 37,
     "in_progress": 0,
-    "pending": 8,
+    "pending": 0,
     "blocked": 0
   },
   "tasks": [
@@ -92,7 +92,7 @@
       "adr_source": "planning-session/decision-engine-refactor",
       "blocks": [],
       "commits": [],
-      "completed_at": "2025-10-29T13:00:38.626Z",
+      "completed_at": "2025-10-29T20:14:28.669Z",
       "dependencies": [
         "TASK-001"
       ],
@@ -109,7 +109,7 @@
       "id": "TASK-003",
       "risk": "low",
       "spec_source": "planning-session/decision-engine-refactor",
-      "started_at": "2025-10-29T12:59:34.230Z",
+      "started_at": "2025-10-29T20:14:28.541Z",
       "status": "completed",
       "test_strategy": "Direct",
       "test_strategy_rationale": "Setting up test infrastructure, verified by successful test execution",
@@ -1119,12 +1119,12 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:06:01.755Z",
+      "completed_at": "2025-10-29T20:08:17.694Z",
       "commits": [],
       "validation": {
-        "tests_pass": false,
+        "tests_pass": true,
         "ac_verified": []
       }
     },
@@ -1153,9 +1153,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:12:46.894Z",
+      "completed_at": "2025-10-29T20:12:46.929Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1188,9 +1188,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:12:46.963Z",
+      "completed_at": "2025-10-29T20:12:46.996Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1222,9 +1222,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:12:47.033Z",
+      "completed_at": "2025-10-29T20:12:47.068Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1255,9 +1255,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:12:47.103Z",
+      "completed_at": "2025-10-29T20:12:47.138Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1292,9 +1292,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:12:55.341Z",
+      "completed_at": "2025-10-29T20:13:20.515Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1327,9 +1327,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:13:27.773Z",
+      "completed_at": "2025-10-29T20:14:03.809Z",
       "commits": [],
       "validation": {
         "tests_pass": false,
@@ -1363,9 +1363,9 @@
         "modify": [],
         "delete": []
       },
-      "status": "pending",
-      "started_at": null,
-      "completed_at": null,
+      "status": "completed",
+      "started_at": "2025-10-29T20:14:11.364Z",
+      "completed_at": "2025-10-29T20:15:40.635Z",
       "commits": [],
       "validation": {
         "tests_pass": false,

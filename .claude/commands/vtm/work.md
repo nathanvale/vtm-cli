@@ -82,6 +82,9 @@ if [[ $? -ne 0 ]]; then
     exit 1
 fi
 
+# Set session state after successful start
+vtm session set "$TASK_ID" > /dev/null 2>&1
+
 echo ""
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
@@ -121,8 +124,6 @@ echo "   • View task details: /vtm:task $TASK_ID"
 echo "   • Check progress: /vtm:stats"
 echo "   • Switch tasks: /vtm:work TASK-XXX"
 echo ""
-echo "Note: Session tracking for current task is available via VTMSession class"
-echo "      (Integration with vtm CLI pending)"
 ```
 
 ## What This Command Does
@@ -130,8 +131,8 @@ echo "      (Integration with vtm CLI pending)"
 The `/vtm:work` command streamlines your workflow by:
 
 1. **Marking task as in-progress**: Changes status from `pending` → `in-progress`
-2. **Displaying task context**: Shows full task details with dependencies
-3. **Setting session state**: Tracks this as your current task (future integration)
+2. **Setting session state**: Tracks this as your current task automatically
+3. **Displaying task context**: Shows full task details with dependencies
 4. **Providing next steps**: Reminds you of completion workflow
 
 ## Token Efficiency
@@ -184,13 +185,14 @@ Or explicitly:
 
 ## Session State Integration
 
-The command is designed to work with VTMSession for tracking your current task. This enables:
+The command automatically sets session state when you start a task. This enables:
 
 - `/vtm:done` to complete the current task without specifying ID
 - Session persistence across Claude Code restarts
 - Better workflow continuity
+- Automatic tracking of your current task via `vtm session get`
 
-**Note**: Full session integration with the vtm CLI is pending. The command currently provides session tracking guidance but doesn't yet persist state automatically.
+Session state is only set if `vtm start` succeeds, ensuring consistency between task status and session tracking.
 
 ## See Also
 

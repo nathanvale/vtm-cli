@@ -5,7 +5,14 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import * as fs from 'fs'
-import { VTMReader, VTMWriter, ContextBuilder, VTMSummarizer, DecisionEngine } from './lib'
+import {
+  VTMReader,
+  VTMWriter,
+  ContextBuilder,
+  VTMSummarizer,
+  DecisionEngine,
+  VTMSession,
+} from './lib'
 
 const program = new Command()
 
@@ -424,6 +431,56 @@ program
       const errorMessage = (error as Error).message
       console.error(chalk.red(`❌ Error analyzing domain '${domain}': ${errorMessage}`))
       console.error(chalk.yellow('\nTip: Ensure the domain exists in .claude/commands/'))
+      process.exit(1)
+    }
+  })
+
+// vtm session - Manage current task session
+const sessionCommand = program.command('session').description('Manage current task session')
+
+sessionCommand
+  .command('get')
+  .description('Get current task ID')
+  .action(async () => {
+    try {
+      const session = new VTMSession()
+      const currentTask = session.getCurrentTask()
+      if (currentTask) {
+        console.info(currentTask)
+        process.exit(0)
+      } else {
+        process.exit(1)
+      }
+    } catch (error) {
+      console.error(chalk.red(`Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+sessionCommand
+  .command('set <task-id>')
+  .description('Set current task ID')
+  .action(async (taskId: string) => {
+    try {
+      const session = new VTMSession()
+      session.setCurrentTask(taskId)
+      console.info(chalk.green(`✅ Current task set to: ${taskId}`))
+    } catch (error) {
+      console.error(chalk.red(`Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+sessionCommand
+  .command('clear')
+  .description('Clear current task and remove session file')
+  .action(async () => {
+    try {
+      const session = new VTMSession()
+      session.clearCurrentTask()
+      console.info(chalk.green('✅ Session cleared'))
+    } catch (error) {
+      console.error(chalk.red(`Error: ${(error as Error).message}`))
       process.exit(1)
     }
   })

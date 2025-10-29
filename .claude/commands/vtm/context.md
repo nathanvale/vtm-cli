@@ -72,11 +72,9 @@ fi
 
 # AC3: Check if this is the current task
 IS_CURRENT_TASK=false
-if [[ -f ".vtm-session" ]]; then
-    CURRENT_TASK=$(cat .vtm-session 2>/dev/null | grep -o '"currentTask":"[^"]*"' | cut -d'"' -f4)
-    if [[ "$CURRENT_TASK" == "$TASK_ID" ]]; then
-        IS_CURRENT_TASK=true
-    fi
+CURRENT_TASK=$(vtm session get 2>/dev/null)
+if [[ "$CURRENT_TASK" == "$TASK_ID" ]]; then
+    IS_CURRENT_TASK=true
 fi
 
 echo "📋 Task Context: $TASK_ID"
