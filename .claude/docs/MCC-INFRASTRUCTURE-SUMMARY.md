@@ -86,7 +86,7 @@ Three main slash commands with full implementation:
 #### Template Files
 
 - **Location:** `.claude/templates/`
-- **Command Template:** command.template.md
+- **Command Template:** template-command.md
   - Frontmatter structure
   - $ARGUMENTS parsing example
   - Documentation template
@@ -323,7 +323,7 @@ All commands include:
 
 ```
 .claude/templates/
-└── command.template.md          # Command file template
+└── template-command.md          # Command file template
 ```
 
 ### Data & Examples (1+ files)

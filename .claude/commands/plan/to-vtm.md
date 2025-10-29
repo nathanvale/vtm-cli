@@ -52,34 +52,139 @@ You are an orchestration agent transforming planning documents into VTM tasks. F
    - ARG2: spec-file path
    - FLAGS: Parse `--commit` and `--preview-only` from arguments
 
-2. Validate files exist:
+2. Validate files exist and are correct type:
    - Use Read tool to verify both files exist
    - If either file missing, show clear error and exit
+   - Validate first arg contains "ADR-" (ADR file)
+   - Validate second arg references an ADR (technical spec)
+   - Reject if arguments are in wrong order
 
-3. Check ADR+Spec pairing (optional warning):
-   - Extract ADR filename (basename)
+3. Check ADR+Spec pairing:
+   - Extract ADR filename (basename) from first argument
    - Read spec file and check if it mentions the ADR filename
-   - If not found, show warning but allow user to continue
+   - If not found, show error: "Spec does not reference this ADR"
+   - Example error: "spec-api.md does not mention ADR-002. Check if this is the correct spec for ADR-002-api-design.md"
+   - Prevent accidental pairing of unrelated ADR+Spec
 
 Example validation:
 
-```typescript
+````typescript
 const adrFile = args[0]
 const specFile = args[1]
 const hasCommitFlag = args.includes("--commit")
 const hasPreviewOnlyFlag = args.includes("--preview-only")
 
-// Try to read files
+console.log("🔍 Validating input files...")
+
+// Validate file existence
+let adrContent, specContent
 try {
-  const adrContent = await Read(adrFile)
-  const specContent = await Read(specFile)
+  adrContent = await Read(adrFile)
+  specContent = await Read(specFile)
 } catch (error) {
   console.log(`❌ Error: File not found`)
   console.log(`  ADR: ${adrFile}`)
   console.log(`  Spec: ${specFile}`)
+  console.log("")
+  console.log(
+    "💡 Example: /plan:to-vtm docs/adr/ADR-001-auth.md docs/specs/spec-auth.md",
+  )
   return
 }
-```
+
+// Validate ADR file structure
+if (!adrFile.includes("adr/") && !adrFile.includes("/adr/")) {
+  console.log("❌ Error: First argument must be an ADR file")
+  console.log("   Path should contain /adr/ directory")
+  console.log("")
+  console.log(
+    "💡 Example: /plan:to-vtm docs/adr/ADR-001-auth.md docs/specs/spec-auth.md",
+  )
+  return
+}
+
+if (!adrContent.match(/^# ADR-/m)) {
+  console.log("❌ Error: First file does not appear to be an ADR")
+  console.log("   Missing ADR header (e.g., '# ADR-001: Title')")
+  console.log("")
+  console.log("💡 Use /plan:create-adr to create a properly structured ADR")
+  return
+}
+
+// Validate Spec file
+if (!specFile.includes("spec") && !specFile.includes("/specs/")) {
+  console.log("❌ Error: Second argument must be a spec file")
+  console.log("   Path should contain /spec/ or /specs/ directory")
+  console.log("")
+  console.log(
+    "💡 Example: /plan:to-vtm docs/adr/ADR-001-auth.md docs/specs/spec-auth.md",
+  )
+  return
+}
+
+// Validate ADR+Spec pairing
+const adrFilename = adrFile.split("/").pop() || ""
+const adrId = adrFilename.match(/ADR-\d+/)?.[0]
+
+const specReferencesAdr =
+  specContent.includes(adrFilename) || (adrId && specContent.includes(adrId))
+
+if (!specReferencesAdr) {
+  console.log("❌ Error: Spec does not reference the ADR")
+  console.log(`   ${specFile} does not mention ${adrFilename}`)
+  console.log("")
+  console.log(
+    "   This prevents accidental pairing of unrelated ADR+Spec files.",
+  )
+  console.log("   The spec should reference the ADR it implements.")
+  console.log("")
+  console.log("💡 Fix: Add a reference to the ADR in the spec file:")
+  console.log(`   Example: "Implements ${adrFilename}"`)
+  return
+}
+
+// Check for required ADR sections
+const requiredAdrSections = ["Status", "Context", "Decision", "Consequences"]
+const missingAdrSections = []
+
+for (const section of requiredAdrSections) {
+  if (!adrContent.includes(`## ${section}`)) {
+    missingAdrSections.push(section)
+  }
+}
+
+if (missingAdrSections.length > 0) {
+  console.log(
+    `❌ Error: ADR missing required sections: ${missingAdrSections.join(", ")}`,
+  )
+  console.log("   Task extraction requires complete ADR structure")
+  console.log("")
+  console.log("💡 Use /plan:create-adr to create a properly structured ADR")
+  return
+}
+
+// Check for Spec content quality (warnings)
+const specHasCodeExamples = (specContent.match(/```/g) || []).length >= 2
+const specHasAcceptanceCriteria = specContent.includes("Acceptance Criteria")
+
+if (!specHasCodeExamples) {
+  console.warn("⚠️  Warning: Spec has no code examples")
+  console.warn("   Task context will be limited without code examples")
+  console.warn("")
+}
+
+if (!specHasAcceptanceCriteria) {
+  console.warn("⚠️  Warning: Spec missing Acceptance Criteria section")
+  console.warn("   Tasks may not have clear completion criteria")
+  console.warn("")
+}
+
+console.log("✅ File validation passed")
+console.log(`   ADR: ${adrFile}`)
+console.log(`   Spec: ${specFile}`)
+console.log(`   Pairing: Valid (spec references ${adrId})`)
+console.log("")
+````
 
 ### Step 2: Read Source Files with Line Numbers
 

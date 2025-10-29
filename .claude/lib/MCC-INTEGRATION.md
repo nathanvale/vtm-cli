@@ -39,7 +39,7 @@ Output & User Feedback
 │   ├── mcc-config.sh           # Configuration management
 │   └── MCC-INTEGRATION.md      # This file
 ├── templates/
-│   └── command.template.md     # Command file template
+│   └── template-command.md     # Command file template
 ├── designs/
 │   └── {domain}.json           # Design specifications (created by design:domain)
 ├── registry.json               # Component registry (created by registry:scan)

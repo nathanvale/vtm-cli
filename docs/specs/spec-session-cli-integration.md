@@ -210,7 +210,7 @@ export class VTMSession {
   private currentTask: string | null = null
 
   constructor(basePath: string = process.cwd()) {
-    this.sessionFilePath = path.join(basePath, '.vtm-session')
+    this.sessionFilePath = path.join(basePath, ".vtm-session")
     this.loadSession()
   }
 
@@ -234,17 +234,17 @@ export class VTMSession {
 // src/index.ts
 
 // Add import
-import { VTMSession } from './lib'
+import { VTMSession } from "./lib"
 
 // Create session subcommand group
 const sessionCommand = program
-  .command('session')
-  .description('Manage current task session')
+  .command("session")
+  .description("Manage current task session")
 
 // vtm session get
 sessionCommand
-  .command('get')
-  .description('Get current task ID')
+  .command("get")
+  .description("Get current task ID")
   .action(async () => {
     try {
       const session = new VTMSession()
@@ -266,6 +266,7 @@ sessionCommand
 ```
 
 **Acceptance Criteria**:
+
 - Outputs task ID to stdout if session exists
 - Exit code 0 if task ID found
 - Exit code 1 if no session (empty)
@@ -273,6 +274,7 @@ sessionCommand
 - Stdout output is clean (just task ID, no formatting)
 
 **Usage**:
+
 ```bash
 $ vtm session get
 TASK-003
@@ -295,8 +297,8 @@ TASK-003
 // src/index.ts
 
 sessionCommand
-  .command('set <task-id>')
-  .description('Set current task ID')
+  .command("set <task-id>")
+  .description("Set current task ID")
   .action(async (taskId: string) => {
     try {
       const session = new VTMSession()
@@ -310,6 +312,7 @@ sessionCommand
 ```
 
 **Acceptance Criteria**:
+
 - Accepts task ID as required positional argument
 - Creates `.vtm-session` file with JSON: `{"currentTask": "TASK-XXX"}`
 - Shows success message with green checkmark
@@ -317,6 +320,7 @@ sessionCommand
 - Exit code 1 on any error (e.g., no task ID provided)
 
 **Usage**:
+
 ```bash
 $ vtm session set TASK-003
 ✅ Current task set: TASK-003
@@ -337,13 +341,13 @@ $ cat .vtm-session
 // src/index.ts
 
 sessionCommand
-  .command('clear')
-  .description('Clear current task')
+  .command("clear")
+  .description("Clear current task")
   .action(async () => {
     try {
       const session = new VTMSession()
       session.clearCurrentTask()
-      console.log(chalk.green('✅ Session cleared'))
+      console.log(chalk.green("✅ Session cleared"))
     } catch (error) {
       console.error(chalk.red(`Error: ${(error as Error).message}`))
       process.exit(1)
@@ -352,12 +356,14 @@ sessionCommand
 ```
 
 **Acceptance Criteria**:
+
 - Removes `.vtm-session` file if it exists
 - Shows success message even if no session exists (idempotent)
 - Exit code 0 on success
 - Exit code 1 only on filesystem errors
 
 **Usage**:
+
 ```bash
 $ vtm session clear
 ✅ Session cleared
@@ -404,6 +410,7 @@ vtm session set "$TASK_ID" > /dev/null 2>&1
 ```
 
 **Acceptance Criteria**:
+
 - Session is set only if `vtm start` succeeds
 - Session output is silenced (redirected to /dev/null)
 - Does not affect existing error handling
@@ -440,6 +447,7 @@ vtm session clear > /dev/null 2>&1
 ```
 
 **Acceptance Criteria**:
+
 - `/vtm:done` works identically to before
 - Gets task ID from session via `vtm session get`
 - Clears session after successful completion via `vtm session clear`
@@ -464,6 +472,7 @@ CURRENT_TASK=$(vtm session get 2>/dev/null)
 ```
 
 **Acceptance Criteria**:
+
 - Smart hint "You're already working on this task" still works
 - Uses `vtm session get` instead of manual file parsing
 - More robust (handles malformed JSON gracefully via VTMSession)
@@ -497,6 +506,7 @@ fi
 ```
 
 **Acceptance Criteria**:
+
 - "📌 This is your current task" indicator still appears
 - Uses `vtm session get` instead of manual file parsing
 - Simplified logic (4 lines instead of 7)
@@ -505,15 +515,16 @@ fi
 
 ### Error Handling
 
-| Scenario | Command | Behavior |
-|----------|---------|----------|
-| No session file exists | `vtm session get` | Exit code 1, no output |
-| Session file corrupted | `vtm session get` | Exit code 1, no output (VTMSession handles gracefully) |
-| No task ID provided | `vtm session set` | Commander shows usage, exit code 1 |
-| Invalid task ID format | `vtm session set INVALID` | **Accepts any string** (no validation - keeps simple) |
-| Filesystem permissions | `vtm session set/clear` | Error message, exit code 1 |
+| Scenario               | Command                   | Behavior                                               |
+| ---------------------- | ------------------------- | ------------------------------------------------------ |
+| No session file exists | `vtm session get`         | Exit code 1, no output                                 |
+| Session file corrupted | `vtm session get`         | Exit code 1, no output (VTMSession handles gracefully) |
+| No task ID provided    | `vtm session set`         | Commander shows usage, exit code 1                     |
+| Invalid task ID format | `vtm session set INVALID` | **Accepts any string** (no validation - keeps simple)  |
+| Filesystem permissions | `vtm session set/clear`   | Error message, exit code 1                             |
 
 **Design Decision**: No task ID validation (e.g., checking if task exists in VTM). Rationale:
+
 - Keeps commands simple and fast (no I/O for vtm.json)
 - User might set session before VTM file exists (edge case)
 - Session is advisory, not authoritative
@@ -524,6 +535,7 @@ fi
 ### Configuration
 
 No configuration required. Session file location is hardcoded:
+
 - Path: `<project-root>/.vtm-session`
 - Format: JSON `{"currentTask": "TASK-XXX"}`
 - Behavior: Project-specific (different session per directory)
@@ -558,30 +570,30 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 
 **Coverage Target**: All CLI commands and edge cases
 
-| Scenario | Test Case | Expected Outcome |
-|----------|-----------|------------------|
-| Get empty session | `vtm session get` (no file) | Exit code 1, no output |
-| Get existing session | `vtm session get` (with file) | Outputs "TASK-003", exit code 0 |
-| Set session | `vtm session set TASK-003` | Creates file, success message, exit code 0 |
-| Set overwrites existing | `vtm session set TASK-004` (after set 003) | Updates file, exit code 0 |
-| Clear session | `vtm session clear` | Removes file, success message, exit code 0 |
-| Clear empty session | `vtm session clear` (no file) | Success message (idempotent), exit code 0 |
-| Set without task ID | `vtm session set` | Commander error, exit code 1 |
-| Get with corrupted JSON | Manually corrupt .vtm-session | Exit code 1, no output |
-| Help text | `vtm session --help` | Shows subcommands with descriptions |
+| Scenario                | Test Case                                  | Expected Outcome                           |
+| ----------------------- | ------------------------------------------ | ------------------------------------------ |
+| Get empty session       | `vtm session get` (no file)                | Exit code 1, no output                     |
+| Get existing session    | `vtm session get` (with file)              | Outputs "TASK-003", exit code 0            |
+| Set session             | `vtm session set TASK-003`                 | Creates file, success message, exit code 0 |
+| Set overwrites existing | `vtm session set TASK-004` (after set 003) | Updates file, exit code 0                  |
+| Clear session           | `vtm session clear`                        | Removes file, success message, exit code 0 |
+| Clear empty session     | `vtm session clear` (no file)              | Success message (idempotent), exit code 0  |
+| Set without task ID     | `vtm session set`                          | Commander error, exit code 1               |
+| Get with corrupted JSON | Manually corrupt .vtm-session              | Exit code 1, no output                     |
+| Help text               | `vtm session --help`                       | Shows subcommands with descriptions        |
 
 #### End-to-End Tests (New)
 
 **Coverage Target**: Full workflows with slash commands
 
-| Scenario | Test Case | Dependencies | Expected Outcome |
-|----------|-----------|--------------|------------------|
-| Work → Done workflow | `/vtm:work TASK-003` → `/vtm:done` | Mock vtm.json | Session set, task completed, session cleared |
-| Work → Work (different task) | `/vtm:work TASK-003` → `/vtm:work TASK-004` | Mock vtm.json | Session updated to TASK-004 |
-| Start with current task hint | `/vtm:work TASK-003` → `/vtm:start TASK-003` | Mock vtm.json | Shows "already current task" warning |
-| Context shows current indicator | `/vtm:work TASK-003` → `/vtm:context TASK-003` | Mock vtm.json | Shows "📌 This is your current task" |
-| Done without session | `/vtm:done` (no session) | Mock vtm.json | Error: "No current task in session" |
-| Manual session control | `vtm session set` → `vtm session get` → `vtm session clear` | None | Manual CLI works independently |
+| Scenario                        | Test Case                                                   | Dependencies  | Expected Outcome                             |
+| ------------------------------- | ----------------------------------------------------------- | ------------- | -------------------------------------------- |
+| Work → Done workflow            | `/vtm:work TASK-003` → `/vtm:done`                          | Mock vtm.json | Session set, task completed, session cleared |
+| Work → Work (different task)    | `/vtm:work TASK-003` → `/vtm:work TASK-004`                 | Mock vtm.json | Session updated to TASK-004                  |
+| Start with current task hint    | `/vtm:work TASK-003` → `/vtm:start TASK-003`                | Mock vtm.json | Shows "already current task" warning         |
+| Context shows current indicator | `/vtm:work TASK-003` → `/vtm:context TASK-003`              | Mock vtm.json | Shows "📌 This is your current task"         |
+| Done without session            | `/vtm:done` (no session)                                    | Mock vtm.json | Error: "No current task in session"          |
+| Manual session control          | `vtm session set` → `vtm session get` → `vtm session clear` | None          | Manual CLI works independently               |
 
 ---
 
@@ -592,6 +604,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Implement three CLI subcommands (`vtm session get|set|clear`) in `src/index.ts` using existing VTMSession class.
 
 **Acceptance Criteria**:
+
 - `vtm session` subcommand group exists
 - `get` command outputs task ID with exit code 0 (or exit 1 if empty)
 - `set <task-id>` command saves to `.vtm-session` file
@@ -607,6 +620,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 2
 
 **Files**:
+
 - Modify: `src/index.ts` (add session subcommands after line 407)
 - Modify: `src/lib/index.ts` (export VTMSession)
 - Create: `src/__tests__/cli-session.test.ts` (integration tests for CLI)
@@ -618,6 +632,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Add `vtm session set` call to `/vtm:work` command after successful task start. This completes the streamlined workflow.
 
 **Acceptance Criteria**:
+
 - `/vtm:work TASK-003` sets current task in session after `vtm start` succeeds
 - Session output is silenced (redirected to /dev/null)
 - Failure to set session does not fail the command (graceful degradation)
@@ -631,6 +646,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.5
 
 **Files**:
+
 - Modify: `.claude/commands/vtm/work.md` (add session set after line 83)
 
 ---
@@ -640,6 +656,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Replace `node session.mjs` calls in `/vtm:done` with `vtm session get` and `vtm session clear`.
 
 **Acceptance Criteria**:
+
 - `/vtm:done` gets current task via `vtm session get` instead of helper
 - `/vtm:done` clears session via `vtm session clear` instead of helper
 - Workflow behavior unchanged (backward compatible)
@@ -652,6 +669,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.5
 
 **Files**:
+
 - Modify: `.claude/commands/vtm/done.md` (replace helper calls)
 
 ---
@@ -661,6 +679,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Replace manual `.vtm-session` file parsing in `/vtm:start` with `vtm session get` for smart hints.
 
 **Acceptance Criteria**:
+
 - Smart hint "already working on this task" uses `vtm session get`
 - No manual JSON parsing with grep/cut
 - More robust to malformed session files
@@ -673,6 +692,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.25
 
 **Files**:
+
 - Modify: `.claude/commands/vtm/start.md` (replace file parsing with CLI)
 
 ---
@@ -682,6 +702,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Replace manual `.vtm-session` file parsing in `/vtm:context` with `vtm session get` for current task indicator.
 
 **Acceptance Criteria**:
+
 - "📌 This is your current task" indicator uses `vtm session get`
 - No manual JSON parsing
 - Simplified logic (fewer lines)
@@ -694,6 +715,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.25
 
 **Files**:
+
 - Modify: `.claude/commands/vtm/context.md` (replace file parsing with CLI)
 
 ---
@@ -703,6 +725,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Delete `.claude/commands/helpers/session.mjs` helper script and verify no remaining references.
 
 **Acceptance Criteria**:
+
 - File `.claude/commands/helpers/session.mjs` deleted
 - No grep matches for "session.mjs" in `.claude/commands/`
 - No grep matches for "SESSION_HELPER" in `.claude/commands/`
@@ -715,6 +738,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.25
 
 **Files**:
+
 - Delete: `.claude/commands/helpers/session.mjs`
 
 ---
@@ -724,6 +748,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Update CLAUDE.md documentation to reflect new CLI commands and remove references to pending integration.
 
 **Acceptance Criteria**:
+
 - CLAUDE.md section on Session State Tracking updated (lines 229-249)
 - Documents `vtm session get|set|clear` commands
 - Removes note about "integration pending"
@@ -737,6 +762,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 0.5
 
 **Files**:
+
 - Modify: `CLAUDE.md` (update Session State Tracking section)
 
 ---
@@ -746,6 +772,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Description**: Manually test full workflows to verify all changes work together correctly.
 
 **Acceptance Criteria**:
+
 - `/vtm:work TASK-003` → `/vtm:done` workflow works (session set and cleared)
 - Smart hints in `/vtm:start` and `/vtm:context` work correctly
 - Manual CLI usage: `vtm session set/get/clear` works independently
@@ -758,6 +785,7 @@ Future enhancement: Allow custom path via `VTM_SESSION_PATH` env var (out of sco
 **Estimated Hours**: 1
 
 **Test Script**:
+
 ```bash
 # Test 1: Full workflow
 /vtm:work TASK-003
@@ -785,13 +813,13 @@ vtm session set              # Should error: task ID required
 
 ## Risks & Mitigations
 
-| Risk | Impact | Probability | Mitigation |
-|------|--------|-------------|------------|
-| Breaking change to slash commands | High | Low | All changes are backward compatible; slash commands work identically |
-| Session file corruption causes errors | Medium | Low | VTMSession already handles corruption gracefully (loads clean state) |
-| Users rely on session.mjs directly | Low | Very Low | Helper is internal implementation; no public documentation |
-| CLI binary not available in slash commands | High | Very Low | Test with `command -v vtm` in each slash command |
-| Session not set due to silent failure | Medium | Low | Log failures for debugging (even if silenced to user) |
+| Risk                                       | Impact | Probability | Mitigation                                                           |
+| ------------------------------------------ | ------ | ----------- | -------------------------------------------------------------------- |
+| Breaking change to slash commands          | High   | Low         | All changes are backward compatible; slash commands work identically |
+| Session file corruption causes errors      | Medium | Low         | VTMSession already handles corruption gracefully (loads clean state) |
+| Users rely on session.mjs directly         | Low    | Very Low    | Helper is internal implementation; no public documentation           |
+| CLI binary not available in slash commands | High   | Very Low    | Test with `command -v vtm` in each slash command                     |
+| Session not set due to silent failure      | Medium | Low         | Log failures for debugging (even if silenced to user)                |
 
 ---
 
@@ -803,9 +831,11 @@ vtm session set              # Should error: task ID required
 - **File I/O**: Session file is small (<100 bytes JSON) - no performance concern
 
 **Bottlenecks**:
+
 - None expected; session operations are trivial compared to vtm.json loading
 
 **Optimization Strategy**:
+
 - Not required; session file operations are already optimal
 
 ---
@@ -818,6 +848,7 @@ vtm session set              # Should error: task ID required
 - **Secrets Management**: N/A (no secrets involved)
 
 **Security Notes**:
+
 - Session file is project-specific (not global) - isolated to repository
 - No network access or external dependencies
 - No code execution from session data
@@ -832,6 +863,7 @@ vtm session set              # Should error: task ID required
 - **Alerts**: N/A (no production deployment)
 
 **Debug Tips**:
+
 ```bash
 # View current session
 cat .vtm-session
@@ -873,6 +905,7 @@ All questions resolved during ADR-048 review.
 ### Examples
 
 **Example 1: Manual Session Control**
+
 ```bash
 $ vtm session set TASK-042
 ✅ Current task set: TASK-042
@@ -885,6 +918,7 @@ $ vtm session clear
 ```
 
 **Example 2: Streamlined Workflow**
+
 ```bash
 $ /vtm:work TASK-042
 🚀 Starting work on: TASK-042
@@ -905,6 +939,7 @@ $ /vtm:done
 ```
 
 **Example 3: Session File Format**
+
 ```json
 {
   "currentTask": "TASK-042"
@@ -915,6 +950,6 @@ $ /vtm:done
 
 ## Version History
 
-| Version | Date | Author | Changes |
-|---------|------|--------|---------|
-| 1.0.0 | 2025-10-30 | VTM CLI Team | Initial specification approved alongside ADR-048 |
+| Version | Date       | Author       | Changes                                          |
+| ------- | ---------- | ------------ | ------------------------------------------------ |
+| 1.0.0   | 2025-10-30 | VTM CLI Team | Initial specification approved alongside ADR-048 |

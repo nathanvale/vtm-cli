@@ -805,5 +805,4 @@ describe('vtm ingest command', () => {
       expect(ids).toEqual(['TASK-001', 'TASK-040', 'TASK-041', 'TASK-042'])
     })
   })
-
 })

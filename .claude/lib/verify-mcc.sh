@@ -92,7 +92,7 @@ check_file ".claude/commands/README.md" "Commands guide"
 echo ""
 
 echo -e "${BLUE}=== Templates ===${NC}"
-check_file ".claude/templates/command.template.md" "Command template"
+check_file ".claude/templates/template-command.md" "Command template"
 echo ""
 
 echo -e "${BLUE}=== Example Data ===${NC}"

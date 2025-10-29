@@ -228,7 +228,7 @@ JSON_TOOL, VERBOSITY
 
 Located in `.claude/templates/`
 
-### command.template.md
+### template-command.md
 
 Template for generated command files.
 
@@ -392,7 +392,7 @@ SECOND="${ARGUMENTS[1]:-}"
 │   ├── MCC-INTEGRATION.md
 │   └── README.md
 ├── templates/
-│   └── command.template.md
+│   └── template-command.md
 ├── skills/
 │   └── {domain}-expert/ (generated)
 ├── mcp-servers/

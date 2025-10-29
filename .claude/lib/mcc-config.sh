@@ -187,7 +187,7 @@ JSON_TOOL="${JSON_TOOL:-auto}"  # auto, jq, python
 # ============================================================================
 
 # Template locations and defaults
-TEMPLATE_COMMAND_PATH="$TEMPLATES_DIR/command.template.md"
+TEMPLATE_COMMAND_PATH="$TEMPLATES_DIR/template-command.md"
 TEMPLATE_SKILL_PATH="$TEMPLATES_DIR/skill.template.md"
 TEMPLATE_MCP_PATH="$TEMPLATES_DIR/mcp.template.json"
 TEMPLATE_HOOK_PATH="$TEMPLATES_DIR/hook.template.sh"

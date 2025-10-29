@@ -4,7 +4,7 @@
  */
 
 import { describe, it, expect } from 'vitest'
-import { DecisionEngine } from '../index'
+import { DecisionEngine, VTMHistory } from '../index'
 
 describe('Library Exports', () => {
   describe('DecisionEngine', () => {
@@ -32,6 +32,18 @@ describe('Library Exports', () => {
         verbose: false,
       })
       expect(engine).toBeInstanceOf(DecisionEngine)
+    })
+  })
+
+  describe('VTMHistory', () => {
+    it('should export VTMHistory class', () => {
+      expect(VTMHistory).toBeDefined()
+      expect(typeof VTMHistory).toBe('function')
+    })
+
+    it('should be instantiable with path', () => {
+      const history = new VTMHistory('test-vtm.json')
+      expect(history).toBeInstanceOf(VTMHistory)
     })
   })
 })

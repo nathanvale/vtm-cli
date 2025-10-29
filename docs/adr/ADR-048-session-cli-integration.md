@@ -39,12 +39,14 @@ The VTM CLI includes a `VTMSession` class (`src/lib/vtm-session.ts`) that manage
 ### Current Implementation
 
 **What exists:**
+
 - ✅ `VTMSession` TypeScript class with full implementation
 - ✅ 17 passing tests covering all functionality
 - ✅ Documentation in CLAUDE.md
 - ⚠️ `.claude/commands/helpers/session.mjs` - Node.js wrapper script for bash commands
 
 **Current usage pattern:**
+
 ```bash
 # Bash commands call Node.js helper
 node .claude/commands/helpers/session.mjs get
@@ -53,6 +55,7 @@ node .claude/commands/helpers/session.mjs clear
 ```
 
 **Used by:**
+
 - `/vtm:done` (Claude Code slash command) - Reads and clears session
 - `/vtm:work` (Claude Code slash command) - **Should set but doesn't** ❌
 - `/vtm:start` (Claude Code slash command) - Reads session for smart hints
@@ -93,14 +96,15 @@ vtm session clear         # Clear current task and remove session file
 ### Implementation Changes
 
 **1. Add CLI Commands** (`src/index.ts`):
+
 ```typescript
 const sessionCommand = program
-  .command('session')
-  .description('Manage current task session')
+  .command("session")
+  .description("Manage current task session")
 
 sessionCommand
-  .command('get')
-  .description('Get current task ID')
+  .command("get")
+  .description("Get current task ID")
   .action(async () => {
     const session = new VTMSession()
     const currentTask = session.getCurrentTask()
@@ -117,6 +121,7 @@ sessionCommand
 
 **2. Update Slash Commands**:
 Replace all `node session.mjs` calls with `vtm session` commands:
+
 ```bash
 # OLD: node "$SESSION_HELPER" get 2>/dev/null
 # NEW: vtm session get 2>/dev/null
@@ -133,6 +138,7 @@ Delete `.claude/commands/helpers/session.mjs` - no longer needed.
 
 **4. Fix Missing Integration**:
 Add session tracking to `/vtm:work` after successful task start:
+
 ```bash
 vtm start "$TASK_ID"
 if [[ $? -eq 0 ]]; then
@@ -191,23 +197,27 @@ fi
 ## Implementation Plan
 
 ### Phase 1: Add CLI Commands (30 minutes)
+
 - Add `VTMSession` to imports in `src/index.ts`
 - Export `VTMSession` from `src/lib/index.ts`
 - Implement `vtm session get|set|clear` commands
 - Build and test manually
 
 ### Phase 2: Update Slash Commands (20 minutes)
+
 - Update `.claude/commands/vtm/work.md` - Add session set
 - Update `.claude/commands/vtm/done.md` - Replace helper calls
 - Update `.claude/commands/vtm/start.md` - Replace helper calls
 - Update `.claude/commands/vtm/context.md` - Replace helper calls
 
 ### Phase 3: Cleanup (10 minutes)
+
 - Remove `.claude/commands/helpers/session.mjs`
 - Update CLAUDE.md documentation
 - Verify no remaining references
 
 ### Phase 4: Testing (15 minutes)
+
 - Test `vtm session` commands directly
 - Test full workflow: `/vtm:work` → `/vtm:done`
 - Test smart hints in `/vtm:start` and `/vtm:context`
@@ -224,6 +234,7 @@ fi
 ### Acceptance Criteria
 
 **AC1: CLI commands work correctly**
+
 ```bash
 vtm session set TASK-003
 vtm session get                    # Output: TASK-003
@@ -232,6 +243,7 @@ vtm session get                    # Exit code: 1
 ```
 
 **AC2: Slash commands use CLI**
+
 ```bash
 /vtm:work TASK-003                 # Sets session
 vtm session get                    # Output: TASK-003
@@ -240,6 +252,7 @@ vtm session get                    # Exit code: 1
 ```
 
 **AC3: Smart hints work**
+
 ```bash
 /vtm:work TASK-003
 /vtm:context TASK-003              # Shows "📌 This is your current task"
@@ -247,6 +260,7 @@ vtm session get                    # Exit code: 1
 ```
 
 **AC4: Helper script removed**
+
 ```bash
 ls .claude/commands/helpers/session.mjs   # File not found
 ```
@@ -264,11 +278,13 @@ ls .claude/commands/helpers/session.mjs   # File not found
 **Backward Compatibility**: None required - helper script is internal implementation detail.
 
 **Rollout Strategy**:
+
 1. Deploy CLI commands (additive change, no impact)
 2. Update slash commands (internal change, no user-facing impact)
 3. Remove helper script (cleanup, no user-facing impact)
 
 **Rollback Plan**:
+
 - Revert commit to restore `session.mjs` helper
 - No data migration needed (`.vtm-session` file format unchanged)
 
@@ -277,16 +293,19 @@ ls .claude/commands/helpers/session.mjs   # File not found
 ## References
 
 ### Related Files
+
 - `src/lib/vtm-session.ts` - Core implementation
 - `src/lib/__tests__/vtm-session.test.ts` - Test suite
 - `.claude/commands/helpers/session.mjs` - To be removed
 - `.claude/commands/vtm/*.md` - Slash commands to update
 
 ### Documentation
+
 - CLAUDE.md (lines 229-249) - Session state documentation
 - Will add section on new CLI commands
 
 ### Prior Art
+
 - Existing VTM CLI follows this pattern for all features
 - Git uses similar pattern: `git config get/set`, `git remote add/remove`
 - npm uses: `npm config get/set`
@@ -298,17 +317,20 @@ ls .claude/commands/helpers/session.mjs   # File not found
 ### Design Decisions
 
 **Why exit codes for `vtm session get`?**
+
 - Enables bash conditionals: `if vtm session get > /dev/null; then`
 - Standard Unix convention: 0 = success, 1 = not found
 - Matches behavior of tools like `git config --get`
 
 **Why separate `get/set/clear` instead of single command with flags?**
+
 - Clearer intent: `vtm session set TASK-003` vs `vtm session --set TASK-003`
 - Follows Commander.js subcommand pattern
 - More discoverable in help output
 - Easier to extend (e.g., future `vtm session list` for history)
 
 **Why not `vtm set-session` / `vtm get-session`?**
+
 - Clutters top-level namespace (currently 10 commands)
 - Doesn't scale if we add more session operations
 - Subcommand pattern is more extensible
@@ -316,6 +338,7 @@ ls .claude/commands/helpers/session.mjs   # File not found
 ### Future Enhancements
 
 Possible future additions under `vtm session`:
+
 - `vtm session history` - Show recent tasks
 - `vtm session switch <id>` - Validation + set in one step
 - `vtm session status` - Show current task with details

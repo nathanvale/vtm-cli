@@ -5,6 +5,7 @@
 import { Command } from 'commander'
 import chalk from 'chalk'
 import * as fs from 'fs'
+import * as path from 'path'
 import {
   VTMReader,
   VTMWriter,
@@ -12,7 +13,45 @@ import {
   VTMSummarizer,
   DecisionEngine,
   VTMSession,
+  VTMHistory,
 } from './lib'
+import { findMatchingAdrs, generateSpecName, checkExistingSpecs } from './lib/batch-spec-creator'
+import { ResearchCache } from './lib/research-cache'
+import * as readline from 'readline'
+
+// Helper functions for cache commands
+function formatBytes(bytes: number): string {
+  if (bytes === 0) return '0 Bytes'
+  const k = 1024
+  const sizes = ['Bytes', 'KB', 'MB', 'GB']
+  const i = Math.floor(Math.log(bytes) / Math.log(k))
+  return Math.round((bytes / Math.pow(k, i)) * 100) / 100 + ' ' + sizes[i]
+}
+
+function formatAge(timestamp: Date): string {
+  const now = new Date()
+  const diff = now.getTime() - new Date(timestamp).getTime()
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor(diff / (1000 * 60 * 60))
+
+  if (days > 0) return `${days} day${days > 1 ? 's' : ''} ago`
+  if (hours > 0) return `${hours} hour${hours > 1 ? 's' : ''} ago`
+  return 'Just now'
+}
+
+async function promptUser(question: string): Promise<string> {
+  const rl = readline.createInterface({
+    input: process.stdin,
+    output: process.stdout,
+  })
+
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close()
+      resolve(answer)
+    })
+  })
+}
 
 const program = new Command()
 
@@ -479,6 +518,597 @@ sessionCommand
       const session = new VTMSession()
       session.clearCurrentTask()
       console.info(chalk.green('✅ Session cleared'))
+    } catch (error) {
+      console.error(chalk.red(`Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm history - Show transaction history
+program
+  .command('history [limit]')
+  .description('Show VTM transaction history')
+  .action(async (limit?: string) => {
+    try {
+      const vtmPath = path.resolve(process.cwd(), 'vtm.json')
+      const history = new VTMHistory(vtmPath)
+
+      const limitNum = limit ? parseInt(limit, 10) : 10
+      const entries = await history.getHistory(limitNum)
+
+      if (entries.length === 0) {
+        console.info('No transaction history found.')
+        return
+      }
+
+      console.info('\n📋 VTM Transaction History')
+      console.info('═'.repeat(64))
+      console.info('')
+
+      for (const entry of entries) {
+        console.info(`${entry.id}: ${entry.action} ${entry.tasks_added?.length || 0} tasks`)
+        console.info(`  Source: ${entry.source}`)
+        if (entry.files?.adr) {
+          const adrName = path.basename(entry.files.adr)
+          const specName = entry.files.spec ? path.basename(entry.files.spec) : ''
+          console.info(`  Files: ${adrName}${specName ? ' + ' + specName : ''}`)
+        }
+        if (entry.tasks_added && entry.tasks_added.length > 0) {
+          console.info(`  Tasks: ${entry.tasks_added.join(', ')}`)
+        }
+        console.info(`  Time: ${entry.timestamp.toLocaleString()}`)
+        console.info('')
+      }
+
+      const stats = await history.getStats()
+      console.info(`Total transactions: ${stats.totalEntries}`)
+
+      // Calculate total tasks ingested
+      const allEntries = await history.getHistory()
+      const totalTasksIngested = allEntries.reduce(
+        (sum, e) => sum + (e.tasks_added?.length || 0),
+        0,
+      )
+      console.info(`Total tasks ingested: ${totalTasksIngested}`)
+      console.info('')
+    } catch (error) {
+      console.error(chalk.red(`❌ Error reading history: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm history-detail <transaction-id> - Show transaction details
+program
+  .command('history-detail <transaction-id>')
+  .description('Show detailed transaction information')
+  .action(async (transactionId: string) => {
+    try {
+      const vtmPath = path.resolve(process.cwd(), 'vtm.json')
+      const history = new VTMHistory(vtmPath)
+      const reader = new VTMReader(vtmPath)
+
+      const entry = await history.getEntry(transactionId)
+      if (!entry) {
+        console.error(chalk.red(`❌ Transaction not found: ${transactionId}`))
+        process.exit(1)
+      }
+
+      console.info('\n📋 Transaction Details')
+      console.info('═'.repeat(64))
+      console.info('')
+      console.info(`Transaction ID: ${entry.id}`)
+      console.info(`Action: ${entry.action}`)
+      console.info(`Source: ${entry.source}`)
+      console.info(`Timestamp: ${entry.timestamp.toISOString()}`)
+      console.info('')
+
+      if (entry.files) {
+        console.info('Files:')
+        if (entry.files.adr) {
+          console.info(`  ADR: ${entry.files.adr}`)
+        }
+        if (entry.files.spec) {
+          console.info(`  Spec: ${entry.files.spec}`)
+        }
+        console.info('')
+      }
+
+      if (entry.tasks_added && entry.tasks_added.length > 0) {
+        console.info('Tasks Added:')
+        const vtm = await reader.load()
+        for (const taskId of entry.tasks_added) {
+          const task = vtm.tasks.find((t) => t.id === taskId)
+          if (task) {
+            console.info(`  • ${task.id}: ${task.title} [${task.status}]`)
+          } else {
+            console.info(`  • ${taskId}: (task removed)`)
+          }
+        }
+        console.info('')
+      }
+
+      console.info('Rollback Status: Available')
+      console.info(chalk.gray(`Run: vtm rollback ${transactionId} --dry-run`))
+      console.info('')
+    } catch (error) {
+      console.error(chalk.red(`❌ Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm rollback - Rollback a transaction
+program
+  .command('rollback <transaction-id>')
+  .description('Rollback a VTM transaction')
+  .option('--dry-run', 'Preview rollback without executing')
+  .option('--force', 'Skip confirmation prompt')
+  .action(async (transactionId: string, options: { dryRun?: boolean; force?: boolean }) => {
+    try {
+      const vtmPath = path.resolve(process.cwd(), 'vtm.json')
+      const history = new VTMHistory(vtmPath)
+      const reader = new VTMReader(vtmPath)
+
+      const entry = await history.getEntry(transactionId)
+      if (!entry || !entry.tasks_added) {
+        console.error(chalk.red(`❌ Transaction not found: ${transactionId}`))
+        process.exit(1)
+      }
+
+      const details = await history.getRollbackDetails(transactionId)
+      const vtm = await reader.load()
+
+      // Show preview
+      console.info('\n🔍 Rollback Preview')
+      console.info('═'.repeat(64))
+      console.info('')
+      console.info(`Transaction: ${transactionId}`)
+      console.info(`Source: ${entry.source}`)
+      console.info(`Date: ${entry.timestamp.toLocaleString()}`)
+      console.info('')
+
+      console.info('Tasks to be removed:')
+      for (const task of details.tasks) {
+        const taskData = vtm.tasks.find((t) => t.id === task.id)
+        const status = taskData?.status || 'unknown'
+        console.info(`  ✓ ${task.id}: ${task.title} [${status}]`)
+      }
+      console.info('')
+
+      // Check for issues
+      const issues: string[] = []
+
+      // Check for in-progress tasks
+      for (const task of details.tasks) {
+        const taskData = vtm.tasks.find((t) => t.id === task.id)
+        if (taskData?.status === 'in-progress') {
+          issues.push(`${task.id} is in-progress (started work)`)
+        }
+      }
+
+      // Check for dependencies
+      if (details.dependencies.length > 0) {
+        for (const dep of details.dependencies) {
+          issues.push(`${dep.taskId} depends on ${dep.dependsOn} (blocking dependency)`)
+        }
+      }
+
+      if (issues.length > 0) {
+        console.info(chalk.yellow('⚠️  Issues detected:'))
+        issues.forEach((issue, i) => {
+          console.info(chalk.yellow(`  ${i + 1}. ${issue}`))
+        })
+        console.info('')
+      } else {
+        console.info('Dependency Check:')
+        console.info('  ✅ No blocking dependencies found')
+        console.info('  ✅ Safe to rollback')
+        console.info('')
+      }
+
+      if (options.dryRun) {
+        console.info(chalk.cyan('This is a dry run. No changes will be made.'))
+        console.info(chalk.cyan('Run without --dry-run to execute rollback.'))
+        console.info('')
+        return
+      }
+
+      // Confirmation prompt (unless --force)
+      if (!options.force && issues.length > 0) {
+        const rl = readline.createInterface({
+          input: process.stdin,
+          output: process.stdout,
+        })
+
+        const answer = await new Promise<string>((resolve) => {
+          rl.question('Continue with rollback? (y/N): ', resolve)
+        })
+
+        rl.close()
+
+        if (answer.toLowerCase() !== 'y') {
+          console.info(chalk.yellow('Rollback cancelled.'))
+          process.exit(0)
+        }
+      }
+
+      // Execute rollback
+      await history.rollback({
+        transactionId,
+        force: true, // Force because we've already checked dependencies
+        dryRun: false,
+      })
+
+      console.info(chalk.green('\n✅ Rollback completed successfully'))
+      console.info(chalk.green(`Removed ${details.tasks.length} task(s)`))
+      console.info('')
+
+      // Show updated stats
+      const updatedVtm = await reader.load(true)
+      console.info('📊 Updated Stats:')
+      console.info(`   Total: ${updatedVtm.stats.total_tasks} tasks`)
+      console.info(`   Pending: ${updatedVtm.stats.pending}`)
+      console.info(`   In Progress: ${updatedVtm.stats.in_progress}`)
+      console.info(`   Completed: ${updatedVtm.stats.completed}`)
+      console.info('')
+    } catch (error) {
+      console.error(chalk.red(`❌ Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm cache-stats - Show cache statistics
+program
+  .command('cache-stats')
+  .description('Show research cache statistics')
+  .action(async () => {
+    try {
+      const cacheDir = process.env.CACHE_DIR || '.claude/cache/research'
+      const cache = new ResearchCache(cacheDir)
+      const stats = await cache.getStats()
+
+      console.info('\n📊 Research Cache Statistics')
+      console.info('═'.repeat(64))
+      console.info()
+
+      console.info('Cache Location:', cacheDir)
+      const ttlMinutes = 30 * 24 * 60 // 30 days
+      console.info('TTL:', `${ttlMinutes} minutes (${Math.floor(ttlMinutes / 60 / 24)} days)`)
+      console.info()
+
+      console.info('Performance:')
+      console.info('  Cache hits:    ', stats.hits)
+      console.info('  Cache misses:  ', stats.misses)
+      console.info('  Hit rate:      ', `${stats.hitRate.toFixed(1)}%`)
+      console.info()
+
+      console.info('Storage:')
+      console.info('  Total entries: ', stats.entriesCount)
+      console.info('  Total size:    ', formatBytes(stats.totalSize))
+      console.info()
+
+      if (stats.entriesCount === 0) {
+        console.info('Cache is empty. Research results will be cached on first use.')
+      } else {
+        console.info("💡 Tip: Use 'vtm cache clear' to remove old entries")
+      }
+      console.info()
+    } catch (error) {
+      console.error(chalk.red(`❌ Error reading cache: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm cache-clear - Clear cache entries
+program
+  .command('cache-clear')
+  .description('Clear research cache')
+  .option('--expired', 'Clear only expired entries')
+  .option('--tag <tag>', 'Clear entries with specific tag')
+  .option('--force', 'Skip confirmation prompt')
+  .action(async (options: { expired?: boolean; tag?: string; force?: boolean }) => {
+    try {
+      const cacheDir = process.env.CACHE_DIR || '.claude/cache/research'
+      const cache = new ResearchCache(cacheDir)
+      const stats = await cache.getStats()
+
+      // Handle empty cache
+      if (stats.entriesCount === 0) {
+        console.info('\nCache is empty. Nothing to clear.\n')
+        return
+      }
+
+      // Clear expired entries
+      if (options.expired) {
+        console.info('\n🧹 Clearing Expired Cache')
+        console.info('═'.repeat(64))
+        console.info()
+        console.info(`Checking for expired entries (TTL: 30 days)...`)
+        console.info()
+
+        await cache.clearExpired()
+
+        const newStats = await cache.getStats()
+        const cleared = stats.entriesCount - newStats.entriesCount
+        const freedBytes = stats.totalSize - newStats.totalSize
+
+        if (cleared === 0) {
+          console.info('No expired entries found.')
+        } else {
+          console.info(`✅ Cleared ${cleared} entries (${formatBytes(freedBytes)} freed)`)
+          console.info()
+          console.info(
+            `Remaining: ${newStats.entriesCount} entries (${formatBytes(newStats.totalSize)})`,
+          )
+        }
+        console.info()
+        return
+      }
+
+      // Clear by tag
+      if (options.tag) {
+        console.info('\n🏷️  Clearing Cache by Tag')
+        console.info('═'.repeat(64))
+        console.info()
+        console.info(`Tag: ${options.tag}`)
+
+        const entries = await cache.search([options.tag])
+        console.info(`Found ${entries.length} matching entries`)
+        console.info()
+
+        if (entries.length === 0) {
+          console.info('No entries found with this tag.')
+          console.info()
+          return
+        }
+
+        // Confirm unless --force
+        if (!options.force) {
+          const answer = await promptUser('Continue? (y/N): ')
+          if (answer.toLowerCase() !== 'y') {
+            console.info('Operation cancelled.')
+            return
+          }
+        }
+
+        // Clear entries by tag (manually delete each one)
+        for (const entry of entries) {
+          const filePath = path.join(cacheDir, entry.key)
+          try {
+            await fs.promises.unlink(filePath)
+          } catch {
+            // File already deleted
+          }
+        }
+
+        const newStats = await cache.getStats()
+        const freedBytes = stats.totalSize - newStats.totalSize
+
+        console.info()
+        console.info(`✅ Cleared ${entries.length} entries (${formatBytes(freedBytes)} freed)`)
+        console.info()
+        console.info(
+          `Remaining: ${newStats.entriesCount} entries (${formatBytes(newStats.totalSize)})`,
+        )
+        console.info()
+        return
+      }
+
+      // Clear all entries
+      console.info('\n⚠️  Clearing All Cache')
+      console.info('═'.repeat(64))
+      console.info()
+      console.info('This will remove all cached research results.')
+      console.info()
+      console.info('Current cache:')
+      console.info(`  ${stats.entriesCount} entries (${formatBytes(stats.totalSize)})`)
+      console.info()
+
+      // Confirm unless --force
+      if (!options.force) {
+        const answer = await promptUser('Continue? (y/N): ')
+        if (answer.toLowerCase() !== 'y') {
+          console.info('Operation cancelled.')
+          return
+        }
+      }
+
+      await cache.clear()
+
+      console.info()
+      console.info(
+        `✅ Cleared ${stats.entriesCount} entries (${formatBytes(stats.totalSize)} freed)`,
+      )
+      console.info()
+    } catch (error) {
+      console.error(chalk.red(`❌ Error clearing cache: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm cache-info - Show cache entry details
+program
+  .command('cache-info <query>')
+  .description('Show information about a cache entry')
+  .action(async (query: string) => {
+    try {
+      const cacheDir = process.env.CACHE_DIR || '.claude/cache/research'
+      const cache = new ResearchCache(cacheDir)
+
+      // Try to get the entry
+      const result = await cache.get(query)
+
+      if (!result) {
+        console.error(chalk.red(`\n❌ Cache entry not found for query: ${query}\n`))
+        process.exit(1)
+      }
+
+      // Get the entry details
+      const key = cache['generateCacheKey'](query)
+      const filePath = path.join(cacheDir, key)
+      const fileStats = await fs.promises.stat(filePath)
+      const content = await fs.promises.readFile(filePath, 'utf-8')
+      const entry = JSON.parse(content)
+
+      console.info('\n📄 Cache Entry Details')
+      console.info('═'.repeat(64))
+      console.info()
+
+      console.info('Query:', entry.query)
+      console.info('Key:', entry.key)
+      console.info('Created:', formatAge(entry.timestamp))
+      console.info('Size:', formatBytes(fileStats.size))
+      console.info('Tags:', entry.tags.join(', '))
+      console.info()
+
+      console.info('Result Preview:')
+      console.info('─'.repeat(64))
+      const preview =
+        entry.result.length > 300 ? entry.result.substring(0, 300) + '...' : entry.result
+      console.info(preview)
+      console.info('─'.repeat(64))
+      console.info()
+    } catch (error) {
+      console.error(chalk.red(`❌ Error reading cache entry: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm create-specs - Batch create specs from ADRs
+program
+  .command('create-specs <pattern>')
+  .description('Create technical specifications for multiple ADRs in batch')
+  .option('--dry-run', 'Preview what would be created without creating files')
+  .option('--with-tasks', 'Also generate VTM tasks from ADR+Spec pairs')
+  .action(async (pattern: string, options: { dryRun?: boolean; withTasks?: boolean }) => {
+    try {
+      // Validate pattern
+      if (!pattern || pattern.trim() === '') {
+        console.error(chalk.red('❌ Error: ADR pattern is required'))
+        console.info('')
+        console.info('Usage: vtm create-specs <pattern> [--dry-run] [--with-tasks]')
+        console.info('')
+        console.info('Examples:')
+        console.info('  vtm create-specs "docs/adr/ADR-*.md"')
+        console.info('  vtm create-specs "docs/adr/ADR-001-*.md" --dry-run')
+        console.info('  vtm create-specs "docs/adr/ADR-*.md" --with-tasks')
+        process.exit(1)
+      }
+
+      // Find matching ADRs
+      console.info(chalk.blue('\n📋 Batch Spec Creation'))
+      console.info(chalk.gray('═'.repeat(50)))
+      console.info('')
+
+      const adrFiles = findMatchingAdrs(pattern)
+
+      if (adrFiles.length === 0) {
+        console.error(chalk.red(`❌ Error: No ADR files match pattern: ${pattern}`))
+        console.info('')
+        console.info(chalk.yellow('Available ADRs:'))
+
+        // Try to list available ADRs
+        const adrDir = path.dirname(pattern)
+        if (fs.existsSync(adrDir)) {
+          const files = fs
+            .readdirSync(adrDir)
+            .filter((f) => f.startsWith('ADR-') && f.endsWith('.md'))
+          if (files.length > 0) {
+            files.forEach((f) => console.info(chalk.gray(`  ${f}`)))
+          } else {
+            console.info(chalk.gray('  (no ADR files found)'))
+          }
+        }
+        process.exit(1)
+      }
+
+      console.info(chalk.green(`✅ Found ${adrFiles.length} ADR file(s) matching: ${pattern}`))
+      console.info('')
+
+      adrFiles.forEach((file) => {
+        console.info(chalk.gray(`  ✓ ${path.basename(file)}`))
+      })
+
+      // Check for existing specs
+      const report = checkExistingSpecs(adrFiles)
+
+      console.info('')
+      console.info(chalk.blue('🔍 Checking for existing specs...'))
+      console.info('')
+
+      if (report.existing.length > 0) {
+        console.info(chalk.yellow(`⚠️  ${report.existing.length} spec(s) already exist:`))
+        report.existing.forEach((adrFile) => {
+          const specName = generateSpecName(adrFile)
+          console.info(chalk.gray(`   - spec-${specName}.md`))
+        })
+        console.info('')
+        console.info(chalk.gray('⏭️  These will be skipped. Delete them first to regenerate.'))
+        console.info('')
+      }
+
+      if (report.new.length === 0) {
+        console.info(chalk.yellow('⚠️  All specs already exist. Nothing to create.'))
+        console.info('')
+        console.info(chalk.gray('Run these commands to regenerate:'))
+        report.existing.forEach((adrFile) => {
+          const specName = generateSpecName(adrFile)
+          console.info(chalk.gray(`   rm test-data/specs/spec-${specName}.md`))
+        })
+        process.exit(0)
+      }
+
+      console.info(chalk.green(`📝 Will create ${report.new.length} new spec(s)`))
+      console.info('')
+
+      // Dry run mode
+      if (options.dryRun) {
+        console.info(chalk.blue('📋 Specs that would be created (dry-run):'))
+        console.info('')
+
+        report.new.forEach((adrFile) => {
+          const specName = generateSpecName(adrFile)
+          const specPath = path.join('test-data', 'specs', `spec-${specName}.md`)
+          console.info(chalk.gray(`  ✓ ${specPath}`))
+        })
+
+        console.info('')
+        console.info(chalk.green('✅ Dry run complete. No files created.'))
+        console.info(chalk.gray('   Run without --dry-run to actually create specs.'))
+        console.info('')
+
+        if (options.withTasks) {
+          console.info(chalk.blue('📋 VTM task batches that would be created:'))
+          console.info('')
+          report.new.forEach((adrFile) => {
+            const specName = generateSpecName(adrFile)
+            const specFile = `test-data/specs/spec-${specName}.md`
+            console.info(
+              chalk.gray(`  ✓ Tasks from: ${path.basename(adrFile)} + ${path.basename(specFile)}`),
+            )
+          })
+          console.info('')
+        }
+
+        process.exit(0)
+      }
+
+      // Non-dry-run mode would create files here
+      // For now, just show a message
+      console.info(chalk.yellow('⚠️  Spec creation not implemented yet'))
+      console.info(
+        chalk.gray('   This command currently only supports --dry-run mode for preview purposes.'),
+      )
+      console.info('')
+      console.info(chalk.blue('📋 Next steps:'))
+      console.info(chalk.gray('   1. Implement spec generation logic in batch-spec-creator.ts'))
+      console.info(chalk.gray('   2. Integrate with /helpers:thinking-partner for research'))
+      console.info(chalk.gray('   3. Support --with-tasks flag for VTM task generation'))
+      console.info('')
+
+      if (options.withTasks) {
+        console.info(chalk.yellow('⚠️  --with-tasks flag not implemented yet'))
+        console.info('')
+      }
     } catch (error) {
       console.error(chalk.red(`Error: ${(error as Error).message}`))
       process.exit(1)

@@ -329,7 +329,7 @@ Project completion summary:
 
 ### 11. Command Template
 
-**File:** `templates/command.template.md`
+**File:** `templates/template-command.md`
 
 Template for generated command files:
 
@@ -399,7 +399,7 @@ Shows what a complete design looks like.
 │   └── mcc-config.sh                # Configuration (339 lines)
 │
 ├── templates/                        # File templates
-│   └── command.template.md          # Command template
+│   └── template-command.md          # Command template
 │
 ├── designs/                         # Design specs (created by /design:domain)
 │   └── example-pm.json              # Example design
