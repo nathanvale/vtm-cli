@@ -475,10 +475,19 @@ program
       try {
         const domainPath = path.join(process.cwd(), domain)
 
+        // If --deep flag is set, use the integrated deep analysis pipeline
+        if (options.deep) {
+          const engine = new DecisionEngine()
+          const deepAnalysis = engine.analyzeDeepArchitecture(domainPath, {
+            minSeverity: 'medium', // Default to medium+ severity
+          })
+          console.info(deepAnalysis.formatted)
+          return
+        }
+
         // If --deep or no specific options, run complete pipeline
         const runComplete =
-          options.deep ||
-          (!options.metrics && !options.issues && !options.refactor && !options.suggestRefactoring)
+          !options.metrics && !options.issues && !options.refactor && !options.suggestRefactoring
 
         if (options.metrics || runComplete) {
           console.info(chalk.cyan('\n📊 COMPONENT METRICS ANALYSIS'))

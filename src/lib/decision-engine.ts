@@ -14,6 +14,9 @@
 import * as fs from 'fs'
 import * as path from 'path'
 import chalk from 'chalk'
+import { DeepAnalysisEngine } from './deep-analysis-engine'
+import type { ComponentMetrics as RealComponentMetrics } from './component-analyzer'
+import type { ArchitecturalIssue as RealArchitecturalIssue, DetectionOptions } from './types'
 
 type DecisionEngineOptions = {
   basePath?: string
@@ -132,6 +135,38 @@ type Metrics = {
   linesOfCode?: number
 }
 
+/**
+ * Deep analysis result combining pattern recommendations with deep architecture analysis
+ * AC3: Combined results with pattern recommendations + deep analysis
+ */
+type DeepAnalysisResult = {
+  // Pattern-based recommendations
+  domain: string
+  commands: CommandRecommendation[]
+  patterns: string[]
+  confidence: number
+  // Deep analysis tier results (nested structure per AC3)
+  deepAnalysis: {
+    components: RealComponentMetrics[]
+    issues: RealArchitecturalIssue[]
+    refactoringStrategies: RefactoringStrategy[]
+    summary: AnalysisSummary
+  }
+}
+
+type RefactoringStrategy = {
+  issue: RealArchitecturalIssue
+  options: RefactoringOption[]
+  recommendedOption: RefactoringOption | null
+}
+
+type AnalysisSummary = {
+  totalComponents: number
+  totalIssues: number
+  criticalIssues: number
+  totalRefactoringOptions: number
+}
+
 type ComponentState = {
   name: string
   lines: number
@@ -157,6 +192,8 @@ type RefactoringOption = {
   cons: string[]
   effort: string
   breaking: boolean
+  riskLevel?: 'low' | 'medium' | 'high'
+  recommendation?: boolean
 }
 
 type MigrationStrategy = {
@@ -357,6 +394,98 @@ export class DecisionEngine {
 
     plan.formatted = this.formatRefactoringPlan(plan)
     return plan
+  }
+
+  /**
+   * Run deep architectural analysis using 3-tier pipeline
+   *
+   * Executes comprehensive analysis using DeepAnalysisEngine:
+   * 1. ComponentAnalyzer: File-level metrics (LOC, complexity, code smells)
+   * 2. IssueDetector: Architectural issue detection with severity classification
+   * 3. RefactoringPlanner: Refactoring strategies (2-3 options per issue)
+   *
+   * @param domainName - Name of domain to analyze
+   * @param options - Optional detection options (skipRules, minSeverity)
+   * @returns DeepAnalysisResult with components, issues, strategies, and formatted output
+   *
+   * @example
+   * ```typescript
+   * const engine = new DecisionEngine()
+   * const analysis = engine.analyzeDeepArchitecture('vtm')
+   * console.log(analysis.formatted)
+   * ```
+   */
+  /**
+   * Analyze domain with deep architecture analysis
+   *
+   * Combines pattern-based recommendations with comprehensive 3-tier deep analysis
+   * (ComponentAnalyzer → IssueDetector → RefactoringPlanner).
+   *
+   * @param domainPath - Absolute or relative path to domain directory
+   * @param options - Optional detection options (minSeverity defaults to 'medium')
+   * @returns DeepAnalysisResult combining pattern recommendations + deep analysis
+   *
+   * @example
+   * ```typescript
+   * // Light analysis (pattern-based only)
+   * const engine = new DecisionEngine()
+   * const lightAnalysis = engine.analyzeDomain('vtm')
+   *
+   * // Deep analysis (pattern + 3-tier analysis)
+   * const deepAnalysis = engine.analyzeDeepArchitecture('vtm')
+   * console.log('Components:', deepAnalysis.deepAnalysis.components.length)
+   * console.log('Issues:', deepAnalysis.deepAnalysis.issues.length)
+   *
+   * // With custom severity threshold
+   * const highOnly = engine.analyzeDeepArchitecture('vtm', {
+   *   minSeverity: 'high'
+   * })
+   * ```
+   */
+  public analyzeDeepArchitecture(
+    domainPath: string,
+    options: DetectionOptions = {},
+  ): DeepAnalysisResult {
+    const deepEngine = new DeepAnalysisEngine()
+
+    // Resolve domain path (handle both absolute and relative paths)
+    const resolvedPath = path.isAbsolute(domainPath)
+      ? domainPath
+      : path.join(this.basePath, '.claude/commands', domainPath)
+
+    // Extract domain name from path
+    const domainName = path.basename(domainPath)
+
+    // Step 1: Generate pattern-based recommendations
+    const keywords = this.extractKeywords(domainName)
+    const matchedPatterns = this.matchPatterns(keywords)
+    const commands = this.suggestCommands(keywords, matchedPatterns)
+    const confidence = this.calculateConfidence(matchedPatterns, keywords)
+
+    // Step 2: Run full 3-tier deep analysis with severity filtering (default: medium+)
+    const detectionOptions: DetectionOptions = {
+      ...options,
+      minSeverity: options.minSeverity || 'medium', // AC5: Default to medium
+    }
+    const analysisResult = deepEngine.runFullAnalysis(resolvedPath, detectionOptions)
+
+    // Step 3: Build combined result structure (AC3)
+    const result: DeepAnalysisResult = {
+      // Pattern-based recommendations
+      domain: domainName,
+      commands,
+      patterns: matchedPatterns.map((p) => p.name),
+      confidence,
+      // Deep analysis tier results (AC4)
+      deepAnalysis: {
+        components: analysisResult.components,
+        issues: analysisResult.issues,
+        refactoringStrategies: analysisResult.refactoringStrategies,
+        summary: analysisResult.summary,
+      },
+    }
+
+    return result
   }
 
   // ========== Private Helper Methods ==========
@@ -879,6 +1008,102 @@ export class DecisionEngine {
       `Current state analyzed.\n` +
       `Recommendation: ${plan.recommendation.name}\n`
     )
+  }
+
+  /**
+   * Format deep analysis result for CLI output
+   * @param analysis - Deep analysis result to format
+   * @returns Formatted string with clear sections for components, issues, and strategies
+   */
+  private formatDeepAnalysis(analysis: DeepAnalysisResult): string {
+    let output = chalk.blue(`\n🔬 Deep Architecture Analysis: ${analysis.domain}\n\n`)
+    output += chalk.bold('━'.repeat(60)) + '\n'
+
+    // Section 1: Component Metrics
+    output += chalk.cyan('📊 COMPONENT METRICS\n')
+    output += chalk.bold('━'.repeat(60)) + '\n\n'
+
+    if (analysis.deepAnalysis.components.length === 0) {
+      output += chalk.yellow('⚠️  No TypeScript files found in domain\n\n')
+    } else {
+      output += chalk.green(
+        `✅ Analyzed ${analysis.deepAnalysis.components.length} component(s)\n\n`,
+      )
+      analysis.deepAnalysis.components.forEach((component: RealComponentMetrics) => {
+        output += chalk.bold(`  📄 ${component.name}\n`)
+        output += `     Complexity: ${component.complexity.toFixed(1)}\n`
+        output += `     JSDoc Coverage: ${component.jsdocCoverage}%\n`
+        output += `     Functions: ${component.functions.length}\n`
+        output += `     Dependencies: ${component.dependencies.length}\n`
+        if (component.codeSmells.length > 0) {
+          output += `     Code Smells: ${component.codeSmells.length}\n`
+        }
+        output += '\n'
+      })
+    }
+
+    // Section 2: Architectural Issues
+    output += chalk.cyan('🔍 ARCHITECTURAL ISSUES\n')
+    output += chalk.bold('━'.repeat(60)) + '\n\n'
+
+    if (analysis.deepAnalysis.issues.length === 0) {
+      output += chalk.green('✅ No architectural issues detected\n\n')
+    } else {
+      output += chalk.yellow(`⚠️  Found ${analysis.deepAnalysis.issues.length} issue(s)\n\n`)
+
+      analysis.deepAnalysis.issues.forEach((issue: RealArchitecturalIssue) => {
+        const severityColor: Record<string, typeof chalk.red> = {
+          critical: chalk.red,
+          high: chalk.red,
+          medium: chalk.yellow,
+          low: chalk.blue,
+        }
+        const color = severityColor[issue.severity] || chalk.gray
+
+        output += color(`  [${issue.severity.toUpperCase()}] ${issue.title}\n`)
+        output += `           ${issue.description}\n`
+        output += `           Evidence: ${issue.evidence}\n`
+        if (issue.impact.length > 0) {
+          output += `           Impact: ${issue.impact.join(', ')}\n`
+        }
+        output += '\n'
+      })
+    }
+
+    // Section 3: Refactoring Strategies
+    output += chalk.cyan('🔧 REFACTORING STRATEGIES\n')
+    output += chalk.bold('━'.repeat(60)) + '\n\n'
+
+    if (analysis.refactoringStrategies.length === 0) {
+      output += chalk.green('✅ No refactoring needed\n\n')
+    } else {
+      analysis.refactoringStrategies.forEach((strategy) => {
+        if (strategy.options.length > 0) {
+          output += chalk.bold(`\n  📋 For: ${strategy.issue.title}\n`)
+          strategy.options.forEach((option, idx) => {
+            const isRecommended =
+              strategy.recommendedOption && option.name === strategy.recommendedOption.name
+                ? ' ⭐ RECOMMENDED'
+                : ''
+            output += `     ${idx + 1}. ${option.name}${isRecommended}\n`
+            output += `        Effort: ${option.effort} | Risk: ${option.riskLevel}\n`
+            output += `        ${option.description}\n`
+          })
+          output += '\n'
+        }
+      })
+    }
+
+    // Section 4: Summary
+    output += chalk.cyan('📈 SUMMARY\n')
+    output += chalk.bold('━'.repeat(60)) + '\n\n'
+    output += `  Total Components:       ${analysis.summary.totalComponents}\n`
+    output += `  Total Issues:           ${analysis.summary.totalIssues}\n`
+    output += `  Critical Issues:        ${analysis.summary.criticalIssues}\n`
+    output += `  Refactoring Options:    ${analysis.summary.totalRefactoringOptions}\n`
+    output += '\n'
+
+    return output
   }
 
   private getDefaultPatterns(): Record<string, ArchitecturePattern> {
