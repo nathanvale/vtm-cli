@@ -82,17 +82,16 @@ if [[ -z "$FORCE_FLAG" ]]; then
     if [[ "$TASK_STATUS" == "pending" ]]; then
         echo "⚠️  Warning: $TASK_ID was never started"
         echo ""
-        echo "This task has status 'pending'. You should start it first."
+        echo "This task has status 'pending'. You should execute it first."
         echo ""
         echo "Options:"
-        echo "   • Start then complete: /vtm:start $TASK_ID"
-        echo "   • Quick start: /vtm:work $TASK_ID"
+        echo "   • Execute task: /vtm:execute $TASK_ID"
         echo "   • Force complete: /vtm:complete $TASK_ID --force"
         echo ""
         read -p "Complete anyway? (y/N): " -n 1 -r
         echo ""
         if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-            echo "Cancelled. Use /vtm:start $TASK_ID first."
+            echo "Cancelled. Use /vtm:execute $TASK_ID first."
             exit 0
         fi
     fi
@@ -180,14 +179,20 @@ Completing a task:
 
 ## Workflow
 
-1. Start task: `/vtm:start TASK-XXX`
-2. Get context: `/vtm:context TASK-XXX`
-3. Implement with TDD
-4. **Complete task: `/vtm:complete TASK-XXX`**
-5. Find next: `/vtm:next`
+**Recommended (with git integration):**
+1. Execute task: `/vtm:execute TASK-XXX` (agent + git)
+2. Agent implements autonomously
+3. Complete: `/vtm:done` (commits + merges + completes)
+
+**Direct CLI (no git integration):**
+1. Mark in-progress: `vtm start TASK-XXX`
+2. Implement manually
+3. **Complete: `/vtm:complete TASK-XXX`** (or use `/vtm:done`)
+4. Find next: `/vtm:next`
 
 ## See Also
 
-- `/vtm:start` - Mark task as in-progress
+- `/vtm:execute` - Launch agent with git integration
+- `/vtm:done` - Complete current task with git workflow
 - `/vtm:stats` - View updated progress
 - `/vtm:next` - Find newly unblocked tasks

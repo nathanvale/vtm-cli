@@ -77,6 +77,52 @@ fi
 
 echo ""
 
+# Git integration (if in a git repository)
+if git rev-parse --git-dir > /dev/null 2>&1; then
+    # Get current branch
+    CURRENT_BRANCH=$(git branch --show-current 2>/dev/null)
+
+    # Only process git workflow if on a task branch
+    if [[ "$CURRENT_BRANCH" =~ ^(feature|bugfix|refactor|chore|docs|test)/ ]]; then
+        echo "📝 Processing git workflow..."
+        echo ""
+
+        # Get task details for commit message
+        TASK_JSON=$(vtm task "$TASK_ID" --json 2>/dev/null)
+        TASK_TITLE=$(echo "$TASK_JSON" | jq -r '.title // "Complete task"')
+        TASK_TYPE=$(echo "$TASK_JSON" | jq -r '.type // "feature"')
+
+        # Use VTMGitWorkflow library for commit and merge
+        MERGE_RESULT=$(node dist/lib/vtm-git-cli.js commit-merge "$TASK_ID" "$TASK_TITLE" "$TASK_TYPE" 2>&1)
+
+        if [[ $? -ne 0 ]]; then
+            echo ""
+            echo "❌ Git workflow failed:"
+            echo "$MERGE_RESULT"
+            echo ""
+            echo "Please resolve issues manually and try again."
+            exit 1
+        fi
+
+        echo "✅ $MERGE_RESULT"
+        echo ""
+
+        # Cleanup branch
+        echo "🗑️  Cleaning up branch: $CURRENT_BRANCH"
+        CLEANUP_RESULT=$(node dist/lib/vtm-git-cli.js cleanup "$CURRENT_BRANCH" 2>&1)
+
+        if [[ $? -ne 0 ]]; then
+            echo ""
+            echo "⚠️  Warning: Could not delete branch automatically"
+            echo "   You may need to delete it manually: git branch -d $CURRENT_BRANCH"
+            echo ""
+        else
+            echo "✅ $CLEANUP_RESULT"
+            echo ""
+        fi
+    fi
+fi
+
 # Complete the task
 vtm complete "$TASK_ID"
 
@@ -125,105 +171,67 @@ echo "   • View all tasks: /vtm:list"
 echo "   • Check stats: /vtm:stats"
 ```
 
+## Documentation
+
+For detailed information, see:
+
+- **[Done Workflow Guide](../../docs/vtm/done-workflow.md)** - Complete workflow details, git merge process, session management
+- **[Execute Workflow Guide](../../docs/vtm/execute-workflow.md)** - Task execution and session state
+- **[Test Strategies](../../docs/vtm/test-strategies.md)** - Testing requirements and validation
+
 ## What This Command Does
 
-The `/vtm:done` command streamlines task completion by:
+The `/vtm:done` command streamlines task completion with integrated git workflow:
 
-1. **Completing the task**: Marks task as `completed` and updates stats
-2. **Clearing session**: Removes current task from session state
-3. **Showing next tasks**: Displays 3 ready tasks to work on next
-4. **Progress update**: Shows overall completion statistics
+1. **Git workflow** (if on a feature branch):
+   - Commits any uncommitted changes with conventional commit format
+   - Merges the feature branch to main
+   - Deletes the feature branch after successful merge
+2. **Completing the task**: Marks task as `completed` and updates stats
+3. **Clearing session**: Removes current task from session state
+4. **Showing next tasks**: Displays 3 ready tasks to work on next
+5. **Progress update**: Shows overall completion statistics
 
-## Two Usage Modes
+## Quick Reference
 
-### Mode 1: Complete Current Task (Session-based)
+### Two Usage Modes
 
-After starting a task with `/vtm:work`:
+**Mode 1: Complete Current Task (Session-based)**
 
 ```bash
-/vtm:work TASK-003      # Sets TASK-003 as current
+/vtm:execute TASK-003   # Sets TASK-003 as current
 # ... implement ...
 /vtm:done               # Completes TASK-003 from session
 ```
 
-### Mode 2: Complete Specific Task (Explicit)
-
-Bypass session and complete any task directly:
+**Mode 2: Complete Specific Task (Explicit)**
 
 ```bash
 /vtm:done TASK-007      # Completes TASK-007 explicitly
 ```
 
-## Error Handling
-
-The command handles these scenarios:
-
-1. **No current task and no ID**: Shows error and lists available tasks
-2. **Invalid task ID**: Reports completion failure with suggestions
-3. **Already completed**: VTM CLI reports the issue
-4. **No next tasks**: Reports "No more tasks available"
-
-## Workflow Integration
-
-**Full streamlined workflow:**
+### Simplified Workflow
 
 ```bash
-# 1. Start work
-/vtm:work TASK-003      # Mark in-progress + show context
-
-# 2. Implement
-# ... write code, tests, etc ...
-
-# 3. Complete and continue
-/vtm:done               # Complete + show next tasks
-/vtm:work TASK-004      # Start next task
+/vtm:execute TASK-003   # Launch agent + create branch
+# ... agent implements autonomously ...
+/vtm:done               # Commit + merge + complete + show next
 ```
 
-## Session State
+## Git Integration
 
-The command integrates with VTMSession:
+The command automatically handles:
 
-- **Reads** current task from `.vtm-session` if no ID provided
-- **Clears** session after successful completion
-- **Preserves** session if completion fails
+- Commits uncommitted changes with conventional commit format
+- Merges feature branch to main
+- Deletes feature branch after successful merge
+- Provides clear error messages for conflicts
 
-Session file location: `./.vtm-session` (project-specific)
+See [Done Workflow Guide](../../docs/vtm/done-workflow.md) for detailed git workflow.
 
-## Output Example
+## Related Commands
 
-```
-✅ Completing current task: TASK-003
-
-✅ Task TASK-003 marked as completed
-📅 Completed at: 2025-10-29T12:30:00.000Z
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🎯 Next Available Tasks:
-
-TASK-004: Implement feature X [pending] [2h]
-TASK-007: Add validation for Y [pending] [1h]
-TASK-009: Update documentation [pending] [30m]
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📊 Progress Update:
-
-Total: 25 tasks
-✅ Completed: 12 (48%)
-🚧 In Progress: 0 (0%)
-⏳ Pending: 10 (40%)
-🚫 Blocked: 3 (12%)
-
-💡 Next steps:
-   • Start next task: /vtm:work TASK-XXX
-   • View all tasks: /vtm:list
-   • Check stats: /vtm:stats
-```
-
-## See Also
-
-- `/vtm:work` - Start task with context
+- `/vtm:execute` - Start task with git integration
 - `/vtm:next` - Find ready tasks
-- `/vtm:complete` - Complete task (direct CLI)
+- `/vtm:complete` - Complete task (direct CLI, no git operations)
 - `/vtm:stats` - View progress

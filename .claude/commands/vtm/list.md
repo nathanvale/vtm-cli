@@ -68,7 +68,7 @@ echo ""
 echo "💡 Actions:"
 echo "   • View task: /vtm:task TASK-XXX"
 echo "   • Get context: /vtm:context TASK-XXX"
-echo "   • Start task: /vtm:start TASK-XXX"
+echo "   • Execute task: /vtm:execute TASK-XXX"
 echo "   • View stats: /vtm:stats"
 ```
 

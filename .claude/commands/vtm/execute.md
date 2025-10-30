@@ -114,6 +114,28 @@ echo "Strategy:     $TEST_STRATEGY"
 echo "Status:       $TASK_STATUS"
 echo ""
 
+# Step 0: Git integration (if in a git repository)
+if git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "🔍 Setting up git workflow..."
+
+    # Get task type from VTM
+    TASK_JSON=$(vtm task "$TASK_ID" --json 2>/dev/null)
+    TASK_TYPE=$(echo "$TASK_JSON" | jq -r '.type // "feature"')
+
+    # Use VTMGitWorkflow library to ensure clean state and create branch
+    BRANCH_NAME=$(node dist/lib/vtm-git-cli.js ensure-clean "$TASK_ID" "$TASK_TYPE" 2>&1)
+
+    if [[ $? -ne 0 ]]; then
+        echo ""
+        echo "❌ Git workflow failed:"
+        echo "$BRANCH_NAME"
+        exit 1
+    fi
+
+    echo "✅ Created branch: $BRANCH_NAME"
+    echo ""
+fi
+
 # Mark task as in-progress
 echo "▶️  Marking task as in-progress..."
 vtm start "$TASK_ID" > /dev/null 2>&1
@@ -432,264 +454,56 @@ echo ""
 
 ```
 
+## Documentation
+
+For detailed information, see:
+
+- **[Execute Workflow Guide](../../docs/vtm/execute-workflow.md)** - Complete workflow details, git integration, session management
+- **[Test Strategies](../../docs/vtm/test-strategies.md)** - Strategy-specific workflows, coverage requirements, Wallaby MCP tools
+- **[Coding Standards](../../docs/vtm/coding-standards.md)** - JSDoc requirements, TypeScript standards, validation commands
+
 ## What This Command Does
 
-The `/vtm:execute` command launches a Task agent for autonomous task execution by:
+The `/vtm:execute` command launches a Task agent for autonomous task execution:
 
 1. **Validates Task**: Checks task exists and is ready to execute
-2. **Marks In-Progress**: Updates task status and session state
-3. **Generates Context**: Builds comprehensive task context with descriptions and ACs
-4. **Creates Instructions**: Uses InstructionBuilder to generate strategy-specific instructions
-5. **Launches Agent**: Passes full context and instructions to Task agent
-6. **Shows Summary**: Displays what the agent will work on in the main window
-7. **Enables Progress Tracking**: Agent reports back with updates and final results
+2. **Git Setup**: Uses VTMGitWorkflow library to ensure clean state and create feature branch
+3. **Marks In-Progress**: Updates task status and session state
+4. **Generates Context**: Builds comprehensive task context with ACs and dependencies
+5. **Launches Agent**: Provides strategy-specific instructions to autonomous Task agent
+6. **Tracks Progress**: Agent reports back with updates and final results
 
-## Agent Capabilities by Test Strategy
+## Quick Reference
 
-### TDD Tasks
+### Test Strategy Coverage Targets
 
-- Writes tests FIRST (Red phase)
-- Implements code to pass tests (Green phase)
-- Refactors for quality (Refactor phase)
-- Uses Wallaby MCP for real-time test feedback
-- Targets ≥80% test coverage
-- Requires 100% JSDoc coverage
+| Strategy     | Coverage | JSDoc | Tools       |
+| ------------ | -------- | ----- | ----------- |
+| TDD          | ≥80%     | 100%  | Wallaby MCP |
+| Unit         | ≥70%     | 90%   | Jest/Vitest |
+| Integration  | ≥60%     | 80%   | Integration |
+| Direct       | N/A      | 50%   | Manual      |
 
-### Unit Tasks
-
-- Implements functionality first
-- Writes comprehensive unit tests
-- Targets ≥70% test coverage
-- Requires 90% JSDoc coverage
-- Optional Wallaby MCP usage
-
-### Integration Tasks
-
-- Implements features with realistic scenarios
-- Writes integration tests for cross-component behavior
-- Targets ≥60% test coverage
-- Requires 80% JSDoc coverage
-- Tests end-to-end workflows
-
-### Direct Tasks
-
-- Executes setup/configuration tasks
-- Creates/updates documentation
-- Performs manual verification
-- Requires 50% JSDoc coverage if code is created
-- No automated test requirements
-
-## Pre-Execution Checks
-
-Before launching the agent, the command verifies:
-
-- Task ID is valid
-- Task exists in vtm.json
-- Task is not already completed
-- Task dependencies are met (or task is blocked)
-- VTM CLI is available
-- vtm.json exists in current directory
-
-## Agent Instructions Include
-
-1. **Task Context**
-   - Description and objectives
-   - Acceptance criteria checklist
-   - Dependencies and related tasks
-   - File operations (create/modify/delete)
-   - ADR and Spec references
-
-2. **Test Strategy Workflow**
-   - Step-by-step execution plan
-   - Test strategy specific guidance
-   - Coverage targets
-   - Tools and techniques to use
-
-3. **Coding Standards**
-   - JSDoc requirements
-   - TypeScript strict mode
-   - Linting standards
-   - No `any` types policy
-   - Conventional commit format
-
-4. **Validation Requirements**
-   - Test coverage targets
-   - All tests must pass
-   - Type checking (pnpm build)
-   - Linting clean (pnpm lint:fix)
-   - Coverage verification (pnpm test -- --coverage)
-
-5. **Acceptance Criteria Verification**
-   - Checklist to verify each AC is met
-   - How to document AC coverage in tests
-   - Blocker reporting if ACs cannot be met
-
-6. **Pre-flight and Post-flight Checklists**
-   - Pre-flight: Verify environment and dependencies
-   - Post-flight: Validate completion criteria
-
-## Session State Integration
-
-The command integrates with VTMSession:
-
-- **Sets** current task in `.vtm-session`
-- **Enables** `/vtm:done` to complete the task without ID
-- **Preserves** task status through agent execution
-- **Clears** session only when task is marked complete
-
-## Error Handling
-
-The command handles:
-
-- Task not found
-- Task already completed
-- Task has unmet dependencies (blocked)
-- Task already in-progress (warns before proceeding)
-- VTM CLI not installed
-- vtm.json missing
-
-## Output Example
-
-```
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🤖 Launching Task Agent
-
-Task ID:      TASK-042
-Title:        Implement instruction builder with tests
-Strategy:     TDD
-Status:       pending
-
-▶️  Marking task as in-progress...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📋 Generating task context and instructions...
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🚀 Agent Launch Summary
-
-Strategy:     TDD
-Workflow:     Red → Green → Refactor (with Wallaby MCP)
-Coverage:     ≥80% required
-JSDoc:        100% required
-Tools:        Wallaby MCP mandatory
-
-Target ACs:   5 criteria
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-🔄 Agent is now executing the task...
-
-The agent will:
-  1. Review task requirements and dependencies
-  2. Follow test strategy workflow
-  3. Implement code with appropriate testing
-  4. Verify all acceptance criteria are met
-  5. Validate code quality and coverage
-  6. Report results back to you
-
-You will see progress updates as the agent works.
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-✅ Task agent is prepared and ready for execution
-
-Session state:
-  Current task: TASK-042
-  Task status: in-progress
-
-💡 After agent completes:
-   • Review agent's final summary
-   • Verify all acceptance criteria are met
-   • Run /vtm:done to mark complete
-```
-
-## Workflow Integration
-
-**Full agent execution workflow:**
+### Simplified Workflow
 
 ```bash
-# 1. View ready tasks
-/vtm:next
-
-# 2. Launch agent for autonomous execution
-/vtm:execute TASK-042
-
-# 3. Agent executes autonomously
-#    - Reviews requirements
-#    - Follows test strategy
-#    - Implements code and tests
-#    - Reports progress
-#    - Validates completion
-
-# 4. Review agent's results
-# Agent provides summary showing:
-#    - What was implemented
-#    - Test coverage achieved
-#    - Acceptance criteria verified
-#    - Commits made
-
-# 5. Mark task complete
-/vtm:done
-
-# 6. Continue with next task
-/vtm:execute TASK-043
+/vtm:next              # See ready tasks
+/vtm:execute TASK-042  # Launch agent (creates branch, marks in-progress)
+# ... agent implements autonomously ...
+/vtm:done              # Complete + merge + show next
 ```
-
-## Comparison with Other Workflows
-
-| Workflow             | Command                   | Execution        | Best For                       |
-| -------------------- | ------------------------- | ---------------- | ------------------------------ |
-| **Traditional**      | `/vtm:context` + manual   | Human implements | Simple tasks, learning         |
-| **Streamlined**      | `/vtm:work` + `/vtm:done` | Human implements | Most tasks with guidance       |
-| **Agent Autonomous** | `/vtm:execute`            | Agent executes   | Complex tasks, high confidence |
-
-## Pre-flight Checklist (Agent Will Verify)
-
-Before implementation starts:
-
-- [ ] Task context is clear and complete
-- [ ] All dependencies are completed
-- [ ] Test strategy is appropriate
-- [ ] Development environment is ready
-- [ ] Required files exist or can be created
-
-## Post-flight Checklist (Agent Will Verify)
-
-Before marking complete:
-
-- [ ] All acceptance criteria met
-- [ ] Test coverage meets target
-- [ ] All tests passing
-- [ ] Linting clean (pnpm lint:fix run successfully)
-- [ ] Type checking passed (pnpm build)
-- [ ] JSDoc coverage meets target
-- [ ] Commits made with clear messages
-- [ ] No blockers or outstanding issues
-
-## Wallaby MCP Integration (TDD)
-
-For TDD tasks, the agent uses Wallaby MCP tools:
-
-- `wallaby_failingTests` - Verify RED phase (tests fail before implementation)
-- `wallaby_allTests` - Verify GREEN phase (tests pass after implementation)
-- `wallaby_coveredLinesForFile` - Check coverage gaps
-- `wallaby_runtimeValues` - Debug test failures
-- `wallaby_updateTestSnapshots` - Update snapshots when needed
 
 ## Related Commands
 
-- `/vtm:work` - Manual execution with context (human implements)
-- `/vtm:context` - Get task context only
+- `/vtm:context` - Get task context only (read-only, no git operations)
 - `/vtm:next` - Find ready tasks
 - `/vtm:done` - Complete task and find next
 - `/vtm:stats` - View overall progress
+- `/vtm:task` - View full task details
 - `/vtm:instructions` - View instructions without launching agent
 
 ## See Also
 
-- [InstructionBuilder](../../lib/instruction-builder.ts) - Generates detailed instructions
-- [Coding Standards](.././vtm/coding-standards.md) - Project coding standards
-- [Instruction Templates](.././vtm/instruction-templates/) - Strategy-specific templates
-- [VTMReader](../../lib/vtm-reader.ts) - Task context retrieval
+- [VTMGitWorkflow](../../src/lib/vtm-git-workflow.ts) - Git workflow automation library
+- [VTMReader](../../src/lib/vtm-reader.ts) - Task context retrieval
+- [ContextBuilder](../../src/lib/context-builder.ts) - Task context generation

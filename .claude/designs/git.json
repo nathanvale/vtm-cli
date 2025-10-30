@@ -1,0 +1,122 @@
+{
+  "created_at": "2025-10-30T14:00:00.000Z",
+  "name": "git",
+  "description": "Git domain",
+  "version": "1.0.0",
+  "design": {
+    "operations": [
+      {
+        "name": "status",
+        "description": "Get the current git status",
+        "manual_invocation": "/git:status",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "switch",
+        "description": "Switch branches",
+        "manual_invocation": "/git:switch",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "create-branch",
+        "description": "Create a new branch",
+        "manual_invocation": "/git:create-branch",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "commit",
+        "description": "Make a commit with special instructions",
+        "manual_invocation": "/git:commit",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "pull",
+        "description": "Pull changes",
+        "manual_invocation": "/git:pull",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "push",
+        "description": "Push changes",
+        "manual_invocation": "/git:push",
+        "triggers_auto_discovery": true
+      },
+      {
+        "name": "log",
+        "description": "View history/what's been done",
+        "manual_invocation": "/git:log",
+        "triggers_auto_discovery": true
+      }
+    ],
+    "auto_discovery": {
+      "enabled": true,
+      "type": "skill",
+      "suggested_triggers": [
+        "change branch",
+        "check git status",
+        "checkout branch",
+        "commit changes",
+        "commit my work",
+        "commit history",
+        "create branch",
+        "create commit",
+        "get updates",
+        "git history",
+        "git status",
+        "make commit",
+        "make new branch",
+        "new branch",
+        "pull changes",
+        "pull latest",
+        "push changes",
+        "push to remote",
+        "show history",
+        "show status",
+        "start branch",
+        "switch branches",
+        "sync from remote",
+        "sync to remote",
+        "upload changes",
+        "what branch am i on",
+        "what's been done",
+        "what's changed"
+      ]
+    },
+    "external_integration": {
+      "needed": true,
+      "type": "mcp",
+      "systems": [
+        {
+          "name": "gh",
+          "type": "api"
+        },
+        {
+          "name": "filesystem",
+          "type": "api"
+        }
+      ]
+    },
+    "automation": {
+      "enabled": false,
+      "hooks": []
+    },
+    "sharing": {
+      "scope": "personal",
+      "team_members": [],
+      "published": false
+    },
+    "recommendations": {
+      "next_steps": [
+        "Run: /scaffold:domain git",
+        "Customize generated command files",
+        "Test commands locally: /git:{operation}",
+        "Add quality gates and tests when ready"
+      ],
+      "start_with": [
+        "Create commands for: status, switch, create-branch, commit, pull, push, log",
+        "Add skill with trigger phrases for auto-discovery",
+        "Create MCP stub(s) for external system connection"
+      ]
+    }
+  }
+}

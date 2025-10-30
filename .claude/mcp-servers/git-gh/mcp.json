@@ -1,0 +1,37 @@
+{
+  "name": "git-gh",
+  "type": "mcp",
+  "description": "GitHub CLI integration for git domain",
+  "version": "1.0.0",
+  "connection": {
+    "type": "cli",
+    "service": "gh",
+    "auth_type": "oauth"
+  },
+  "configuration": {
+    "gh_executable": "gh",
+    "endpoint": "https://api.github.com"
+  },
+  "operations": {
+    "read": {
+      "commands": [
+        "gh pr list",
+        "gh issue list",
+        "gh repo view",
+        "gh branch list"
+      ]
+    },
+    "write": {
+      "commands": [
+        "gh pr create",
+        "gh issue create",
+        "gh pr checkout"
+      ]
+    }
+  },
+  "setup": {
+    "required_env_vars": [],
+    "required_cli_tools": ["gh"],
+    "instructions": "Install GitHub CLI: https://cli.github.com/\nAuthorize: gh auth login"
+  }
+}

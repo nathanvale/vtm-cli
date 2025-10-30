@@ -38,7 +38,7 @@ describe('DecisionEngine - Deep Architecture Analysis', () => {
     it('should return an object with expected structure', () => {
       const result = engine.analyzeDeepArchitecture('mock-domain')
 
-      // Expect result to have all required fields
+      // Expect result to have all required fields (AC3 structure)
       expect(result).toBeDefined()
       expect(result.domain).toBe('mock-domain')
       expect(result.commands).toBeDefined()
@@ -46,7 +46,8 @@ describe('DecisionEngine - Deep Architecture Analysis', () => {
       expect(result.patterns).toBeDefined()
       expect(Array.isArray(result.patterns)).toBe(true)
       expect(result.deepAnalysis).toBeDefined()
-      expect(result.summary).toBeDefined()
+      // Summary is within deepAnalysis, not at top level
+      expect(result.deepAnalysis.summary).toBeDefined()
     })
 
     it('should include deepAnalysis with components, issues, and strategies', () => {
@@ -87,23 +88,20 @@ describe('DecisionEngine - Deep Architecture Analysis', () => {
       expect(result.deepAnalysis.components.length).toBeGreaterThanOrEqual(0)
     })
 
-    it('should include summary that aggregates both analyses', () => {
+    it('should include summary within deepAnalysis', () => {
       const result = engine.analyzeDeepArchitecture('mock-domain')
 
-      // Summary should aggregate data from both analyses
-      expect(result.summary).toBeDefined()
-      expect(result.summary.lightAnalysis).toBeDefined()
-      expect(result.summary.deepAnalysis).toBeDefined()
+      // Summary is within deepAnalysis per AC3/AC4 structure
+      expect(result.deepAnalysis.summary).toBeDefined()
+      expect(result.deepAnalysis.summary.totalComponents).toBeDefined()
+      expect(result.deepAnalysis.summary.totalIssues).toBeDefined()
+      expect(result.deepAnalysis.summary.criticalIssues).toBeDefined()
+      expect(result.deepAnalysis.summary.totalRefactoringOptions).toBeDefined()
 
-      // Light analysis summary
-      expect(result.summary.lightAnalysis.commands).toBeDefined()
-      expect(result.summary.lightAnalysis.strengths).toBeDefined()
-      expect(result.summary.lightAnalysis.issues).toBeDefined()
-
-      // Deep analysis summary
-      expect(result.summary.deepAnalysis.totalComponents).toBeDefined()
-      expect(result.summary.deepAnalysis.totalIssues).toBeDefined()
-      expect(result.summary.deepAnalysis.criticalIssues).toBeDefined()
+      // Pattern-based fields are at top level
+      expect(result.commands).toBeDefined()
+      expect(result.patterns).toBeDefined()
+      expect(result.confidence).toBeDefined()
     })
 
     it('should not duplicate data between light and deep analysis', () => {

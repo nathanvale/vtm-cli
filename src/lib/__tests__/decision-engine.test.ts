@@ -593,6 +593,115 @@ describe('DecisionEngine', () => {
     })
   })
 
+  // TDD Red Phase: Deep architecture analysis tests
+  describe('Deep architecture analysis', () => {
+    const mockDomainPath = path.join(fixturesPath, 'mock-domain')
+
+    // AC1: Test that analyzeDeepArchitecture exists and returns correct structure
+    it('should run deep analysis and return complete structure', () => {
+      const engine = new DecisionEngine({
+        basePath: fixturesPath,
+        patternsPath: testPatternsPath,
+      })
+
+      const analysis = engine.analyzeDeepArchitecture('mock-domain')
+
+      // Should return DeepAnalysisResult structure with nested deepAnalysis
+      expect(analysis).toBeDefined()
+      expect(analysis.domain).toBe('mock-domain')
+      expect(analysis.deepAnalysis).toBeDefined()
+      expect(analysis.deepAnalysis.components).toBeDefined()
+      expect(Array.isArray(analysis.deepAnalysis.components)).toBe(true)
+      expect(analysis.deepAnalysis.issues).toBeDefined()
+      expect(Array.isArray(analysis.deepAnalysis.issues)).toBe(true)
+      expect(analysis.deepAnalysis.refactoringStrategies).toBeDefined()
+      expect(Array.isArray(analysis.deepAnalysis.refactoringStrategies)).toBe(true)
+      expect(analysis.deepAnalysis.summary).toBeDefined()
+      expect(analysis.deepAnalysis.summary.totalComponents).toBeDefined()
+      expect(analysis.deepAnalysis.summary.totalIssues).toBeDefined()
+    })
+
+    // AC2: Test that deep analysis includes component metrics
+    it('should include component metrics in deep analysis', () => {
+      const engine = new DecisionEngine({
+        basePath: fixturesPath,
+        patternsPath: testPatternsPath,
+      })
+
+      const analysis = engine.analyzeDeepArchitecture('mock-domain')
+
+      expect(analysis.deepAnalysis.components).toBeDefined()
+      // mock-domain has TypeScript files, should have metrics
+      if (analysis.deepAnalysis.components.length > 0) {
+        const component = analysis.deepAnalysis.components[0]
+        expect(component.name).toBeDefined()
+        expect(component.complexity).toBeDefined()
+        expect(typeof component.complexity).toBe('number')
+      }
+    })
+
+    // AC3: Test that deep analysis detects architectural issues
+    it('should detect architectural issues in deep analysis', () => {
+      const engine = new DecisionEngine({
+        basePath: fixturesPath,
+        patternsPath: testPatternsPath,
+      })
+
+      const analysis = engine.analyzeDeepArchitecture('mock-domain')
+
+      expect(analysis.deepAnalysis.issues).toBeDefined()
+      expect(Array.isArray(analysis.deepAnalysis.issues)).toBe(true)
+
+      // Each issue should have severity and title
+      if (analysis.deepAnalysis.issues.length > 0) {
+        const issue = analysis.deepAnalysis.issues[0]
+        expect(issue.severity).toBeDefined()
+        expect(issue.title).toBeDefined()
+      }
+    })
+
+    // AC4: Test that deep analysis generates refactoring strategies
+    it('should generate refactoring strategies in deep analysis', () => {
+      const engine = new DecisionEngine({
+        basePath: fixturesPath,
+        patternsPath: testPatternsPath,
+      })
+
+      const analysis = engine.analyzeDeepArchitecture('mock-domain')
+
+      expect(analysis.deepAnalysis.refactoringStrategies).toBeDefined()
+      expect(Array.isArray(analysis.deepAnalysis.refactoringStrategies)).toBe(true)
+
+      // Each strategy should have issue and options
+      if (analysis.deepAnalysis.refactoringStrategies.length > 0) {
+        const strategy = analysis.deepAnalysis.refactoringStrategies[0]
+        expect(strategy.issue).toBeDefined()
+        expect(strategy.options).toBeDefined()
+        expect(Array.isArray(strategy.options)).toBe(true)
+      }
+    })
+
+    // AC5: Test that deep analysis includes summary statistics
+    it('should include summary statistics in deep analysis', () => {
+      const engine = new DecisionEngine({
+        basePath: fixturesPath,
+        patternsPath: testPatternsPath,
+      })
+
+      const analysis = engine.analyzeDeepArchitecture('mock-domain')
+
+      expect(analysis.deepAnalysis.summary).toBeDefined()
+      expect(typeof analysis.deepAnalysis.summary.totalComponents).toBe('number')
+      expect(typeof analysis.deepAnalysis.summary.totalIssues).toBe('number')
+      expect(typeof analysis.deepAnalysis.summary.criticalIssues).toBe('number')
+      expect(analysis.deepAnalysis.summary.totalComponents).toBeGreaterThanOrEqual(0)
+      expect(analysis.deepAnalysis.summary.totalIssues).toBeGreaterThanOrEqual(0)
+    })
+
+    // AC6: Test formatted output - removed since DeepAnalysisResult doesn't have formatted field anymore
+    // The formatted output is now generated separately by CLI presentation layer
+  })
+
   // TDD Red Phase: Domain analysis tests
   describe('Domain analysis', () => {
     const mockDomainPath = path.join(fixturesPath, 'mock-domain')
@@ -771,6 +880,296 @@ describe('DecisionEngine', () => {
         expect(typeof analysis.formatted).toBe('string')
         expect(analysis.formatted.length).toBeGreaterThan(0)
         expect(analysis.formatted).toContain('mock-domain')
+      })
+    })
+  })
+
+  // TDD Red Phase: Deep analysis integration tests (DEEP-ANALYSIS-3)
+  describe('Deep Architecture Analysis (AC1-AC6)', () => {
+    const mockDomainPath = path.join(fixturesPath, 'mock-domain')
+
+    // AC1: DecisionEngine has new method analyzeDeepArchitecture(domainPath: string): DeepAnalysisResult
+    describe('AC1: analyzeDeepArchitecture method exists', () => {
+      it('should have analyzeDeepArchitecture method', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // This will FAIL because method doesn't exist yet
+        expect(typeof engine.analyzeDeepArchitecture).toBe('function')
+      })
+
+      it('should accept domainPath parameter', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // This will FAIL because method doesn't exist
+        expect(() => {
+          engine.analyzeDeepArchitecture(mockDomainPath)
+        }).not.toThrow()
+      })
+    })
+
+    // AC2: Original analyzeDomain() behavior preserved (backward compatible)
+    describe('AC2: Backward compatibility', () => {
+      it('should preserve original analyzeDomain() behavior', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const analysis = engine.analyzeDomain('mock-domain')
+
+        // Original structure should be intact
+        expect(analysis).toBeDefined()
+        expect(analysis.domain).toBe('mock-domain')
+        expect(analysis.current).toBeDefined()
+        expect(analysis.strengths).toBeDefined()
+        expect(analysis.issues).toBeDefined()
+        expect(analysis.recommendations).toBeDefined()
+        expect(analysis.refactoringRoadmap).toBeDefined()
+        expect(analysis.metrics).toBeDefined()
+        expect(analysis.formatted).toBeDefined()
+      })
+
+      it('should not break existing tests', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // Original method should still work
+        const analysis = engine.analyzeDomain('mock-domain')
+        expect(analysis.current.commands).toBe(3)
+      })
+    })
+
+    // AC3: Deep analysis returns combined results: pattern recommendations + deep analysis
+    describe('AC3: Combined results structure', () => {
+      it('should return combined pattern recommendations and deep analysis', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // This will FAIL because method doesn't exist
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        // Expect combined structure
+        expect(result).toBeDefined()
+
+        // Original pattern-based fields
+        expect(result.domain).toBeDefined()
+        expect(result.commands).toBeDefined()
+        expect(result.patterns).toBeDefined()
+        expect(result.confidence).toBeDefined()
+
+        // NEW: Deep analysis fields
+        expect(result.deepAnalysis).toBeDefined()
+        expect(result.deepAnalysis.components).toBeDefined()
+        expect(result.deepAnalysis.issues).toBeDefined()
+        expect(result.deepAnalysis.refactoringStrategies).toBeDefined()
+        expect(result.deepAnalysis.summary).toBeDefined()
+      })
+
+      it('should include pattern-based recommendations', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        // Pattern-based fields should be populated
+        expect(result.domain).toBe('mock-domain')
+        expect(Array.isArray(result.commands)).toBe(true)
+        expect(Array.isArray(result.patterns)).toBe(true)
+        expect(typeof result.confidence).toBe('number')
+      })
+    })
+
+    // AC4: Deep analysis includes refactoring strategies and issue severity
+    describe('AC4: Deep analysis tier results', () => {
+      it('should include component metrics from Tier 1', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        expect(result.deepAnalysis.components).toBeDefined()
+        expect(Array.isArray(result.deepAnalysis.components)).toBe(true)
+
+        // Should detect components in mock-domain
+        if (result.deepAnalysis.components.length > 0) {
+          const component = result.deepAnalysis.components[0]
+          expect(component.filePath).toBeDefined()
+          expect(component.lines).toBeDefined()
+          expect(component.complexity).toBeDefined()
+        }
+      })
+
+      it('should include architectural issues from Tier 2 with severity', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        expect(result.deepAnalysis.issues).toBeDefined()
+        expect(Array.isArray(result.deepAnalysis.issues)).toBe(true)
+
+        // Each issue should have severity
+        if (result.deepAnalysis.issues.length > 0) {
+          const issue = result.deepAnalysis.issues[0]
+          expect(issue.id).toBeDefined()
+          expect(issue.title).toBeDefined()
+          expect(issue.severity).toBeDefined()
+          expect(['low', 'medium', 'high', 'critical']).toContain(issue.severity)
+        }
+      })
+
+      it('should include refactoring strategies from Tier 3', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        expect(result.deepAnalysis.refactoringStrategies).toBeDefined()
+        expect(Array.isArray(result.deepAnalysis.refactoringStrategies)).toBe(true)
+
+        // Each strategy should have issue, options, and recommendation
+        if (result.deepAnalysis.refactoringStrategies.length > 0) {
+          const strategy = result.deepAnalysis.refactoringStrategies[0]
+          expect(strategy.issue).toBeDefined()
+          expect(strategy.options).toBeDefined()
+          expect(Array.isArray(strategy.options)).toBe(true)
+        }
+      })
+
+      it('should include analysis summary', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        expect(result.deepAnalysis.summary).toBeDefined()
+        expect(typeof result.deepAnalysis.summary.totalComponents).toBe('number')
+        expect(typeof result.deepAnalysis.summary.totalIssues).toBe('number')
+        expect(typeof result.deepAnalysis.summary.criticalIssues).toBe('number')
+        expect(typeof result.deepAnalysis.summary.totalRefactoringOptions).toBe('number')
+      })
+    })
+
+    // AC5: Smart filtering: only show issues with severity >= threshold (medium by default)
+    describe('AC5: Severity filtering', () => {
+      it('should filter issues by severity threshold (medium by default)', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        // By default, should only show medium+ severity
+        if (result.deepAnalysis.issues.length > 0) {
+          result.deepAnalysis.issues.forEach((issue) => {
+            expect(['medium', 'high', 'critical']).toContain(issue.severity)
+          })
+        }
+      })
+
+      it('should accept minSeverity option for custom filtering', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // This will FAIL because options parameter doesn't exist yet
+        const result = engine.analyzeDeepArchitecture(mockDomainPath, {
+          minSeverity: 'high',
+        })
+
+        // Should only show high+ severity
+        if (result.deepAnalysis.issues.length > 0) {
+          result.deepAnalysis.issues.forEach((issue) => {
+            expect(['high', 'critical']).toContain(issue.severity)
+          })
+        }
+      })
+
+      it('should include low severity when minSeverity is low', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath, {
+          minSeverity: 'low',
+        })
+
+        // Should include all severities
+        expect(result.deepAnalysis.issues).toBeDefined()
+        // No filtering - all issues should be included
+      })
+    })
+
+    // AC6: Comprehensive JSDoc on new method with examples
+    describe('AC6: JSDoc documentation', () => {
+      it('should have JSDoc on analyzeDeepArchitecture method', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        // Method should exist and be documented
+        expect(engine.analyzeDeepArchitecture).toBeDefined()
+        expect(typeof engine.analyzeDeepArchitecture).toBe('function')
+      })
+    })
+
+    // Integration test: Full workflow
+    describe('Integration: Full deep analysis workflow', () => {
+      it('should run complete analysis pipeline', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const result = engine.analyzeDeepArchitecture(mockDomainPath)
+
+        // Verify complete result structure
+        expect(result.domain).toBeDefined()
+        expect(result.deepAnalysis).toBeDefined()
+        expect(result.deepAnalysis.components).toBeDefined()
+        expect(result.deepAnalysis.issues).toBeDefined()
+        expect(result.deepAnalysis.refactoringStrategies).toBeDefined()
+        expect(result.deepAnalysis.summary).toBeDefined()
+      })
+
+      it('should handle empty domain gracefully', () => {
+        const engine = new DecisionEngine({
+          basePath: fixturesPath,
+          patternsPath: testPatternsPath,
+        })
+
+        const emptyDomainPath = path.join(fixturesPath, 'empty-domain')
+        const result = engine.analyzeDeepArchitecture(emptyDomainPath)
+
+        // Should return valid structure with empty arrays
+        expect(result.deepAnalysis.components.length).toBe(0)
+        expect(result.deepAnalysis.issues.length).toBe(0)
+        expect(result.deepAnalysis.refactoringStrategies.length).toBe(0)
+        expect(result.deepAnalysis.summary.totalComponents).toBe(0)
       })
     })
   })

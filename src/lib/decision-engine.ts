@@ -152,6 +152,8 @@ type DeepAnalysisResult = {
     refactoringStrategies: RefactoringStrategy[]
     summary: AnalysisSummary
   }
+  // Formatted output for CLI
+  formatted: string
 }
 
 type RefactoringStrategy = {
@@ -483,7 +485,11 @@ export class DecisionEngine {
         refactoringStrategies: analysisResult.refactoringStrategies,
         summary: analysisResult.summary,
       },
+      formatted: '', // Will be populated below
     }
+
+    // Step 4: Format the result for CLI output
+    result.formatted = this.formatDeepAnalysis(result)
 
     return result
   }
@@ -1074,13 +1080,13 @@ export class DecisionEngine {
     output += chalk.cyan('🔧 REFACTORING STRATEGIES\n')
     output += chalk.bold('━'.repeat(60)) + '\n\n'
 
-    if (analysis.refactoringStrategies.length === 0) {
+    if (analysis.deepAnalysis.refactoringStrategies.length === 0) {
       output += chalk.green('✅ No refactoring needed\n\n')
     } else {
-      analysis.refactoringStrategies.forEach((strategy) => {
+      analysis.deepAnalysis.refactoringStrategies.forEach((strategy: RefactoringStrategy) => {
         if (strategy.options.length > 0) {
           output += chalk.bold(`\n  📋 For: ${strategy.issue.title}\n`)
-          strategy.options.forEach((option, idx) => {
+          strategy.options.forEach((option: RefactoringOption, idx: number) => {
             const isRecommended =
               strategy.recommendedOption && option.name === strategy.recommendedOption.name
                 ? ' ⭐ RECOMMENDED'
@@ -1097,10 +1103,10 @@ export class DecisionEngine {
     // Section 4: Summary
     output += chalk.cyan('📈 SUMMARY\n')
     output += chalk.bold('━'.repeat(60)) + '\n\n'
-    output += `  Total Components:       ${analysis.summary.totalComponents}\n`
-    output += `  Total Issues:           ${analysis.summary.totalIssues}\n`
-    output += `  Critical Issues:        ${analysis.summary.criticalIssues}\n`
-    output += `  Refactoring Options:    ${analysis.summary.totalRefactoringOptions}\n`
+    output += `  Total Components:       ${analysis.deepAnalysis.summary.totalComponents}\n`
+    output += `  Total Issues:           ${analysis.deepAnalysis.summary.totalIssues}\n`
+    output += `  Critical Issues:        ${analysis.deepAnalysis.summary.criticalIssues}\n`
+    output += `  Refactoring Options:    ${analysis.deepAnalysis.summary.totalRefactoringOptions}\n`
     output += '\n'
 
     return output

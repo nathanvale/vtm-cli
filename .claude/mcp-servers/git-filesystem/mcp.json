@@ -1,0 +1,38 @@
+{
+  "name": "git-filesystem",
+  "type": "mcp",
+  "description": "Local filesystem integration for git domain",
+  "version": "1.0.0",
+  "connection": {
+    "type": "local",
+    "service": "filesystem",
+    "auth_type": "none"
+  },
+  "configuration": {
+    "root_path": ".",
+    "allowed_paths": [
+      ".git",
+      ".gitignore",
+      ".gitattributes"
+    ]
+  },
+  "operations": {
+    "read": {
+      "paths": [
+        ".git/config",
+        ".gitignore",
+        ".git/HEAD"
+      ]
+    },
+    "write": {
+      "paths": [
+        ".gitignore",
+        ".gitattributes"
+      ]
+    }
+  },
+  "setup": {
+    "required_env_vars": [],
+    "instructions": "No setup required. Operates on local filesystem access."
+  }
+}

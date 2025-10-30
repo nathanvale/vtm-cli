@@ -1,16 +1,16 @@
+---
+allowed-tools: Write, Read, Bash(mkdir:*, test:*, cat:*)
+description: Interactive design wizard for creating domain specifications
+argument-hint: { domain-name } [optional-description]
+---
+
 # Design Domain - Interactive Design Wizard
 
 **Command:** `/design:domain {domain-name} [optional-description]`
-**Version:** 1.0.0
-**Purpose:** Interactive AI-powered thinking partner that helps you design what a domain should contain before building it.
 
----
-
-## What This Command Does
+Interactive AI-powered thinking partner that helps you design what a domain should contain before building it.
 
 This command guides you through a 5-question design process to create a complete domain specification. The result is a JSON file that `/scaffold:domain` can use to generate all the necessary files.
-
----
 
 ## Usage
 
@@ -19,19 +19,6 @@ This command guides you through a 5-question design process to create a complete
 /design:domain pm "Project Management"
 /design:domain devops "Infrastructure and Deployment"
 ```
-
----
-
-## Arguments
-
-Parse the command arguments:
-
-```javascript
-const domainName = ARGUMENTS[0]
-const description = ARGUMENTS.slice(1).join(" ") || `${domainName} domain`
-```
-
----
 
 ## Process
 
@@ -407,24 +394,113 @@ Examples: pm, devops, test-automation, deploy
 
 ---
 
-## Implementation Notes
+## Implementation
 
-1. **Interactive Flow:** Ask questions one at a time, wait for user responses
-2. **Smart Defaults:** Provide sensible defaults based on domain name
-3. **Flexible Input:** Accept various answer formats (yes/y/true, no/n/false)
-4. **Helpful Examples:** Show domain-specific examples
-5. **Validation:** Check answers are reasonable before proceeding
-6. **Clear Output:** Show what was captured at the end
+You are now an interactive design wizard. Your job is to:
 
----
+1. **Parse arguments** from ARGUMENTS array
+   - ARGUMENTS[0] = domain name
+   - ARGUMENTS[1..] = description (or generate default)
+
+2. **Validate** the domain name
+   - Must be lowercase, 2-20 characters
+   - Only letters, numbers, hyphens
+   - Start with a letter
+   - Pattern: `/^[a-z][a-z0-9-]{1,19}$/`
+
+3. **Check** if design already exists
+   - Path: `.claude/designs/{domain}.json`
+   - If exists, show warning with options
+
+4. **Ask 5 questions** sequentially (wait for answers between each)
+   - Show progress indicator ("QUESTION X of 5")
+   - Display question with context and examples
+   - Validate responses before moving on
+   - Show what you captured and ask for confirmation
+
+5. **Generate** design specification JSON containing:
+   - `created_at`: ISO timestamp
+   - `name`: domain name
+   - `description`: from arguments
+   - `version`: "1.0.0"
+   - `design`: object with operations, auto_discovery, external_integration, automation, sharing, recommendations
+
+6. **Save** to `.claude/designs/{domain}.json`
+   - Create .claude/designs directory if needed
+   - Pretty-print JSON with 2-space indent
+   - Atomic write
+
+7. **Show** completion summary with:
+   - File location
+   - Domain configuration
+   - Next steps
+   - How to scaffold
+
+## Key Processing Rules
+
+**Q1 - Operations Processing:**
+- Split by comma, trim whitespace
+- Convert to lowercase slugs (remove special chars)
+- Generate descriptions: "{Operation} operation for {domain}"
+- Return array of operation objects
+
+**Q2 - Trigger Phrases:**
+- Generate contextual phrases for each operation
+- Examples: "next" → "what should I work on", "list" → "show all"
+- Create 2-4 phrases per operation
+- Return sorted array
+
+**Q3 - External Systems:**
+- Parse comma-separated system names
+- Convert to lowercase slugs
+- Set type to "api" by default
+- Return array or empty array
+
+**Q4 - Automation Hooks:**
+- Parse comma-separated hook events
+- Valid events: pre-commit, post-checkout, pre-push, pre-to-vtm
+- Generate action names: `hook_{event_with_underscores}`
+- Return array or empty array
+
+**Q5 - Sharing Scope:**
+- Parse: "personal", "team", or "community"
+- Default: "personal"
+- If "team", ask for comma-separated emails
+- Return scope object with team_members array
+
+## Error Messages
+
+**Invalid domain name:**
+```
+❌ Invalid domain name: "{input}"
+
+Domain names must:
+  • Be lowercase
+  • Use letters, numbers, hyphens only
+  • Start with a letter
+  • Be 2-20 characters
+
+Examples: pm, devops, test-automation, deploy
+```
+
+**Design exists:**
+```
+⚠️  Design for "{domain}" already exists at:
+   .claude/designs/{domain}.json
+
+Options:
+  • View existing: cat .claude/designs/{domain}.json
+  • Delete and redesign: rm .claude/designs/{domain}.json
+  • Choose different name: /design:domain {domain}-v2
+```
 
 ## Related Commands
 
 - **Next:** `/scaffold:domain {domain}` - Generate files from this design
-- **View:** Use Read tool on `.claude/designs/{domain}.json`
-- **Index:** `/registry:scan` - See all domains after scaffolding
+- **View:** `cat .claude/designs/{domain}.json`
+- **List:** `/registry:scan` - See all domains after scaffolding
 
 ---
 
 **Status:** Ready for Implementation
-**Priority:** CRITICAL - This is the entry point for the entire MCC system
+**Priority:** CRITICAL - This is the interactive entry point for the MCC system

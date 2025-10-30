@@ -273,9 +273,9 @@ describe('ComponentAnalyzer', () => {
       const libDir = path.join(__dirname, '..')
       const results = analyzer.scanComponentDir(libDir)
 
-      // Filter for test files
-      const testFiles = results.filter((m: any) => m.name.includes('test'))
-      // Should not include test files
+      // Filter for .test.ts files (but not fixture files like test-component.ts)
+      const testFiles = results.filter((m: any) => m.filePath.endsWith('.test.ts'))
+      // Should not include .test.ts files
       expect(testFiles.length).toBe(0)
     })
 

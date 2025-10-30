@@ -1,0 +1,11 @@
+{
+  "git": {
+    "enabled": true,
+    "branch_naming": {
+      "pattern": "{type}/{id}",
+      "default_type": "feature"
+    },
+    "auto_commit": false,
+    "commit_message_template": "{type}({id}): {title}"
+  }
+}

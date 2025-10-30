@@ -65,7 +65,7 @@ vtm task "$TASK_ID"
 echo ""
 echo "💡 Available actions:"
 echo "   • Get context: /vtm:context $TASK_ID"
-echo "   • Start work: /vtm:start $TASK_ID"
+echo "   • Execute task: /vtm:execute $TASK_ID"
 echo "   • Mark done: /vtm:complete $TASK_ID"
 echo "   • View all: /vtm:list"
 ```

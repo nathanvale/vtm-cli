@@ -74,16 +74,13 @@ echo ""
 vtm next
 
 echo ""
-echo "💡 Workflow options:"
+echo "💡 Workflow:"
 echo ""
-echo "Quick start (recommended):"
-echo "   • /vtm:work TASK-XXX     - Start task and view context in one step"
+echo "Execute task (recommended):"
+echo "   • /vtm:execute TASK-XXX  - Launch agent with git integration"
 echo ""
-echo "Step-by-step workflow:"
-echo "   • /vtm:context TASK-XXX  - View task context first"
-echo "   • /vtm:start TASK-XXX    - Mark task as in-progress"
-echo ""
-echo "Other commands:"
+echo "Read-only commands:"
+echo "   • /vtm:context TASK-XXX  - View task context only (no git operations)"
 echo "   • /vtm:task TASK-XXX     - View full task details"
 echo "   • /vtm:stats             - Check overall progress"
 ```
@@ -92,16 +89,17 @@ echo "   • /vtm:stats             - Check overall progress"
 
 This command wraps the `vtm next` CLI command to show tasks where all dependencies are completed.
 
-**Workflow:**
+**Simplified Workflow:**
 
 1. Run `/vtm:next` to see available tasks
 2. Choose a task to work on
-3. Run `/vtm:context TASK-XXX` to get full context
-4. Start implementation with PROMPT 2
-5. Mark complete with `/vtm:complete TASK-XXX`
+3. Run `/vtm:execute TASK-XXX` to launch agent with git integration
+4. Agent implements autonomously
+5. Run `/vtm:done` to complete, merge to main, and show next tasks
 
 ## See Also
 
-- `/vtm:context` - Get context for a specific task
-- `/vtm:start` - Mark task as in-progress
+- `/vtm:execute` - Launch agent with git integration
+- `/vtm:context` - Get context for a specific task (read-only)
+- `/vtm:done` - Complete current task and show next
 - `/vtm:list` - View all tasks

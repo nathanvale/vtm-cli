@@ -45,6 +45,11 @@ export type Task = {
     ac_verified: string[]
   }
   /**
+   * Optional type for categorizing tasks, used for branch naming and organization.
+   * Defaults to 'feature' if not specified.
+   */
+  type?: 'feature' | 'bugfix' | 'refactor' | 'chore' | 'docs' | 'test'
+  /**
    * Rich context from ADR and Spec sources for traceability.
    * Optional field that can be populated during task extraction.
    */
@@ -395,4 +400,50 @@ export type ChecklistPhase = {
   duration: string
   /** Checklist items for this phase */
   tasks: ChecklistItem[]
+}
+
+/**
+ * Custom error class for git-related operations.
+ * Provides context-specific error messages for git failures.
+ */
+export class GitError extends Error {
+  constructor(
+    message: string,
+    public readonly code?: string,
+    public readonly suggestions: string[] = [],
+  ) {
+    super(message)
+    this.name = 'GitError'
+    Object.setPrototypeOf(this, GitError.prototype)
+  }
+}
+
+/**
+ * Result of a git operation (commit, merge, branch creation, etc).
+ * Provides success/failure status and detailed information.
+ */
+export type GitOperationResult = {
+  /** Whether the operation succeeded */
+  success: boolean
+  /** Human-readable message describing the result */
+  message: string
+  /** Git branch name involved in the operation */
+  branch?: string
+  /** Git commit SHA if a commit was created */
+  commit?: string
+  /** Additional operation details (e.g., files changed, merge conflicts) */
+  details?: Record<string, unknown>
+}
+
+/**
+ * Configuration options for VTMGitWorkflow operations.
+ * Allows customization of git behavior.
+ */
+export type GitWorkflowOptions = {
+  /** Whether to run git commands in verbose mode (default: false) */
+  verbose?: boolean
+  /** Custom git directory path (default: current working directory) */
+  gitDir?: string
+  /** Whether to automatically push changes to remote (default: false) */
+  autoPush?: boolean
 }

@@ -473,17 +473,17 @@ program
       },
     ) => {
       try {
-        const domainPath = path.join(process.cwd(), domain)
-
         // If --deep flag is set, use the integrated deep analysis pipeline
         if (options.deep) {
           const engine = new DecisionEngine()
-          const deepAnalysis = engine.analyzeDeepArchitecture(domainPath, {
+          const deepAnalysis = engine.analyzeDeepArchitecture(domain, {
             minSeverity: 'medium', // Default to medium+ severity
           })
           console.info(deepAnalysis.formatted)
           return
         }
+
+        const domainPath = path.join(process.cwd(), domain)
 
         // If --deep or no specific options, run complete pipeline
         const runComplete =

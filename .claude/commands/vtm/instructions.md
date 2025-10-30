@@ -151,9 +151,9 @@ echo "3. Before starting:"
 echo "   • Check dependencies are completed: /vtm:task $TASK_ID"
 echo "   • Ensure all acceptance criteria are understood"
 echo "4. Start implementing:"
-echo "   • /vtm:work $TASK_ID (start task + view context)"
-echo "   • Follow pre-flight checklist from instructions"
-echo "   • Use TDD workflow if test_strategy is TDD"
+echo "   • /vtm:execute $TASK_ID (launch agent with git integration)"
+echo "   • Agent follows pre-flight checklist from instructions"
+echo "   • Agent uses TDD workflow if test_strategy is TDD"
 echo "5. Upon completion:"
 echo "   • Verify post-flight checklist"
 echo "   • Run tests and linting"
@@ -271,8 +271,8 @@ The command handles errors gracefully:
 ```bash
 /vtm:instructions TASK-042    # Review detailed instructions
 # Review test strategy and acceptance criteria
-/vtm:work TASK-042            # Start task + view context
-# Implement following instructions
+/vtm:execute TASK-042         # Launch agent with git integration
+# Agent implements following instructions
 /vtm:done                     # Complete and find next
 ```
 
@@ -302,14 +302,15 @@ Use `/vtm:instructions` when:
 | Command             | Purpose                                        | Token Usage | Use When                              |
 | ------------------- | ---------------------------------------------- | ----------- | ------------------------------------- |
 | `/vtm:instructions` | **Prescriptive guidance** for HOW to build     | ~4000-5000  | Before starting, reviewing strategy   |
-| `/vtm:context`      | **Descriptive context** about WHAT to build    | ~500-2000   | During implementation, for background |
+| `/vtm:context`      | **Descriptive context** about WHAT to build    | ~500-2000   | Read-only review, during planning     |
 | `/vtm:task`         | **Task metadata** (status, dependencies, etc.) | ~200-500    | Checking status, viewing details      |
-| `/vtm:work`         | **Quick start** combining start + context      | ~500-2000   | Ready to start immediately            |
+| `/vtm:execute`      | **Full execution** with git + agent            | N/A         | Ready to start task with automation   |
 
 ## See Also
 
-- `/vtm:work` - Start task and view context in one step
-- `/vtm:context` - Get minimal implementation context
+- `/vtm:execute` - Launch agent with git integration
+- `/vtm:context` - Get minimal implementation context (read-only)
 - `/vtm:task` - View complete task metadata
+- `/vtm:done` - Complete task with git workflow
 - `/vtm:next` - Find ready tasks to work on
 - `/vtm:list` - View all tasks

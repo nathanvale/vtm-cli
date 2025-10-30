@@ -55,7 +55,7 @@ echo ""
 echo "💡 Quick actions:"
 echo "   • Next tasks: /vtm:next"
 echo "   • All tasks: /vtm:list"
-echo "   • Start work: /vtm:start TASK-XXX"
+echo "   • Execute task: /vtm:execute TASK-XXX"
 ```
 
 ## Statistics Shown
@@ -73,9 +73,9 @@ The stats command displays:
 
 Stats are automatically recalculated when you:
 
-- Start a task (`/vtm:start`)
-- Complete a task (`/vtm:complete`)
-- Update any task status
+- Execute a task (`/vtm:execute`)
+- Complete a task (`/vtm:done` or `/vtm:complete`)
+- Update any task status via CLI (`vtm start`, `vtm complete`)
 
 The VTMWriter class handles this via `recalculateStats()` - you never need to manually update stats.
 

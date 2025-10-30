@@ -104,15 +104,14 @@ fi
 echo ""
 echo "💡 Next steps:"
 
-# AC1 & AC4: Smart hint for /vtm:work (subtle placement)
+# Smart hint for /vtm:execute
 if [[ "$TASK_STATUS" == "pending" ]]; then
-    echo "   • Quick start: /vtm:work $TASK_ID (context + start in one step)"
+    echo "   • Execute task: /vtm:execute $TASK_ID (agent + git integration)"
 fi
 
-echo "   • Copy context above"
-echo "   • Use with PROMPT 2 (prompts/2-execute-task.md)"
-echo "   • Implement with TDD based on test_strategy"
-echo "   • Mark complete: /vtm:complete $TASK_ID"
+echo "   • This is read-only (no git operations)"
+echo "   • To start task with git workflow: /vtm:execute $TASK_ID"
+echo "   • To mark complete: /vtm:done"
 ```
 
 ## Token Efficiency
@@ -131,14 +130,21 @@ VTM achieves 99% token reduction by:
 
 ## Workflow Integration
 
+**Read-Only Mode:** This command only displays context without any git operations.
+
+**For execution workflow:**
 1. Get ready tasks: `/vtm:next`
-2. **Get context: `/vtm:context TASK-XXX`**
-3. Copy context to PROMPT 2
-4. Implement with TDD
-5. Complete: `/vtm:complete TASK-XXX`
+2. Execute with agent: `/vtm:execute TASK-XXX` (includes context + git + agent)
+3. Complete: `/vtm:done`
+
+**When to use `/vtm:context`:**
+- Review task details before executing
+- Understand requirements without starting work
+- Check task status and dependencies
 
 ## See Also
 
+- `/vtm:execute` - Launch agent with git integration
 - `/vtm:next` - Find tasks to work on
 - `/vtm:task` - View full task details
-- `/vtm:start` - Mark task as in-progress
+- `/vtm:done` - Complete current task
