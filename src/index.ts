@@ -15,6 +15,9 @@ import {
   VTMSession,
   VTMHistory,
   TaskQualityValidator,
+  ComponentAnalyzer,
+  IssueDetector,
+  RefactoringPlanner,
 } from './lib'
 import { findMatchingAdrs, generateSpecName, checkExistingSpecs } from './lib/batch-spec-creator'
 import { ResearchCache } from './lib/research-cache'
@@ -449,31 +452,175 @@ program
     }
   })
 
-// vtm analyze - Analyze domain architecture
+// vtm analyze - Analyze domain architecture (enhanced with deep analysis)
 program
   .command('analyze <domain>')
-  .description('Analyze domain architecture and suggest improvements')
-  .option('--suggest-refactoring', 'Show refactoring suggestions for the domain')
-  .action(async (domain: string, options: { suggestRefactoring?: boolean }) => {
-    try {
-      const engine = new DecisionEngine()
+  .description('Analyze domain architecture with deep metrics, issues, and refactoring strategies')
+  .option('--metrics', 'Show component metrics (ComponentAnalyzer analysis)')
+  .option('--issues', 'Show detected architectural issues (IssueDetector analysis)')
+  .option('--refactor', 'Show refactoring strategies (RefactoringPlanner recommendations)')
+  .option('--deep', 'Run complete deep analysis pipeline (all three analyzers)')
+  .option('--suggest-refactoring', 'Show refactoring suggestions from DecisionEngine')
+  .action(
+    async (
+      domain: string,
+      options: {
+        metrics?: boolean
+        issues?: boolean
+        refactor?: boolean
+        deep?: boolean
+        suggestRefactoring?: boolean
+      },
+    ) => {
+      try {
+        const domainPath = path.join(process.cwd(), domain)
 
-      if (options.suggestRefactoring) {
-        // Suggest refactoring for the domain
-        const refactoring = engine.suggestRefactoring(domain)
-        console.info(refactoring.formatted)
-      } else {
-        // Analyze the domain
-        const analysis = engine.analyzeDomain(domain)
-        console.info(analysis.formatted)
+        // If --deep or no specific options, run complete pipeline
+        const runComplete =
+          options.deep ||
+          (!options.metrics && !options.issues && !options.refactor && !options.suggestRefactoring)
+
+        if (options.metrics || runComplete) {
+          console.info(chalk.cyan('\n📊 COMPONENT METRICS ANALYSIS'))
+          console.info(chalk.gray('━'.repeat(60)))
+          try {
+            const analyzer = new ComponentAnalyzer()
+            const components = analyzer.scanComponentDir(domainPath)
+
+            if (components.length === 0) {
+              console.info(chalk.yellow('⚠️  No TypeScript files found in domain'))
+            } else {
+              console.info(chalk.green(`✅ Found ${components.length} component(s)\n`))
+
+              components.forEach((metrics) => {
+                console.info(chalk.bold(`  📄 ${metrics.name}`))
+                console.info(`     Complexity: ${metrics.complexity.toFixed(1)}`)
+                console.info(`     JSDoc Coverage: ${metrics.jsdocCoverage}%`)
+                console.info(`     Functions: ${metrics.functions.length}`)
+                console.info(`     Dependencies: ${metrics.dependencies.length}`)
+                if (metrics.codeSmells.length > 0) {
+                  console.info(`     Code Smells: ${metrics.codeSmells.length}`)
+                }
+              })
+            }
+          } catch (error) {
+            console.error(
+              chalk.yellow(`⚠️  Could not analyze metrics: ${(error as Error).message}`),
+            )
+          }
+        }
+
+        if (options.issues || runComplete) {
+          console.info(chalk.cyan('\n🔍 ARCHITECTURAL ISSUES DETECTION'))
+          console.info(chalk.gray('━'.repeat(60)))
+          try {
+            const detector = new IssueDetector()
+            const issues = detector.detect(domainPath)
+
+            if (issues.length === 0) {
+              console.info(chalk.green('✅ No architectural issues detected'))
+            } else {
+              console.info(chalk.yellow(`⚠️  Found ${issues.length} issue(s)\n`))
+
+              issues.forEach((issue) => {
+                const severityColor =
+                  {
+                    critical: chalk.red,
+                    high: chalk.red,
+                    medium: chalk.yellow,
+                    low: chalk.blue,
+                  }[issue.severity] || chalk.gray
+
+                console.info(severityColor(`  [${issue.severity.toUpperCase()}] ${issue.title}`))
+                console.info(`           ${issue.description}`)
+                console.info(`           Evidence: ${issue.evidence}`)
+                if (issue.impact.length > 0) {
+                  console.info(`           Impact: ${issue.impact.join(', ')}`)
+                }
+              })
+            }
+          } catch (error) {
+            console.error(chalk.yellow(`⚠️  Could not detect issues: ${(error as Error).message}`))
+          }
+        }
+
+        if (options.refactor || runComplete) {
+          console.info(chalk.cyan('\n🔧 REFACTORING STRATEGIES'))
+          console.info(chalk.gray('━'.repeat(60)))
+          try {
+            const detector = new IssueDetector()
+            const issues = detector.detect(domainPath)
+            const planner = new RefactoringPlanner()
+
+            let foundStrategies = false
+            issues.forEach((issue) => {
+              const options_list = planner.generateOptions(issue)
+              if (options_list.length > 0) {
+                foundStrategies = true
+                const bestOption = planner.recommendBest(options_list)
+
+                console.info(chalk.bold(`\n  📋 For: ${issue.title}`))
+                options_list.forEach((option, idx) => {
+                  const isRecommended = option.recommendation ? ' ⭐ RECOMMENDED' : ''
+                  console.info(`     ${idx + 1}. ${option.name}${isRecommended}`)
+                  console.info(`        Effort: ${option.effort} | Risk: ${option.riskLevel}`)
+                  console.info(`        ${option.description}`)
+                })
+
+                if (bestOption) {
+                  const strategy = planner.createMigrationStrategy(issue, bestOption)
+                  if (strategy) {
+                    console.info(`     Migration Duration: ${strategy.estimatedDuration}`)
+                    console.info(`     Phases: ${strategy.phases.map((p) => p.name).join(' → ')}`)
+                  }
+                }
+              }
+            })
+
+            if (!foundStrategies) {
+              console.info(chalk.green('✅ No refactoring needed'))
+            }
+          } catch (error) {
+            console.error(
+              chalk.yellow(`⚠️  Could not generate strategies: ${(error as Error).message}`),
+            )
+          }
+        }
+
+        if (options.suggestRefactoring && !runComplete) {
+          console.info(chalk.cyan('\n💡 ARCHITECTURE RECOMMENDATIONS'))
+          console.info(chalk.gray('━'.repeat(60)))
+          try {
+            const engine = new DecisionEngine()
+            const refactoring = engine.suggestRefactoring(domain)
+            console.info(refactoring.formatted)
+          } catch (error) {
+            console.error(
+              chalk.yellow(`⚠️  Could not generate suggestions: ${(error as Error).message}`),
+            )
+          }
+        }
+
+        if (
+          !options.metrics &&
+          !options.issues &&
+          !options.refactor &&
+          !options.suggestRefactoring &&
+          !options.deep
+        ) {
+          // Default behavior: domain architecture analysis
+          const engine = new DecisionEngine()
+          const analysis = engine.analyzeDomain(domain)
+          console.info(analysis.formatted)
+        }
+      } catch (error) {
+        const errorMessage = (error as Error).message
+        console.error(chalk.red(`❌ Error analyzing domain '${domain}': ${errorMessage}`))
+        console.error(chalk.yellow('\nTip: Use --help for available options'))
+        process.exit(1)
       }
-    } catch (error) {
-      const errorMessage = (error as Error).message
-      console.error(chalk.red(`❌ Error analyzing domain '${domain}': ${errorMessage}`))
-      console.error(chalk.yellow('\nTip: Ensure the domain exists in .claude/commands/'))
-      process.exit(1)
-    }
-  })
+    },
+  )
 
 // vtm session - Manage current task session
 const sessionCommand = program.command('session').description('Manage current task session')
