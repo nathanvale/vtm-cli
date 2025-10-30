@@ -3,19 +3,81 @@
 import { VTMReader } from './vtm-reader'
 import type { Task } from './types'
 
+/**
+ * Options for configuring task ingestion behavior.
+ *
+ * @remarks
+ * All options have sensible defaults that enable automatic ID assignment and
+ * dependency resolution. Disable individual options to customize behavior.
+ */
 export type IngestOptions = {
-  assignIds?: boolean // Default true
-  resolveDependencies?: boolean // Default true
-  defaultStatus?: Task['status'] // Default 'pending'
+  /**
+   * Whether to automatically assign TASK-XXX IDs to tasks without IDs.
+   * @default true
+   */
+  assignIds?: boolean
+  /**
+   * Whether to resolve numeric index dependencies to TASK-XXX IDs.
+   * @default true
+   */
+  resolveDependencies?: boolean
+  /**
+   * Default status to use for ingested tasks if not specified.
+   * @default 'pending'
+   */
+  defaultStatus?: Task['status']
 }
 
 /**
  * Ingest tasks with automatic ID assignment and dependency resolution.
  *
- * @param tasks - Array of partial tasks to ingest
- * @param vtmPath - Path to VTM file (default: 'vtm.json')
- * @param options - Ingest options
- * @returns Array of fully formed tasks with IDs assigned and dependencies resolved
+ * Processes an array of partial task objects and returns fully-formed tasks
+ * with IDs assigned and dependencies resolved. Integrates with existing VTM
+ * file to continue ID numbering and validate dependencies against existing tasks.
+ *
+ * @param tasks - Array of partial tasks to ingest (ID and dependencies optional)
+ * @param vtmPath - Path to VTM file to read for ID numbering and existing tasks
+ * @param options - Configuration options for ingestion behavior
+ * @returns Promise resolving to array of fully-formed tasks ready for VTM ingestion
+ * @throws {Error} If VTM file exists but cannot be read (unless VTM doesn't exist)
+ * @throws {Error} If a numeric dependency index is out of bounds
+ *
+ * @example
+ * ```typescript
+ * const tasks = await ingestTasks([
+ *   {
+ *     title: "Implement auth",
+ *     description: "Add authentication system",
+ *     acceptance_criteria: ["User can log in"],
+ *     dependencies: [],
+ *     test_strategy: "TDD"
+ *   },
+ *   {
+ *     title: "Add user profiles",
+ *     description: "Add profile support",
+ *     acceptance_criteria: ["Users can set profile"],
+ *     dependencies: [0], // References first task by index
+ *     test_strategy: "Unit"
+ *   }
+ * ]);
+ * // Returns:
+ * // [
+ * //   { id: "TASK-001", title: "Implement auth", dependencies: [], ... },
+ * //   { id: "TASK-002", title: "Add user profiles", dependencies: ["TASK-001"], ... }
+ * // ]
+ * ```
+ *
+ * @remarks
+ * ID Assignment:
+ * - If assignIds=true, finds the highest existing TASK-XXX ID in VTM
+ * - New tasks are numbered sequentially starting from (highest + 1)
+ * - IDs are zero-padded to 3 digits (TASK-001, TASK-002, etc.)
+ *
+ * Dependency Resolution:
+ * - Numeric dependencies are converted to TASK-IDs by position in the batch
+ * - Example: dependency index [0] becomes the ID of first task in batch
+ * - String dependencies (already TASK-IDs) are passed through unchanged
+ * - Mixed dependencies are supported: [0, "TASK-002"]
  */
 export async function ingestTasks(
   tasks: Partial<Task>[],

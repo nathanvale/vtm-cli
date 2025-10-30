@@ -1,5 +1,11 @@
 // src/lib/task-validator-ingest.ts
-// Simplified validator for vtm ingest command
+
+/**
+ * Task validation for VTM ingest operations.
+ *
+ * Provides comprehensive validation of tasks before ingestion, including
+ * schema validation, dependency checking, and circular dependency detection.
+ */
 
 import * as fs from 'fs'
 import * as readline from 'readline'
@@ -7,16 +13,60 @@ import chalk from 'chalk'
 import type { Task } from './types'
 import { VTMReader } from './vtm-reader'
 
+/**
+ * Result of task validation operation.
+ */
 export type ValidationResultIngest = {
+  /** Whether all validation checks passed */
   valid: boolean
+  /** Array of validation error messages (empty if valid=true) */
   errors: string[]
 }
 
+/**
+ * Validator for tasks being ingested into VTM.
+ *
+ * Performs comprehensive validation of task arrays including:
+ * - Required field validation (id, title, description, etc.)
+ * - Enum field validation (status, test_strategy, risk)
+ * - Array field type checking
+ * - Dependency validation (both numeric indices and string TASK-IDs)
+ * - Circular dependency detection
+ *
+ * @example
+ * ```typescript
+ * const validator = new TaskValidatorIngest();
+ * await validator.loadExistingTasks('vtm.json');
+ * const result = validator.validate(tasks);
+ * if (!result.valid) {
+ *   console.error('Validation errors:', result.errors);
+ * }
+ * ```
+ */
 export class TaskValidatorIngest {
+  /** Set of existing task IDs from VTM file for dependency validation */
   private existingTaskIds: Set<string> = new Set()
 
   /**
-   * Load existing VTM task IDs for dependency validation
+   * Load existing VTM task IDs for dependency validation.
+   *
+   * Reads the VTM file and caches task IDs to validate that task dependencies
+   * reference existing tasks. If VTM file doesn't exist, cache is left empty.
+   *
+   * @param vtmPath - Path to the VTM file (defaults to 'vtm.json')
+   * @throws {Error} If VTM file exists but cannot be read (permission/parse errors)
+   *
+   * @remarks
+   * Must be called before validate() if you want to check dependencies against
+   * existing VTM tasks. If not called, validation will only check dependencies
+   * within the new task batch.
+   *
+   * @example
+   * ```typescript
+   * const validator = new TaskValidatorIngest();
+   * await validator.loadExistingTasks();
+   * // Now validator will check dependencies against existing VTM
+   * ```
    */
   async loadExistingTasks(vtmPath: string = 'vtm.json'): Promise<void> {
     try {
@@ -30,7 +80,41 @@ export class TaskValidatorIngest {
   }
 
   /**
-   * Validate an array of tasks
+   * Validate an array of tasks for ingestion.
+   *
+   * Performs comprehensive validation including:
+   * - All required fields are present
+   * - Enum fields have valid values
+   * - Array fields are actually arrays
+   * - Dependencies reference existing tasks or valid indices
+   * - No circular dependencies exist
+   *
+   * @param tasks - Array of tasks to validate
+   * @returns Validation result with valid=true if all checks pass, errors array
+   *
+   * @remarks
+   * Call loadExistingTasks() before this method to validate dependencies against
+   * existing VTM. Without loading existing tasks, only batch-internal dependencies
+   * will be validated.
+   *
+   * @example
+   * ```typescript
+   * const result = validator.validate([
+   *   {
+   *     id: "TASK-001",
+   *     title: "Build feature",
+   *     description: "Implementation details",
+   *     acceptance_criteria: ["Should work"],
+   *     status: "pending",
+   *     test_strategy: "TDD",
+   *     risk: "medium",
+   *     dependencies: [0],
+   *     blocks: [],
+   *     adr_source: "adr/ADR-001.md",
+   *     spec_source: "specs/spec-001.md"
+   *   }
+   * ]);
+   * ```
    */
   validate(tasks: Task[]): ValidationResultIngest {
     const errors: string[] = []
@@ -122,7 +206,22 @@ export class TaskValidatorIngest {
   }
 
   /**
-   * Check for circular dependencies in tasks
+   * Check for circular dependencies in tasks.
+   *
+   * Detects cycles in the task dependency graph using depth-first search
+   * with a recursion stack. Supports both numeric indices and string TASK-IDs.
+   *
+   * @param tasks - Array of tasks to check for circular dependencies
+   * @returns Array of error messages describing any circular dependencies found
+   *
+   * @remarks
+   * Uses depth-first search to detect cycles:
+   * - Maintains a visited set for nodes already fully explored
+   * - Maintains a recursion stack for nodes in current path
+   * - If a node in recursion stack is visited again, a cycle exists
+   * - Reports full cycle path in error message for debugging
+   *
+   * @internal
    */
   private checkCircularDependencies(tasks: Task[]): string[] {
     const errors: string[] = []
@@ -170,7 +269,34 @@ export class TaskValidatorIngest {
 }
 
 /**
- * Load tasks from JSON file
+ * Load tasks from a JSON file.
+ *
+ * Reads a JSON file containing an array of task objects and parses it.
+ * File must be a valid JSON array at the top level.
+ *
+ * @param filePath - Path to JSON file containing task array
+ * @returns Object with tasks array property
+ * @throws {Error} If file does not exist
+ * @throws {Error} If file contains invalid JSON
+ * @throws {Error} If file content is not a JSON array
+ *
+ * @example
+ * ```typescript
+ * const { tasks } = loadTasksFromFile('tasks.json');
+ * // tasks is now Task[]
+ * ```
+ *
+ * @remarks
+ * The JSON file must be a valid array of task objects:
+ * ```json
+ * [
+ *   {
+ *     "id": "TASK-001",
+ *     "title": "Example task",
+ *     ...
+ *   }
+ * ]
+ * ```
  */
 export function loadTasksFromFile(filePath: string): { tasks: Task[] } {
   if (!fs.existsSync(filePath)) {
@@ -194,7 +320,43 @@ export function loadTasksFromFile(filePath: string): { tasks: Task[] } {
 }
 
 /**
- * Generate preview of tasks to be ingested
+ * Generate a human-readable preview of tasks to be ingested.
+ *
+ * Creates a formatted text preview showing all tasks and their dependency status.
+ * Indicates which dependencies are new (in this batch), existing (in VTM),
+ * in-progress, completed, or missing.
+ *
+ * @param tasks - Array of tasks to preview
+ * @param vtmPath - Path to VTM file for checking existing task dependencies
+ * @returns Promise resolving to formatted preview string
+ *
+ * @example
+ * ```typescript
+ * const preview = await generateTaskPreview(tasks);
+ * console.log(preview);
+ * // Output:
+ * // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * // 📋 Generated 2 tasks
+ * // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+ * //
+ * // TASK-001: Implement auth
+ * //   Dependencies: none
+ * //   Ready when: immediately
+ * //
+ * // TASK-002: Add profiles
+ * //   Dependencies: TASK-001 (new)
+ * //   Ready when: TASK-001 completes
+ * // ...
+ * ```
+ *
+ * @remarks
+ * Dependency status indicators:
+ * - "(new)" in cyan: Task from this batch
+ * - "✓" in green: Completed existing task
+ * - "⏳" in yellow: In-progress existing task
+ * - "⚠" in red: Blocked existing task
+ * - "⏸" in gray: Pending existing task
+ * - "(missing)" in red: Referenced but not found
  */
 export async function generateTaskPreview(
   tasks: Task[],
@@ -272,7 +434,25 @@ export async function generateTaskPreview(
 }
 
 /**
- * Prompt user for confirmation
+ * Prompt the user for a yes/no confirmation via stdin.
+ *
+ * Displays a message and waits for user input on the command line.
+ * Accepts 'y', 'yes' (case-insensitive) as confirmation.
+ *
+ * @param message - Message to display to the user
+ * @returns Promise resolving to true for "yes", false for any other input
+ *
+ * @example
+ * ```typescript
+ * const confirmed = await promptConfirmation('Ingest 5 tasks?');
+ * if (confirmed) {
+ *   // Proceed with ingestion
+ * }
+ * ```
+ *
+ * @remarks
+ * Uses readline interface to read from stdin/stdout. The promise resolves
+ * after the user provides input and the readline interface is closed.
  */
 export function promptConfirmation(message: string): Promise<boolean> {
   const rl = readline.createInterface({
@@ -289,6 +469,14 @@ export function promptConfirmation(message: string): Promise<boolean> {
   })
 }
 
-// Export aliases for backward compatibility with test imports
+/**
+ * Type alias for backward compatibility with test imports.
+ * @internal
+ */
 export type ValidationResult = ValidationResultIngest
+
+/**
+ * Class alias for backward compatibility with test imports.
+ * @internal
+ */
 export const TaskValidator = TaskValidatorIngest

@@ -200,3 +200,199 @@ export type TaskUpdate = {
     ac_verified?: string[]
   }
 }
+
+/**
+ * Architectural issue detected in a domain or component.
+ * Represents a problem with the code structure, dependencies, or quality.
+ */
+export type ArchitecturalIssue = {
+  /** Unique identifier for the issue (e.g., "ISSUE-001") */
+  id: string
+  /** Short title of the issue */
+  title: string
+  /** Detailed description of the problem */
+  description: string
+  /** Severity level of the issue */
+  severity: 'critical' | 'high' | 'medium' | 'low'
+  /** Location where the issue was detected (file path or component name) */
+  location: string
+  /** Evidence of the issue (specific metrics or observations) */
+  evidence: string
+  /** Array of impacts if the issue is not fixed */
+  impact: string[]
+  /** Estimated effort to fix the issue (e.g., "2 hours") */
+  effort: string
+  /** IDs of related issues that compound this one */
+  relatedIssues: string[]
+}
+
+/**
+ * Detection rule type for custom issue detection.
+ * Allows registering custom detection rules with IssueDetector.
+ */
+export type DetectionRule = {
+  /** Name of the detection rule */
+  readonly name: string
+  /** Description of what this rule detects */
+  readonly description: string
+  /** Method to detect issues of this type */
+  detect: (domainPath: string) => ArchitecturalIssue[]
+}
+
+/**
+ * Options for issue detection.
+ * Allows filtering and customizing detection behavior.
+ */
+export type DetectionOptions = {
+  /** Array of rule names to skip during detection */
+  skipRules?: string[]
+  /** Minimum severity level to include in results */
+  minSeverity?: 'low' | 'medium' | 'high' | 'critical'
+}
+
+/**
+ * A refactoring option/strategy for addressing an architectural issue.
+ * Includes effort, risk, and trade-off analysis.
+ */
+export type RefactoringOption = {
+  /** Name of the refactoring approach */
+  name: string
+  /** Detailed description of the approach */
+  description: string
+  /** Advantages of this approach */
+  pros: string[]
+  /** Disadvantages/risks of this approach */
+  cons: string[]
+  /** Estimated effort to implement (e.g., "2-3 hours") */
+  effort: string
+  /** Whether this change is breaking/requires migration */
+  breaking: boolean
+  /** Risk level of implementing this option */
+  riskLevel: 'low' | 'medium' | 'high'
+  /** Whether this is the recommended option */
+  recommendation: boolean
+}
+
+/**
+ * A migration phase with specific tasks and quality gates.
+ */
+export type MigrationPhase = {
+  /** Phase name (e.g., "Planning", "Implementation") */
+  name: string
+  /** Description of what happens in this phase */
+  description: string
+  /** Individual migration tasks in this phase */
+  tasks: MigrationTask[]
+  /** Estimated duration for this phase */
+  duration: string
+  /** Quality gates that must pass before proceeding */
+  qualityGates: QualityGate[]
+}
+
+/**
+ * A single migration task with rollback procedure.
+ */
+export type MigrationTask = {
+  /** Unique task identifier */
+  id: string
+  /** Short title of the task */
+  title: string
+  /** Detailed description of what to do */
+  description: string
+  /** Step-by-step implementation steps */
+  steps: string[]
+  /** Estimated time to complete */
+  duration: string
+  /** How to roll back if this task fails */
+  rollbackProcedure: string
+}
+
+/**
+ * A quality gate to verify before proceeding to next phase.
+ */
+export type QualityGate = {
+  /** Gate name (e.g., "All tests passing") */
+  name: string
+  /** Command to run (e.g., "pnpm test") */
+  command: string
+  /** What success looks like */
+  successCriteria: string
+}
+
+/**
+ * Complete migration strategy with all phases and validation.
+ */
+export type MigrationStrategy = {
+  /** Strategy name */
+  name: string
+  /** Overview of the entire migration */
+  overview: string
+  /** Ordered list of migration phases */
+  phases: MigrationPhase[]
+  /** Pre-migration checks to perform */
+  preFlightChecks: ChecklistItem[]
+  /** Post-migration validation steps */
+  postFlightValidation: ChecklistItem[]
+  /** Risk mitigation strategies */
+  riskMitigation: RiskMitigation[]
+  /** Total estimated time to complete */
+  estimatedDuration: string
+  /** How to rollback the entire migration if needed */
+  rollbackPlan: string
+}
+
+/**
+ * Item in a migration checklist.
+ */
+export type ChecklistItem = {
+  /** Item identifier */
+  id: string
+  /** What needs to be done */
+  task: string
+  /** Optional command to verify completion */
+  checkCommand?: string
+  /** How to know if this is complete */
+  successCriteria: string
+  /** Whether this item is optional */
+  optional: boolean
+}
+
+/**
+ * Risk mitigation strategy.
+ */
+export type RiskMitigation = {
+  /** Description of the risk */
+  risk: string
+  /** How likely is this risk to occur */
+  likelihood: 'low' | 'medium' | 'high'
+  /** What happens if this risk occurs */
+  impact: string
+  /** How to prevent or handle this risk */
+  mitigation: string
+}
+
+/**
+ * Implementation checklist derived from a migration strategy.
+ */
+export type ImplementationChecklist = {
+  /** Phases with their checklists */
+  phases: ChecklistPhase[]
+  /** Total estimated duration */
+  totalDuration: string
+  /** Overall risk level of the migration */
+  overallRisk: 'low' | 'medium' | 'high' | 'critical'
+  /** Gates that require approval before proceeding */
+  approvalGates: string[]
+}
+
+/**
+ * A phase of the implementation checklist.
+ */
+export type ChecklistPhase = {
+  /** Phase name */
+  name: string
+  /** Estimated duration for this phase */
+  duration: string
+  /** Checklist items for this phase */
+  tasks: ChecklistItem[]
+}

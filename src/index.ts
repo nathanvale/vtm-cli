@@ -14,6 +14,7 @@ import {
   DecisionEngine,
   VTMSession,
   VTMHistory,
+  TaskQualityValidator,
 } from './lib'
 import { findMatchingAdrs, generateSpecName, checkExistingSpecs } from './lib/batch-spec-creator'
 import { ResearchCache } from './lib/research-cache'
@@ -1111,6 +1112,148 @@ program
       }
     } catch (error) {
       console.error(chalk.red(`Error: ${(error as Error).message}`))
+      process.exit(1)
+    }
+  })
+
+// vtm validate-task - Validate task completion against quality standards
+program
+  .command('validate-task <task-id>')
+  .description('Validate task completion against quality standards')
+  .option(
+    '--skip <checks>',
+    'Skip specific checks (comma-separated: jsdoc,coverage,eslint,typescript,acceptance-criteria)',
+  )
+  .option('--fix', 'Auto-fix linting issues')
+  .action(async (taskId: string, options: { skip?: string; fix?: boolean }) => {
+    try {
+      const reader = new VTMReader()
+      const task = await reader.getTask(taskId)
+
+      if (!task) {
+        console.error(chalk.red(`\n❌ Task ${taskId} not found\n`))
+        process.exit(1)
+      }
+
+      console.info(chalk.blue(`\n📋 Validating Task: ${task.id}\n`))
+      console.info(chalk.bold(`Title: ${task.title}`))
+      console.info(chalk.gray(`Status: ${task.status}`))
+      console.info(chalk.gray(`Test Strategy: ${task.test_strategy}`))
+      console.info(chalk.gray(`Risk: ${task.risk}`))
+      console.info('')
+
+      // Parse skip checks
+      const skipChecks = options.skip ? options.skip.split(',').map((s) => s.trim()) : []
+
+      // Run validation
+      const validator = new TaskQualityValidator()
+      const report = await validator.validateTask(task, {
+        skip: skipChecks,
+        fix: options.fix || false,
+      })
+
+      // Display results
+      console.info(chalk.blue('═'.repeat(60)))
+      console.info(chalk.bold('Quality Validation Results'))
+      console.info(chalk.blue('═'.repeat(60)))
+      console.info('')
+
+      // Display each check
+      for (const check of report.checks) {
+        const statusIcon =
+          check.status === 'pass'
+            ? chalk.green('✅')
+            : check.status === 'fail'
+              ? chalk.red('❌')
+              : check.status === 'warning'
+                ? chalk.yellow('⚠️ ')
+                : chalk.gray('⊘ ')
+
+        console.info(`${statusIcon}  ${check.name}`)
+        console.info(`   ${check.message}`)
+
+        if (check.details && check.details.length > 0) {
+          check.details.forEach((detail) => {
+            console.info(chalk.gray(`   • ${detail}`))
+          })
+        }
+        console.info('')
+      }
+
+      // Display summary
+      console.info(chalk.blue('─'.repeat(60)))
+      console.info(chalk.bold('Summary'))
+      console.info(chalk.blue('─'.repeat(60)))
+      console.info(`Passed:  ${chalk.green(`${report.summary.passed}/${report.checks.length}`)}`)
+      console.info(
+        `Failed:  ${report.summary.failed > 0 ? chalk.red(String(report.summary.failed)) : chalk.green('0')}`,
+      )
+      if (report.summary.warnings > 0) {
+        console.info(`Warnings: ${chalk.yellow(String(report.summary.warnings))}`)
+      }
+      if (report.summary.skipped > 0) {
+        console.info(`Skipped:  ${chalk.gray(String(report.summary.skipped))}`)
+      }
+      console.info('')
+
+      // Display overall status
+      if (report.overallStatus === 'pass') {
+        console.info(chalk.green(chalk.bold('✅ VALIDATION PASSED')))
+      } else {
+        console.info(chalk.red(chalk.bold('❌ VALIDATION FAILED')))
+      }
+      console.info('')
+
+      // Display suggestions if there are failures
+      if (report.suggestions.length > 0) {
+        console.info(chalk.blue('─'.repeat(60)))
+        console.info(chalk.bold('Suggested Fixes'))
+        console.info(chalk.blue('─'.repeat(60)))
+        report.suggestions.forEach((suggestion, i) => {
+          console.info(`${i + 1}. ${suggestion}`)
+        })
+        console.info('')
+      }
+
+      // Display next steps
+      console.info(chalk.blue('─'.repeat(60)))
+      console.info(chalk.bold('Next Steps'))
+      console.info(chalk.blue('─'.repeat(60)))
+
+      if (report.overallStatus === 'pass') {
+        console.info('✅ Task ready for completion!')
+        console.info(`   Run: vtm complete ${taskId}`)
+      } else {
+        if (options.fix) {
+          console.info('1. Linting issues have been auto-fixed')
+        } else if (report.checks.some((c) => c.name === 'ESLint' && c.status === 'fail')) {
+          console.info('1. Run: pnpm lint:fix')
+        }
+
+        if (report.checks.some((c) => c.name === 'JSDoc Coverage' && c.status === 'fail')) {
+          console.info('2. Add JSDoc comments to public functions')
+        }
+
+        if (report.checks.some((c) => c.name === 'Test Coverage' && c.status === 'fail')) {
+          console.info('3. Increase test coverage: pnpm test -- --coverage')
+        }
+
+        if (report.checks.some((c) => c.name === 'TypeScript Build' && c.status === 'fail')) {
+          console.info('4. Fix TypeScript errors: pnpm build')
+        }
+
+        if (report.checks.some((c) => c.name === 'Acceptance Criteria' && c.status === 'fail')) {
+          console.info('5. Mark acceptance criteria as verified in vtm.json')
+        }
+
+        console.info('\nRun validation again with: vtm validate-task ' + taskId)
+      }
+      console.info('')
+
+      // Exit with appropriate code
+      process.exit(report.overallStatus === 'pass' ? 0 : 1)
+    } catch (error) {
+      console.error(chalk.red(`\n❌ Error: ${(error as Error).message}\n`))
       process.exit(1)
     }
   })
